@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-// Store session state globally using Zustand
+
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem('user')) || null,
   token: localStorage.getItem('token') || null,

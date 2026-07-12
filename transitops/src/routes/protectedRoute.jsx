@@ -2,12 +2,12 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 
-// Higher order routing component enforcing auth constraints
+
 export const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { isAuthenticated, user } = useAuthStore();
 
   if (!isAuthenticated) {
-    // Redirect to login if user session token is missing
+    
     return <Navigate to="/login" replace />;
   }
 

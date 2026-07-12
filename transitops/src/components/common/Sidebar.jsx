@@ -15,10 +15,11 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
     { name: 'Reports', path: '/reports', roles: ['Fleet Manager', 'Financial Analyst'] }
   ];
 
-  const userRole = user?.role || 'Guest';
+  const userRole = user?.role || 'Fleet Manager';
 
-  // Filter links by role permissions
-  const filteredLinks = links.filter(link => link.roles.includes(userRole));
+  // Render all links during prototyping to allow easy access without login walls
+  const filteredLinks = links;
+
 
   return (
     <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-slate-100 transform ${isOpen ? 'translate-x-0' : '-translate-x-0'} transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:flex md:flex-col border-r border-slate-800`}>
