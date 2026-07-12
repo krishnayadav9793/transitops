@@ -5,19 +5,53 @@ const getStatusId = async (table, statusName) => {
     return data?.trip_status_id || data?.vehicle_status_id || data?.driver_status_id;
 };
 
+const getDriverIdForUser = async (userEmail) => {
+    const { data } = await supabase
+        .from('drivers')
+        .select('driver_id')
+        .eq('email', userEmail)
+        .maybeSingle();
+    return data?.driver_id;
+};
+
 export const getTrips = async (req, res) => {
     try {
-        const { data, error } = await supabase.from('trips')
+        let query = supabase.from('trips')
             .select(`
                 *,
                 trip_statuses(status_name),
                 trip_assignments(
-                    vehicle_id, driver_id,
-                    vehicles(registration_number),
-                    drivers(full_name)
+                    trip_assignment_id, vehicle_id, driver_id, is_active,
+                    vehicles(registration_number, capacity_kg),
+                    drivers(full_name, email)
                 )
             `)
             .order('created_at', { ascending: false });
+
+        // Apply role-based visibility filters
+        if (req.user.role === 'Driver') {
+            const driverId = await getDriverIdForUser(req.user.email);
+            if (driverId) {
+                const { data: assignments } = await supabase
+                    .from('trip_assignments')
+                    .select('trip_id')
+                    .eq('driver_id', driverId)
+                    .eq('is_active', true);
+                    
+                const tripIds = assignments?.map(a => a.trip_id) || [];
+                if (tripIds.length > 0) {
+                    query = query.in('trip_id', tripIds);
+                } else {
+                    return res.status(200).json([]);
+                }
+            } else {
+                return res.status(200).json([]);
+            }
+        } else if (req.user.role === 'User') {
+            query = query.eq('created_by', req.user.user_id);
+        }
+
+        const { data, error } = await query;
         if (error) throw error;
         res.status(200).json(data);
     } catch (error) {
@@ -31,6 +65,46 @@ export const createTrip = async (req, res) => {
         const draftStatusId = await getStatusId('trip_statuses', 'DRAFT');
         const tripNumber = `TRP-${Date.now()}`;
         
+        let selectedVehicleId = vehicle_id;
+        let selectedDriverId = driver_id;
+
+        // Auto-match vehicle & driver if not specified (User workflow)
+        if (!selectedVehicleId || !selectedDriverId) {
+            const vehicleAvailStatusId = await getStatusId('vehicle_statuses', 'AVAILABLE');
+            const { data: vehicles } = await supabase
+                .from('vehicles')
+                .select('*')
+                .eq('vehicle_status_id', vehicleAvailStatusId)
+                .eq('is_active', true);
+                
+            const availableVehicle = vehicles?.find(v => 
+                Number(v.capacity_kg) >= Number(cargo_weight_kg)
+            );
+            
+            if (!availableVehicle) {
+                return res.status(400).json({ error: 'No available vehicles matching this load capacity constraint found.' });
+            }
+            
+            const driverAvailStatusId = await getStatusId('driver_statuses', 'AVAILABLE');
+            const { data: drivers } = await supabase
+                .from('drivers')
+                .select('*')
+                .eq('driver_status_id', driverAvailStatusId)
+                .eq('is_active', true);
+                
+            const currentDate = new Date().toISOString().split('T')[0];
+            const availableDriver = drivers?.find(d => 
+                d.license_expiry_date >= currentDate
+            );
+            
+            if (!availableDriver) {
+                return res.status(400).json({ error: 'No available drivers found at this moment.' });
+            }
+            
+            selectedVehicleId = availableVehicle.vehicle_id;
+            selectedDriverId = availableDriver.driver_id;
+        }
+
         const { data: trip, error: tripErr } = await supabase.from('trips').insert([{
             trip_number: tripNumber,
             source, destination, cargo_weight_kg, estimated_distance_km,
@@ -39,13 +113,13 @@ export const createTrip = async (req, res) => {
         }]).select().single();
         if (tripErr) throw tripErr;
 
-        if (vehicle_id && driver_id) {
-            await supabase.from('trip_assignments').insert([{
-                trip_id: trip.trip_id,
-                vehicle_id, driver_id,
-                assigned_by: req.user.user_id
-            }]);
-        }
+        await supabase.from('trip_assignments').insert([{
+            trip_id: trip.trip_id,
+            vehicle_id: selectedVehicleId,
+            driver_id: selectedDriverId,
+            assigned_by: req.user.user_id,
+            is_active: true
+        }]);
 
         res.status(201).json(trip);
     } catch (error) {
@@ -148,4 +222,4 @@ export const getTripById = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-};
+};

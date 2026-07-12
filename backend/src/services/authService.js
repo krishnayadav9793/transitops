@@ -11,7 +11,9 @@ const ROLE_MAP = {
   'DISPATCHER': 'Dispatcher',
   'SAFETY_OFFICER': 'Safety Officer',
   'FINANCIAL_ANALYST': 'Financial Analyst',
-  'DRIVER': 'Driver'
+  'DRIVER': 'Driver',
+  'USER': 'User',
+  'VEHICLE_OWNER': 'Vehicle Owner'
 };
 
 const REVERSE_ROLE_MAP = {
@@ -20,8 +22,11 @@ const REVERSE_ROLE_MAP = {
   'Dispatcher': 'DISPATCHER',
   'Safety Officer': 'SAFETY_OFFICER',
   'Financial Analyst': 'FINANCIAL_ANALYST',
-  'Driver': 'DRIVER'
+  'Driver': 'DRIVER',
+  'User': 'USER',
+  'Vehicle Owner': 'VEHICLE_OWNER'
 };
+
 
 const roleFromUser = (user) => {
   const raw = user?.user_roles?.[0]?.roles?.role_name || 'Unknown';
@@ -30,10 +35,11 @@ const roleFromUser = (user) => {
 
 export const authService = {
   async login(email, password) {
+    const cleanEmail = email.trim().toLowerCase();
     const { data: user, error } = await supabase
       .from('users')
       .select('*, user_roles(roles(role_name))')
-      .eq('email', email)
+      .eq('email', cleanEmail)
       .single();
 
     // ==========================
@@ -146,6 +152,42 @@ export const authService = {
         user_id: user.user_id,
         role_id: finalRoleId
       }]);
+
+    // If driver role, insert corresponding profile in drivers table
+    if (dbRoleName === 'DRIVER') {
+      const { data: statusData } = await supabase
+        .from('driver_statuses')
+        .select('driver_status_id')
+        .eq('status_name', 'AVAILABLE')
+        .single();
+      const driverStatusId = statusData?.driver_status_id || 1;
+
+      const { data: catData } = await supabase
+        .from('license_categories')
+        .select('license_category_id')
+        .eq('category_code', 'LMV')
+        .single();
+      const licenseCatId = catData?.license_category_id || 1;
+
+      const expiryDate = new Date();
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1); // Valid for 1 year
+      const licenseExpiry = expiryDate.toISOString().split('T')[0];
+
+      await supabase
+        .from('drivers')
+        .insert([{
+          full_name: full_name.trim(),
+          phone: phone ? phone.trim() : '000-000-0000',
+          email: email.trim().toLowerCase(),
+          license_number: `DRV-PEND-${Date.now()}`,
+          license_expiry_date: licenseExpiry,
+          license_category_id: licenseCatId,
+          driver_status_id: driverStatusId,
+          safety_score: 100.0,
+          joining_date: new Date().toISOString().split('T')[0],
+          is_active: true
+        }]);
+    }
 
     // 6. Generate JWT token
     const token = jwt.sign(

@@ -14,7 +14,7 @@ router.use(authenticateToken);
 router.get('/', getTrips);
 router.get('/resources', getEligibleResources);
 router.get('/:id', getTripById);
-router.post('/', checkRole(['Fleet Manager', 'Driver']), createTrip);
-router.patch('/:id/status', checkRole(['Fleet Manager', 'Driver']), updateTripStatus);
+router.post('/', checkRole(['Admin', 'Fleet Manager', 'Driver', 'User']), createTrip);
+router.patch('/:id/status', checkRole(['Admin', 'Fleet Manager', 'Driver', 'User']), updateTripStatus);
 
 export default router;

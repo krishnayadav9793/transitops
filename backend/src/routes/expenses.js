@@ -14,9 +14,9 @@ router.use(authenticateToken);
 
 router.get('/', getExpenses);
 router.get('/meta', getExpenseMetadata);
-router.post('/', checkRole(['Fleet Manager', 'Financial Analyst']), createExpense);
+router.post('/', checkRole(['Admin', 'Fleet Manager', 'Financial Analyst', 'Vehicle Owner']), createExpense);
 router.get('/fuel', getFuelLogs);
-router.post('/fuel', checkRole(['Fleet Manager', 'Driver', 'Financial Analyst']), createFuelLog);
+router.post('/fuel', checkRole(['Admin', 'Fleet Manager', 'Driver', 'Financial Analyst', 'Vehicle Owner']), createFuelLog);
 
 export default router;
 

@@ -35,11 +35,11 @@ function App() {
         
         <Route path="dashboard" element={<Dashboard />} />
 
-        {/* Vehicles (Manager, Finance) */}
+        {/* Vehicles (Manager, Finance, Vehicle Owner) */}
         <Route
           path="vehicles"
           element={
-            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Financial Analyst']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Vehicle Owner', 'Financial Analyst']}>
               <VehicleList />
             </ProtectedRoute>
           }
@@ -47,7 +47,7 @@ function App() {
         <Route
           path="vehicles/:id"
           element={
-            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Financial Analyst']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Vehicle Owner', 'Financial Analyst']}>
               <VehicleDetails />
             </ProtectedRoute>
           }
@@ -71,11 +71,11 @@ function App() {
           }
         />
 
-        {/* Trips (Manager, Driver) */}
+        {/* Trips (User, Driver, Manager) */}
         <Route
           path="trips"
           element={
-            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Driver']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'User', 'Driver']}>
               <TripList />
             </ProtectedRoute>
           }
@@ -83,17 +83,17 @@ function App() {
         <Route
           path="trips/:id"
           element={
-            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Driver']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'User', 'Driver']}>
               <TripDetails />
             </ProtectedRoute>
           }
         />
 
-        {/* Maintenance (Manager) */}
+        {/* Maintenance (Manager, Vehicle Owner) */}
         <Route
           path="maintenance"
           element={
-            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Vehicle Owner']}>
               <MaintenanceLogs />
             </ProtectedRoute>
           }
@@ -101,7 +101,7 @@ function App() {
         <Route
           path="maintenance/schedule"
           element={
-            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Vehicle Owner']}>
               <ScheduleMaintenance />
             </ProtectedRoute>
           }
@@ -109,27 +109,27 @@ function App() {
         <Route
           path="maintenance/:id"
           element={
-            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Vehicle Owner']}>
               <MaintenanceDetails />
             </ProtectedRoute>
           }
         />
 
-        {/* Expenses (Manager, Finance, Driver) */}
+        {/* Expenses (Manager, Finance, Driver, Vehicle Owner) */}
         <Route
           path="expenses"
           element={
-            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Financial Analyst', 'Driver']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Vehicle Owner', 'Financial Analyst', 'Driver']}>
               <ExpenseLedger />
             </ProtectedRoute>
           }
         />
 
-        {/* Reports (Manager, Finance) */}
+        {/* Reports (Manager, Finance, Vehicle Owner) */}
         <Route
           path="reports"
           element={
-            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Financial Analyst']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Vehicle Owner', 'Financial Analyst']}>
               <AnalyticsReports />
             </ProtectedRoute>
           }

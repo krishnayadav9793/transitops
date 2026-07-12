@@ -167,13 +167,10 @@ export default function Signup() {
                                         value={form.role}
                                         onChange={handleChange}
                                     >
-                                        <option value="">Select Role</option>
-                                        <option value="ADMIN">Administrator</option>
-                                        <option value="FLEET_MANAGER">Fleet Manager</option>
-                                        <option value="DISPATCHER">Dispatcher</option>
-                                        <option value="DRIVER">Driver</option>
-                                        <option value="FINANCIAL_ANALYST">Financial Analyst</option>
-                                        <option value="SAFETY_OFFICER">Safety Officer</option>
+                                        <option value="">Select Account Type</option>
+                                        <option value="USER">User (Request Trips)</option>
+                                        <option value="VEHICLE_OWNER">Vehicle Owner (Register Fleet)</option>
+                                        <option value="DRIVER">Driver (Accept & Deliver Trips)</option>
                                     </select>
                                     <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[20px]">expand_more</span>
                                 </div>
