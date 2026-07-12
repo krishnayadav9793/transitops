@@ -1,4 +1,4 @@
-import { supabase } from '../config/db.js';
+import { supabase } from '../config/supabase.js';
 
 const getStatusId = async (table, statusName) => {
     const { data } = await supabase.from(table).select('*').eq('status_name', statusName).single();

@@ -1,4 +1,4 @@
-import { supabase } from '../config/db.js';
+import { supabase } from '../config/supabase.js';
 
 export const getVehicleROI = async (req, res) => {
     try {

@@ -1,11 +1,9 @@
 import express from 'express';
-import { getReports } from '../controllers/reportController.js';
-import { authenticateToken, checkRole } from '../middleware/authMiddleware.js';
+import { getVehicleROI } from '../controllers/reportController.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
-
-router.use(authenticateToken);
-
-router.get('/', checkRole(['Fleet Manager', 'Financial Analyst']), getReports);
+router.use(authMiddleware);
+router.get('/roi', getVehicleROI);
 
 export default router;
