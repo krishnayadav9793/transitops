@@ -1,2 +1,173 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #0f5238;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #2d6a4f;
+  --color-on-primary-container: #a8e7c5;
+  --color-primary-fixed: #b1f0ce;
+  --color-primary-fixed-dim: #95d4b3;
+  --color-on-primary-fixed: #002114;
+  --color-on-primary-fixed-variant: #0e5138;
+  --color-secondary: #86530d;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fdb96c;
+  --color-on-secondary-container: #774700;
+  --color-secondary-fixed: #ffddbb;
+  --color-secondary-fixed-dim: #fdb96c;
+  --color-on-secondary-fixed: #2b1700;
+  --color-on-secondary-fixed-variant: #673d00;
+  --color-tertiary: #47474a;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #5f5e62;
+  --color-on-tertiary-container: #dbd8dc;
+  --color-tertiary-fixed: #e4e1e6;
+  --color-tertiary-fixed-dim: #c8c5ca;
+  --color-on-tertiary-fixed: #1b1b1e;
+  --color-on-tertiary-fixed-variant: #47464a;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-surface: #f8faf6;
+  --color-on-surface: #191c1a;
+  --color-surface-dim: #d8dbd7;
+  --color-surface-bright: #f8faf6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4f0;
+  --color-surface-container: #eceeea;
+  --color-surface-container-high: #e7e9e5;
+  --color-surface-container-highest: #e1e3df;
+  --color-on-surface-variant: #404943;
+  --color-inverse-surface: #2e312f;
+  --color-inverse-on-surface: #eff1ed;
+  --color-outline: #707973;
+  --color-outline-variant: #bfc9c1;
+  --color-background: #f8faf6;
+  --color-on-background: #191c1a;
+  --color-surface-tint: #2c694e;
+  --color-surface-variant: #e1e3df;
+  --color-inverse-primary: #95d4b3;
+
+  --font-display-lg: "Sora", sans-serif;
+  --font-headline-lg: "Sora", sans-serif;
+  --font-headline-md: "Sora", sans-serif;
+  --font-headline-sm: "Sora", sans-serif;
+  --font-body-lg: "Inter", sans-serif;
+  --font-body-md: "Inter", sans-serif;
+  --font-body-sm: "Inter", sans-serif;
+  --font-kpi-lg: "IBM Plex Sans", sans-serif;
+  --font-kpi-md: "IBM Plex Sans", sans-serif;
+  --font-label-caps: "Inter", sans-serif;
+  --font-data-mono: "IBM Plex Sans", sans-serif;
+
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 700;
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--letter-spacing: -0.01em;
+  --text-headline-lg--font-weight: 600;
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--font-weight: 600;
+  --text-headline-sm: 18px;
+  --text-headline-sm--line-height: 24px;
+  --text-headline-sm--font-weight: 500;
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 24px;
+  --text-body-lg--font-weight: 400;
+  --text-body-md: 14px;
+  --text-body-md--line-height: 20px;
+  --text-body-md--font-weight: 400;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 20px;
+  --text-body-sm--font-weight: 400;
+  --text-kpi-lg: 36px;
+  --text-kpi-lg--line-height: 44px;
+  --text-kpi-lg--letter-spacing: -0.01em;
+  --text-kpi-lg--font-weight: 600;
+  --text-kpi-md: 24px;
+  --text-kpi-md--line-height: 32px;
+  --text-kpi-md--font-weight: 500;
+  --text-label-caps: 12px;
+  --text-label-caps--line-height: 16px;
+  --text-label-caps--letter-spacing: 0.05em;
+  --text-label-caps--font-weight: 600;
+
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+
+  --spacing-sidebar-width: 280px;
+  --spacing-container-max: 1440px;
+  --spacing-gutter: 24px;
+  --spacing-base: 4px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
+  --width-md: 28rem;
+}
+
+body {
+  @apply bg-background text-on-background font-body-md;
+  margin: 0;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 12px 32px rgba(45, 106, 79, 0.08);
+}
+
+.emerald-overlay {
+  background: linear-gradient(135deg, rgba(15, 82, 56, 0.15) 0%, rgba(15, 82, 56, 0.05) 100%);
+}
+
+.login-illustration {
+  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZUdq9JZ9Gx2BSej-MaTGpD7HrbagYk0qkX_IMnWWB5FcnUSIcsLFdsLwZ3szJuGHuI9V5s4L_o25FKR8_KD-vurDwfNNvuoz9vpXQTgfGaIVZN4QVWB28XCKS7LKvcsUlwyNK_H-1oTySOyoZ0kuKSnj7VteEINanTnQDHBNoOTp-h3qSxiqD5lBeowGnFGqSDo3GPQ7zbwSKesq5Alp4-q0piJiCXt9U1AV_qICb4gy1T8ou2Hxx1244gUUuSatUtfeYWshutse2');
+  background-size: cover;
+  background-position: center;
+}
+
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(15, 82, 56, 0.08);
+}
+
+#root {
+  min-height: 100svh;
+  width: 100%;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.nav-item-transition {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #bfc9c1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #707973;
+}

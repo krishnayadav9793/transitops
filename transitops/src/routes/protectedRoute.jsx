@@ -11,7 +11,7 @@ export const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Enforce Role-Based Access Control (RBAC) on the frontend
+  
   if (allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />;
   }
