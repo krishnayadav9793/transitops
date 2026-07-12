@@ -15,7 +15,7 @@ export const TripDetails = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="px-xl py-lg flex justify-between items-end">
+      <div className="px-xl py-lg flex flex-col sm:flex-row justify-between items-start sm:items-end gap-md">
         <div>
           <div className="flex items-center gap-md mb-base">
             <Link to="/trips" className="text-primary flex items-center gap-xs hover:underline">
@@ -38,8 +38,8 @@ export const TripDetails = () => {
         </div>
       </div>
 
-      <div className="px-xl pb-xl flex gap-xl flex-1 max-w-[1440px]">
-        <div className="w-3/5 flex flex-col gap-lg">
+      <div className="px-xl pb-xl flex flex-col lg:flex-row gap-xl flex-1 max-w-[1440px]">
+        <div className="w-full lg:w-3/5 flex flex-col gap-lg">
           <div className="bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] overflow-hidden border border-surface-container">
             <div className="h-64 w-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
               <div className="text-center">
@@ -64,7 +64,7 @@ export const TripDetails = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-lg">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
             <div className="bg-white p-lg rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] border border-surface-container">
               <h3 className="font-headline-sm text-headline-sm mb-md flex items-center gap-sm">
                 <span className="material-symbols-outlined text-primary">local_shipping</span>
@@ -127,7 +127,7 @@ export const TripDetails = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-lg">
+          <div className="grid grid-cols-3 sm:grid-cols-3 gap-lg">
             <div className="bg-white p-md rounded-xl shadow-sm border border-surface-container">
               <p className="font-label-caps text-label-caps text-on-surface-variant mb-xs">Avg Speed</p>
               <p className="font-kpi-md text-kpi-md text-on-surface">62 <span className="text-body-sm font-normal">km/h</span></p>
@@ -143,7 +143,7 @@ export const TripDetails = () => {
           </div>
         </div>
 
-        <div className="w-2/5 flex flex-col bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] border border-surface-container overflow-hidden">
+        <div className="w-full lg:w-2/5 flex flex-col bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] border border-surface-container overflow-hidden">
           <div className="p-lg border-b border-surface-container flex justify-between items-center bg-surface-container-lowest">
             <h3 className="font-headline-sm text-headline-sm">Activity Timeline</h3>
             <span className="material-symbols-outlined text-outline">more_vert</span>

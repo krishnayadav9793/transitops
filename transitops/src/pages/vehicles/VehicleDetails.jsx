@@ -30,7 +30,7 @@ export const VehicleDetails = () => {
 
   return (
     <div className="space-y-xl">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-lg">
         <div>
           <nav className="flex items-center gap-xs text-on-surface-variant font-body-sm mb-xs">
             <Link to="/vehicles" className="hover:text-primary transition-colors">Vehicles</Link>
@@ -79,7 +79,7 @@ export const VehicleDetails = () => {
           </div>
         </div>
 
-        <div className="col-span-12 lg:col-span-8 grid grid-cols-3 gap-lg">
+        <div className="col-span-12 lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-lg">
           <div className="bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] p-lg border border-surface-container-highest/30">
             <p className="text-on-surface-variant font-label-caps mb-sm uppercase">Total Trips</p>
             <div className="flex items-baseline gap-sm">

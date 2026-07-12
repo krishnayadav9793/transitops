@@ -144,7 +144,7 @@ export const ExpenseLedger = () => {
     <div className="space-y-lg">
       
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-lg">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-lg mb-xl">
         <div>
           <h2 className="font-headline-lg text-headline-lg text-primary">Expense Management</h2>
           <p className="text-on-surface-variant mt-1">Review, categorize, and track operational expenditures across the fleet.</p>
@@ -167,9 +167,14 @@ export const ExpenseLedger = () => {
             <h3 className="font-headline-sm text-headline-sm text-on-surface">Top Expense Categories</h3>
             <span className="px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded-full font-label-caps text-label-caps">Ledger Summary</span>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-lg">
-            {categoriesList.map((cat) => (
-              <div key={cat} className="space-y-sm">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-lg">
+            {[
+              { name: 'Fuel', icon: 'local_gas_station', amount: '$42.8k', trend: '+8.2%', trendType: 'up' },
+              { name: 'Repairs', icon: 'build', amount: '$18.4k', trend: '-4.1%', trendType: 'down' },
+              { name: 'Insurance', icon: 'verified_user', amount: '$12.1k', trend: 'Steady', trendType: 'neutral' },
+              { name: 'Tolls', icon: 'toll', amount: '$6.5k', trend: '-12.0%', trendType: 'down' },
+            ].map((cat) => (
+              <div key={cat.name} className="space-y-sm">
                 <div className="flex items-center gap-sm">
                   <div className={`p-2 rounded-lg ${categoryBg[cat] || 'bg-surface-variant text-on-surface-variant'}`}>
                     <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>

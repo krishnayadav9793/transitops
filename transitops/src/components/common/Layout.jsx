@@ -25,7 +25,7 @@ export const Layout = () => {
     <div className="font-body-md text-on-background min-h-screen flex overflow-hidden">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
-      <main className="flex-1 ml-[260px] flex flex-col h-screen overflow-y-auto">
+      <main className="flex-1 md:ml-[260px] flex flex-col h-screen overflow-y-auto">
         <Navbar
           toggleSidebar={toggleSidebar}
           theme={theme}

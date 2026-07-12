@@ -24,7 +24,7 @@ export const AnalyticsReports = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-xl border-b border-outline-variant">
+      <div className="flex gap-xs sm:gap-xl border-b border-outline-variant overflow-x-auto no-scrollbar">
         {['Overview', 'Fleet Performance', 'Financial', 'Compliance'].map((tab) => (
           <button
             key={tab}
@@ -83,8 +83,8 @@ export const AnalyticsReports = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-12 gap-lg">
-        <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-lg">
+        <div className="col-span-1 md:col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
           <h3 className="font-headline-sm text-headline-sm mb-lg">Monthly Revenue Trend</h3>
           <div className="h-64 flex items-end gap-md px-md">
             {[65, 78, 55, 85, 92, 70, 82, 88, 76, 94, 86, 98].map((val, i) => (
@@ -98,7 +98,7 @@ export const AnalyticsReports = () => {
           </div>
         </div>
 
-        <div className="col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
+        <div className="col-span-1 md:col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
           <h3 className="font-headline-sm text-headline-sm mb-lg">Fleet Distribution</h3>
           <div className="h-48 flex items-center justify-center">
             <div className="relative w-32 h-32 rounded-full border-8 border-primary flex items-center justify-center">
@@ -126,8 +126,8 @@ export const AnalyticsReports = () => {
       </div>
 
       {/* Quick Insights */}
-      <div className="grid grid-cols-3 gap-lg">
-        <div className="col-span-2 bg-primary-container p-lg rounded-xl flex items-center justify-between overflow-hidden relative group">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
+        <div className="col-span-1 md:col-span-2 bg-primary-container p-lg rounded-xl flex items-center justify-between overflow-hidden relative group">
           <div className="absolute inset-0 bg-white/5 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <div className="relative z-10 max-w-lg">
             <h4 className="font-headline-sm text-headline-sm text-on-primary-container mb-2">Fleet Optimization AI</h4>
