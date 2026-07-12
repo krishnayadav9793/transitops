@@ -25,4 +25,5 @@ dist-ssr
 
 AI_CONTEXT.md
 FETCH_HEAD
-stitch_transitops_design_system/.claude/
+stitch_transitops_design_system/
+.claude/
