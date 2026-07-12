@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getMaintenanceLogs, createMaintenanceLog, closeMaintenanceLog, getMaintenanceTypes, getVehicles } from '../../api/fleet';
 
-const Maintenance = () => {
+const MaintenanceLogs = () => {
   const [logs, setLogs] = useState([]);
   const [types, setTypes] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -46,7 +46,7 @@ const Maintenance = () => {
   };
 
   return (
-    <div className="space-y-lg p-8 max-w-7xl mx-auto grid grid-cols-12 gap-8 bg-[#F9FAFB] min-h-screen">
+    <div className="p-8 max-w-7xl mx-auto grid grid-cols-12 gap-8 bg-[#F9FAFB] min-h-screen">
       <div className="col-span-12 lg:col-span-4 bg-white p-6 rounded-xl border border-gray-100 shadow-sm h-fit">
         <h3 className="font-bold text-xl mb-6 text-gray-900 tracking-tight">Log Maintenance</h3>
         <form onSubmit={handleCreate} className="space-y-4">
@@ -160,4 +160,4 @@ const Maintenance = () => {
   );
 };
 
-export default Maintenance;
+export default MaintenanceLogs;
