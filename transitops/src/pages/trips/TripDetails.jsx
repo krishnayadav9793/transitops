@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getTripById, dispatchTrip, completeTrip, cancelTrip } from '../../api/trips';
+import { getTrip, dispatchTrip, completeTrip, cancelTrip } from '../../api/trips';
 import StatusBadge from '../../components/ui/StatusBadge';
 import TripCompleteModal from './TripCompleteModal';
 import { useAuthStore } from '../../store/authStore';

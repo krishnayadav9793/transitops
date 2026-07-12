@@ -13,9 +13,9 @@ const MaintenanceLogs = () => {
 
   const fetchData = async () => {
     try {
-      const [logsRes, typesRes, vehRes] = await Promise.all([
-        getMaintenanceLogs(), 
-        getMaintenanceTypes(), 
+      const [logs, types, vehs] = await Promise.all([
+        getMaintenanceLogs(),
+        getMaintenanceTypes(),
         getVehicles()
       ]);
       setLogs(Array.isArray(logsRes) ? logsRes : []);
@@ -26,23 +26,29 @@ const MaintenanceLogs = () => {
     }
   };
 
-  useEffect(() => { 
-    fetchData(); 
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    await createMaintenanceLog(formData);
-    setFormData({ vehicle_id: '', maintenance_type_id: '', problem_description: '', estimated_cost: '', start_date: '', expected_completion_date: '' });
-    fetchData();
+    try {
+      await createMaintenanceLog(formData);
+      setFormData({ vehicle_id: '', maintenance_type_id: '', problem_description: '', estimated_cost: '', start_date: '', expected_completion_date: '' });
+      fetchData();
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   const handleClose = async (e) => {
     e.preventDefault();
-    await closeMaintenanceLog(closingId, closeData);
-    setClosingId(null);
-    setCloseData({ actual_cost: '', actual_completion_date: '' });
-    fetchData();
+    try {
+      await closeMaintenanceLog(closingId, closeData);
+      setClosingId(null);
+      setCloseData({ actual_cost: '', actual_completion_date: '' });
+      fetchData();
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
@@ -85,45 +91,45 @@ const MaintenanceLogs = () => {
       </div>
 
       <div className="col-span-12 lg:col-span-8 bg-white shadow-sm border border-gray-100 rounded-xl overflow-hidden h-fit">
-         <div className="px-6 py-5 border-b border-gray-100 bg-[#F3F4F6]">
-           <h2 className="text-lg font-bold text-gray-900 tracking-tight">Active & Past Records</h2>
-         </div>
-         <div className="overflow-x-auto w-full">
-           <table className="min-w-full divide-y divide-gray-100">
-              <thead className="bg-[#F3F4F6]">
-                <tr>
-                  <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Vehicle</th>
-                  <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Type / Problem</th>
-                  <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Action</th>
+        <div className="px-6 py-5 border-b border-gray-100 bg-[#F3F4F6]">
+          <h2 className="text-lg font-bold text-gray-900 tracking-tight">Active & Past Records</h2>
+        </div>
+        <div className="overflow-x-auto w-full">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead className="bg-[#F3F4F6]">
+              <tr>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Vehicle</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Type / Problem</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50 bg-white">
+              {logs.map(log => (
+                <tr key={log.maintenance_id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-6 py-4 text-sm font-bold text-gray-900 whitespace-nowrap">{log.vehicles?.registration_number}</td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-bold text-gray-900">{log.maintenance_types?.type_name}</div>
+                    <div className="text-[13px] text-gray-500 mt-0.5">{log.problem_description}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2.5 py-1 inline-flex text-[11px] font-bold rounded-md uppercase tracking-wide
+                      ${log.maintenance_statuses?.status_name === 'IN_PROGRESS' ? 'bg-orange-50 text-orange-700' :
+                        log.maintenance_statuses?.status_name === 'COMPLETED' ? 'bg-[#E5F0E8] text-[#1C5B3E]' :
+                        'bg-gray-100 text-gray-600'}`}>
+                      {log.maintenance_statuses?.status_name}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {log.maintenance_statuses?.status_name === 'IN_PROGRESS' && (
+                      <button onClick={() => setClosingId(log.maintenance_id)} className="text-[#1C5B3E] hover:text-[#154630] text-sm font-bold transition-colors">Close Log</button>
+                    )}
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50 bg-white">
-                {logs.map(log => (
-                  <tr key={log.maintenance_id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4 text-sm font-bold text-gray-900 whitespace-nowrap">{log.vehicles?.registration_number}</td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-bold text-gray-900">{log.maintenance_types?.type_name}</div>
-                      <div className="text-[13px] text-gray-500 mt-0.5">{log.problem_description}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2.5 py-1 inline-flex text-[11px] font-bold rounded-md uppercase tracking-wide
-                        ${log.maintenance_statuses?.status_name === 'IN_PROGRESS' ? 'bg-orange-50 text-orange-700' : 
-                          log.maintenance_statuses?.status_name === 'COMPLETED' ? 'bg-[#E5F0E8] text-[#1C5B3E]' : 
-                          'bg-gray-100 text-gray-600'}`}>
-                        {log.maintenance_statuses?.status_name}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {log.maintenance_statuses?.status_name === 'IN_PROGRESS' && (
-                         <button onClick={() => setClosingId(log.maintenance_id)} className="text-[#1C5B3E] hover:text-[#154630] text-sm font-bold transition-colors">Close Log</button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-           </table>
-         </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {closingId && (
@@ -138,7 +144,6 @@ const MaintenanceLogs = () => {
               </div>
               <h3 className="font-bold text-xl text-gray-900 tracking-tight">Close Maintenance</h3>
             </div>
-            
             <form onSubmit={handleClose} className="space-y-4">
               <div>
                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Actual Cost ($)</label>

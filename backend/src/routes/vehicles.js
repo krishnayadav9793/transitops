@@ -9,7 +9,7 @@ import {
     getDocumentTypes, 
     uploadDocument 
 } from '../controllers/vehicleController.js';
-import { authMiddleware } from '../middleware/authMiddleware.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 
 // Configure Multer for local document uploads
 const storage = multer.diskStorage({
@@ -20,7 +20,7 @@ const upload = multer({ storage });
 
 const router = express.Router();
 
-router.use(authMiddleware);
+router.use(authenticateToken);
 router.get('/', getVehicles);
 router.post('/', createVehicle);
 router.put('/:id', updateVehicle);

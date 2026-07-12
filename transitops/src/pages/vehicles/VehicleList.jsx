@@ -1,166 +1,81 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { getVehicles } from '../../api/fleet';
 import VehicleForm from './VehicleForm';
-import StatusBadge from '../../components/ui/StatusBadge';
-
-const prettyStatus = (status) => {
-  if (!status) return 'Unknown';
-  return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-};
 
 const VehicleList = () => {
   const [vehicles, setVehicles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
 
   const fetchVehicles = async () => {
-    setLoading(true);
-    setError('');
     try {
       const data = await getVehicles();
-      setVehicles(data || []);
-    } catch (err) {
-      setError(err.message || 'Failed to retrieve vehicle fleet.');
-    } finally {
-      setLoading(false);
+      setVehicles(data);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  useEffect(() => {
-    fetchVehicles();
-  }, []);
+  useEffect(() => { fetchVehicles(); }, []);
+
+  const getStatusStyle = (status) => {
+    switch(status) {
+      case 'AVAILABLE': return 'bg-[#E5F0E8] text-[#1C5B3E]';
+      case 'ON_TRIP': return 'bg-blue-50 text-blue-700';
+      case 'IN_SHOP': return 'bg-orange-50 text-orange-700';
+      case 'RETIRED': return 'bg-red-50 text-red-700';
+      default: return 'bg-gray-100 text-gray-600';
+    }
+  };
 
   return (
-    <div className="space-y-lg">
-      
-      {/* Header Panel */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-lg">
+    <div className="p-8 max-w-7xl mx-auto bg-[#F9FAFB] min-h-screen font-sans">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="font-headline-lg text-headline-lg text-primary tracking-tight">Vehicle Registry</h2>
-          <p className="text-on-surface-variant mt-1">Manage corporate fleet assets, load limits, and live maintenance status.</p>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Vehicle Registry</h1>
+          <p className="text-gray-500 text-sm mt-1">Manage fleet assets and real-time status.</p>
         </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-primary hover:bg-primary-container text-white py-2.5 px-6 rounded-lg font-body-md text-body-md flex items-center gap-sm shadow-lg hover:shadow-xl hover:translate-y-[-1px] transition-all cursor-pointer"
-        >
-          <span className="material-symbols-outlined">directions_bus</span>
-          <span>Add New Vehicle</span>
+        <button onClick={() => setShowForm(true)} className="bg-[#1C5B3E] hover:bg-[#154630] text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-colors shadow-sm">
+          <span className="text-lg leading-none">+</span> Add Vehicle
         </button>
       </div>
 
-      {showForm && (
-        <VehicleForm
-          onClose={() => setShowForm(false)}
-          onSuccess={fetchVehicles}
-        />
-      )}
+      {showForm && <VehicleForm onClose={() => setShowForm(false)} onSuccess={fetchVehicles} />}
 
-      {/* Fleet table container */}
-      <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container overflow-hidden">
-        {error && (
-          <div className="p-md bg-error/10 text-error border-b border-error/20 font-body-sm">
-            {error}
-          </div>
-        )}
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead className="sticky top-0 bg-surface-container-low z-10">
+      <div className="bg-white shadow-sm border border-gray-100 rounded-xl overflow-hidden">
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead className="bg-[#F3F4F6]">
               <tr>
-                <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Registration</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Vehicle Details</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Vehicle Type</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-right">Max Load</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-right">Odometer Reading</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-right">Acquisition Cost</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Status</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-center">Actions</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Registration</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Model / Type</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Capacity</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Odometer (KM)</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Acquisition</th>
+                <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-container">
-              {loading ? (
-                <tr>
-                  <td colSpan={8} className="px-lg py-8 text-center text-outline italic">
-                    Loading vehicle assets...
+            <tbody className="divide-y divide-gray-50 bg-white">
+              {vehicles.map((v) => (
+                <tr key={v.vehicle_id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{v.registration_number}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-bold text-gray-900">{v.vehicle_name || v.model}</div>
+                    <div className="text-[12px] text-gray-500 mt-0.5">{v.vehicle_types?.type_name}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{v.capacity_kg} KG</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{v.current_odometer_km}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">${v.purchase_cost}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2.5 py-1 inline-flex text-[11px] font-bold rounded-md uppercase tracking-wide ${getStatusStyle(v.vehicle_statuses?.status_name)}`}>
+                      {v.vehicle_statuses?.status_name}
+                    </span>
                   </td>
                 </tr>
-              ) : vehicles.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-lg py-8 text-center text-outline italic">
-                    No vehicles registered in the fleet database.
-                  </td>
-                </tr>
-              ) : (
-                vehicles.map((v) => {
-                  const status = v.vehicle_statuses?.status_name || 'AVAILABLE';
-                  return (
-                    <tr key={v.vehicle_id} className="hover:bg-surface-container-lowest/50 transition-colors group">
-                      
-                      {/* Registration */}
-                      <td className="px-lg py-md font-body-sm text-on-surface font-semibold">
-                        <Link to={`/vehicles/${v.vehicle_id}`} className="hover:text-primary group-hover:text-primary transition-colors">
-                          {v.registration_number}
-                        </Link>
-                      </td>
-
-                      {/* Name / Model */}
-                      <td className="px-lg py-md font-body-sm text-on-surface font-semibold">
-                        {v.vehicle_name || v.model || 'Unnamed Vehicle'}
-                      </td>
-
-                      {/* Type */}
-                      <td className="px-lg py-md font-body-sm text-on-surface-variant">
-                        {v.vehicle_types?.type_name || 'General Fleet'}
-                      </td>
-
-                      {/* Capacity */}
-                      <td className="px-lg py-md font-body-sm text-on-surface text-right font-semibold">
-                        {Number(v.capacity_kg).toLocaleString()} kg
-                      </td>
-
-                      {/* Odometer */}
-                      <td className="px-lg py-md font-body-sm text-on-surface text-right font-semibold">
-                        {Number(v.current_odometer_km).toLocaleString()} km
-                      </td>
-
-                      {/* Cost */}
-                      <td className="px-lg py-md font-body-sm text-on-surface text-right font-semibold">
-                        ${Number(v.purchase_cost || 0).toLocaleString()}
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-lg py-md">
-                        <StatusBadge status={prettyStatus(status)} />
-                      </td>
-
-                      {/* Action details */}
-                      <td className="px-lg py-md text-center">
-                        <Link
-                          to={`/vehicles/${v.vehicle_id}`}
-                          className="px-md py-1.5 font-semibold text-primary hover:bg-primary/5 rounded-lg border border-primary/20 transition-all inline-block text-body-sm cursor-pointer"
-                        >
-                          View Details
-                        </Link>
-                      </td>
-
-                    </tr>
-                  );
-                })
-              )}
+              ))}
             </tbody>
           </table>
         </div>
-
-        {/* Counter footer */}
-        <div className="px-lg py-md bg-surface-container-low border-t border-surface-container flex justify-between items-center">
-          <span className="font-body-sm text-on-surface-variant">
-            Total of {vehicles.length} assets registered in fleet network.
-          </span>
-        </div>
       </div>
-
     </div>
   );
 };

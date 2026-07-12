@@ -1,30 +1,43 @@
 import jwt from 'jsonwebtoken';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_dev_secret';
+
 export const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  
+
   if (!token) {
-    return res.status(401).json({ error: 'Access Denied: No token provided.' });
+    return res.status(401).json({ error: 'Authentication required.' });
   }
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET || 'fallback_dev_secret');
-    req.user = verified;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = {
+      user_id: decoded.user_id,
+      email: decoded.email,
+      role: decoded.role_name,
+    };
     next();
   } catch (err) {
-    return res.status(403).json({ error: 'Invalid or expired token.' });
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token has expired.' });
+    }
+    return res.status(403).json({ error: 'Token is invalid.' });
   }
 };
 
-export const authMiddleware = authenticateToken;
-
-export const checkRole = (allowedRoles) => {
-  return (req, res, next) => {
-    const userRole = req.user?.role_name;
-    if (!allowedRoles.includes(userRole)) {
-      return res.status(403).json({ error: `Access Denied: Role '${userRole}' lacks permission to access this resource.` });
+export const checkRole = (allowedRoles = []) => {
+  return (req, res, nQext) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'User is not authenticated.' });
     }
+
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        error: `Access Denied: Role '${req.user.role}' lacks permission to access this resource.`
+      });
+    }
+
     next();
   };
 };
