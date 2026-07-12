@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+# TransitOps - Smart Transport Operations Platform
+
+Welcome to the TransitOps repository!
+
+We have prepared a professional and comprehensive work distribution plan for our 4-person team. This plan divides both frontend and backend tasks equally to ensure smooth execution during the 8-hour hackathon.
+
+👉 **View the complete work distribution plan here: [work_distribution.md](file:///d:/CODING/web%20devlopment/transitops/work_distribution.md)**
+=======
 # 🚚 TransitOps – Smart Transport Operations Platform
 
 TransitOps is a centralized Transport Operations Management System designed to help logistics and transport companies manage vehicles, drivers, trips, maintenance, fuel consumption, expenses, and operational analytics from a single platform.
@@ -224,3 +233,4 @@ Record Fuel & Expenses
 Maintenance (If Required)
        ↓
 Update Dashboard & Analytics
+>>>>>>> 69f18ee2eb709f687cec6d42f8fed8830b1255eb
