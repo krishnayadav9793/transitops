@@ -75,6 +75,79 @@ export const authService = {
     };
   },
 
+  async signup(full_name, email, password, phone, role_name) {
+    // 1. Check if user already exists
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('user_id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingUser) {
+      const err = new Error('A user with this email address already exists.');
+      err.status = 409;
+      throw err;
+    }
+
+    // 2. Hash password
+    const salt = await bcrypt.genSalt(10);
+    const password_hash = await bcrypt.hash(password, salt);
+
+    // 3. Create user entry
+    const { data: user, error: userErr } = await supabase
+      .from('users')
+      .insert([{
+        full_name: full_name.trim(),
+        email: email.trim().toLowerCase(),
+        password_hash,
+        phone: phone ? phone.trim() : null,
+        is_active: true
+      }])
+      .select()
+      .single();
+
+    if (userErr || !user) throw userErr || new Error('Failed to create user account.');
+
+    // 4. Resolve role ID (default to FLEET_MANAGER)
+    const activeRole = role_name || 'FLEET_MANAGER';
+    const { data: roleData } = await supabase
+      .from('roles')
+      .select('role_id')
+      .eq('role_name', activeRole)
+      .single();
+
+    const finalRoleId = roleData?.role_id || 2; // Default fallback to FLEET_MANAGER (id 2)
+
+    // 5. Insert user role
+    await supabase
+      .from('user_roles')
+      .insert([{
+        user_id: user.user_id,
+        role_id: finalRoleId
+      }]);
+
+    // 6. Generate JWT token
+    const token = jwt.sign(
+      {
+        user_id: user.user_id,
+        email: user.email,
+        role_name: activeRole,
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    return {
+      user: {
+        id: user.user_id,
+        email: user.email,
+        name: user.full_name,
+        role: activeRole,
+      },
+      token,
+    };
+  },
+
   async getUserById(userId) {
     const { data: user, error } = await supabase
       .from('users')
@@ -95,4 +168,4 @@ export const authService = {
       role: roleFromUser(user),
     };
   },
-};
+};

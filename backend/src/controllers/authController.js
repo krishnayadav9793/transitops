@@ -1,5 +1,19 @@
 import { authService } from '../services/authService.js';
 
+export const signup = async (req, res, next) => {
+  try {
+    const { full_name, email, password, phone, role_name } = req.body;
+    if (!full_name || !email || !password) {
+      return res.status(400).json({ error: 'Full name, email, and password are required.' });
+    }
+
+    const result = await authService.signup(full_name, email, password, phone, role_name);
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -30,3 +44,4 @@ export const getCurrentUser = async (req, res, next) => {
     next(error);
   }
 };
+

@@ -4,6 +4,7 @@ import Layout from './components/common/Layout';
 import ProtectedRoute from './routes/protectedRoute';
 // Page imports
 import Login from './pages/auth/Login';
+import Signup from './pages/auth/Signup';
 import Dashboard from './pages/dashboard/Dashboard';
 import VehicleList from './pages/vehicles/VehicleList';
 import DriverList from './pages/drivers/DriverList';
@@ -20,8 +21,10 @@ import ScheduleMaintenance from './pages/maintenance/ScheduleMaintenance';
 function App() {
   return (
     <Routes>
-        {/* Auth Route */}
+        {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
 
       <Route path="/" element={<Layout />}>
         <Route index element={<Navigate to="/dashboard" replace />} />

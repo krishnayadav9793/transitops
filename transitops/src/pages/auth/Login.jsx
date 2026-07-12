@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { apiClient } from '../../services/apiClient';
 
@@ -107,14 +107,6 @@ export const Login = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    onFocus={(e) => {
-                      const icon = e.target.parentElement.querySelector('.material-symbols-outlined');
-                      if (icon) icon.style.transform = 'translateY(-50%) scale(1.1)';
-                    }}
-                    onBlur={(e) => {
-                      const icon = e.target.parentElement.querySelector('.material-symbols-outlined');
-                      if (icon) icon.style.transform = 'translateY(-50%) scale(1)';
-                    }}
                   />
                 </div>
               </div>
@@ -136,18 +128,7 @@ export const Login = () => {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    onFocus={(e) => {
-                      const icon = e.target.parentElement.querySelector('.material-symbols-outlined');
-                      if (icon) icon.style.transform = 'translateY(-50%) scale(1.1)';
-                    }}
-                    onBlur={(e) => {
-                      const icon = e.target.parentElement.querySelector('.material-symbols-outlined');
-                      if (icon) icon.style.transform = 'translateY(-50%) scale(1)';
-                    }}
                   />
-                  <button className="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
-                    <span className="material-symbols-outlined text-[20px]">visibility</span>
-                  </button>
                 </div>
               </div>
 
@@ -179,6 +160,12 @@ export const Login = () => {
                 )}
               </button>
             </form>
+
+            <div className="mt-md text-center">
+              <span className="font-body-sm text-body-sm text-on-surface-variant mr-xs">Don't have an account?</span>
+              <Link to="/signup" className="font-body-sm text-body-sm text-primary font-bold hover:underline transition-all">Sign up now</Link>
+            </div>
+
 
             {/* Additional Security Info */}
             <div className="mt-xl pt-xl border-t border-white/40 w-full">
