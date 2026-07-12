@@ -302,3 +302,16 @@ export const getTripById = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const updateTripStatus = async (req, res) => {
+    const { status_name } = req.body;
+    if (status_name === 'ON_TRIP' || status_name === 'DISPATCHED') {
+        return dispatchTrip(req, res);
+    } else if (status_name === 'COMPLETED') {
+        return completeTrip(req, res);
+    } else if (status_name === 'CANCELLED') {
+        return cancelTrip(req, res);
+    } else {
+        return res.status(400).json({ error: 'Unknown status name provided for update.' });
+    }
+};

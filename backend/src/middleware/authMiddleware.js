@@ -16,6 +16,7 @@ export const authenticateToken = (req, res, next) => {
       user_id: decoded.user_id,
       email: decoded.email,
       role: decoded.role_name,
+      role_name: decoded.role_name,
     };
     next();
   } catch (err) {
@@ -27,7 +28,7 @@ export const authenticateToken = (req, res, next) => {
 };
 
 export const checkRole = (allowedRoles = []) => {
-  return (req, res, nQext) => {
+  return (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ error: 'User is not authenticated.' });
     }
