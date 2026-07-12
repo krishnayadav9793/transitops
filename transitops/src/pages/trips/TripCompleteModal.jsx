@@ -1,54 +1,34 @@
 import React, { useState } from 'react';
 
-export const TripCompleteModal = ({ isOpen, onClose }) => {
-  const [notes, setNotes] = useState('');
-  const [mileage, setMileage] = useState('');
-
-  if (!isOpen) return null;
+const TripCompleteModal = ({ trip, onClose, onSubmit }) => {
+  const [odometer, setOdometer] = useState('');
+  const [fuel, setFuel] = useState('');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-lg">
-      <div className="bg-surface-container-lowest w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
-        <div className="px-xl py-lg border-b border-outline-variant flex justify-between items-center">
-          <div className="flex items-center gap-md">
-            <div className="bg-primary-container p-sm rounded-lg text-on-primary-container">
-              <span className="material-symbols-outlined">check_circle</span>
-            </div>
-            <div>
-              <h2 className="font-headline-md text-headline-md text-on-surface">Complete Trip</h2>
-              <p className="font-body-sm text-body-sm text-on-surface-variant">Finalize this trip and record delivery details.</p>
-            </div>
+    <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center z-50">
+      <div className="p-8 w-full max-w-md shadow-2xl rounded-2xl bg-white relative">
+        <button onClick={onClose} className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 transition-colors">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-[#E5F0E8] p-2 rounded-lg text-[#1C5B3E]">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
           </div>
-          <button onClick={onClose} className="text-on-surface-variant hover:bg-surface-container-high p-sm rounded-full transition-colors">
-            <span className="material-symbols-outlined">close</span>
-          </button>
+          <h3 className="text-xl font-bold text-gray-900 tracking-tight">Complete Trip</h3>
         </div>
-
-        <div className="p-xl space-y-lg">
-          <div className="flex flex-col gap-xs">
-            <label className="font-body-sm text-body-sm text-on-surface-variant ml-xs">Trip ID</label>
-            <input className="px-md py-sm rounded-lg border border-outline-variant bg-surface-container-low text-on-surface-variant font-body-md cursor-not-allowed" value="TRK-8842-X" disabled type="text" />
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Final Odometer Reading (KM)</label>
+            <input required type="number" placeholder="e.g. 154020" value={odometer} onChange={(e) => setOdometer(e.target.value)} className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5B3E]/20 focus:border-[#1C5B3E] transition-all text-sm" />
           </div>
-          <div className="flex flex-col gap-xs">
-            <label className="font-body-sm text-body-sm text-on-surface-variant ml-xs">Final Odometer Reading (km)</label>
-            <input value={mileage} onChange={(e) => setMileage(e.target.value)} className="px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface bg-surface-container-lowest" placeholder="e.g. 42,850" type="number" />
-          </div>
-          <div className="flex flex-col gap-xs">
-            <label className="font-body-sm text-body-sm text-on-surface-variant ml-xs">Completion Notes</label>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface bg-surface-container-lowest resize-none" placeholder="Any delivery notes, incidents, or remarks..." rows="4" />
-          </div>
-          <div className="p-md bg-secondary/5 border border-secondary/10 rounded-lg flex items-start gap-md">
-            <span className="material-symbols-outlined text-secondary text-[20px]">info</span>
-            <p className="text-body-sm text-on-surface-variant">Completing this trip will update the vehicle status, driver logs, and generate final billing.</p>
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Fuel Consumed (Liters)</label>
+            <input required type="number" placeholder="e.g. 120" value={fuel} onChange={(e) => setFuel(e.target.value)} className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5B3E]/20 focus:border-[#1C5B3E] transition-all text-sm" />
           </div>
         </div>
-
-        <div className="px-xl py-lg bg-surface-container-low border-t border-outline-variant flex justify-end items-center gap-md">
-          <button onClick={onClose} className="px-lg py-sm font-semibold text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all">Cancel</button>
-          <button className="bg-primary hover:bg-primary-container text-white px-xl py-sm rounded-lg font-semibold shadow-md transform active:scale-95 transition-all flex items-center gap-sm">
-            <span className="material-symbols-outlined">check</span>
-            Complete Trip
-          </button>
+        <div className="flex justify-end gap-3 mt-8 pt-5 border-t border-gray-100">
+          <button onClick={onClose} className="px-5 py-2.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded-lg transition-colors">Cancel</button>
+          <button onClick={() => onSubmit({ odometer_reading: odometer, fuel_quantity_liters: fuel })} className="px-5 py-2.5 text-sm bg-[#1C5B3E] hover:bg-[#154630] text-white font-medium rounded-lg transition-colors shadow-sm">Complete Trip</button>
         </div>
       </div>
     </div>
