@@ -39,7 +39,7 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
       {/* SideNavBar Shell */}
       <aside
         className={`
-          fixed left-0 top-0 h-full w-[260px] bg-inverse-surface flex flex-col py-lg px-md z-50
+          fixed left-0 top-0 h-screen w-full md:w-[260px] bg-inverse-surface flex flex-col py-lg px-md z-50
           transition-all duration-300
           md:static md:translate-x-0
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -67,7 +67,7 @@ export const Sidebar = ({ isOpen, toggleSidebar }) => {
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="flex-1 space-y-xs">
+        <nav className="flex-1 space-y-xs overflow-y-auto no-scrollbar">
           {filteredNav.map((item) => (
             <NavLink
               key={item.path}

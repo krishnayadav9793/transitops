@@ -168,13 +168,8 @@ export const ExpenseLedger = () => {
             <span className="px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded-full font-label-caps text-label-caps">Ledger Summary</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-lg">
-            {[
-              { name: 'Fuel', icon: 'local_gas_station', amount: '$42.8k', trend: '+8.2%', trendType: 'up' },
-              { name: 'Repairs', icon: 'build', amount: '$18.4k', trend: '-4.1%', trendType: 'down' },
-              { name: 'Insurance', icon: 'verified_user', amount: '$12.1k', trend: 'Steady', trendType: 'neutral' },
-              { name: 'Tolls', icon: 'toll', amount: '$6.5k', trend: '-12.0%', trendType: 'down' },
-            ].map((cat) => (
-              <div key={cat.name} className="space-y-sm">
+            {['FUEL', 'REPAIR', 'INSURANCE', 'TOLL'].map((cat) => (
+              <div key={cat} className="space-y-sm">
                 <div className="flex items-center gap-sm">
                   <div className={`p-2 rounded-lg ${categoryBg[cat] || 'bg-surface-variant text-on-surface-variant'}`}>
                     <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>

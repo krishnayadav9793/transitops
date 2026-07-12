@@ -29,7 +29,7 @@ export const getTrips = async (req, res) => {
             .order('created_at', { ascending: false });
 
         // Apply role-based visibility filters
-        if (req.user.role === 'Driver') {
+        if (req.user.role_name === 'Driver') {
             const driverId = await getDriverIdForUser(req.user.email);
             if (driverId) {
                 const { data: assignments } = await supabase
@@ -47,7 +47,7 @@ export const getTrips = async (req, res) => {
             } else {
                 return res.status(200).json([]);
             }
-        } else if (req.user.role === 'User') {
+        } else if (req.user.role_name === 'User') {
             query = query.eq('created_by', req.user.user_id);
         }
 
@@ -218,6 +218,20 @@ export const getTripById = async (req, res) => {
             .single();
         if (error) throw error;
         if (!data) return res.status(404).json({ error: 'Trip not found.' });
+
+        // Role-based access authorization check
+        if (req.user.role_name === 'User') {
+            if (data.created_by !== req.user.user_id) {
+                return res.status(403).json({ error: 'Access Denied: You are not authorized to view this trip.' });
+            }
+        } else if (req.user.role_name === 'Driver') {
+            const driverId = await getDriverIdForUser(req.user.email);
+            const isAssigned = data.trip_assignments?.some(a => a.driver_id === driverId && a.is_active);
+            if (!isAssigned) {
+                return res.status(403).json({ error: 'Access Denied: You are not authorized to view this trip.' });
+            }
+        }
+
         res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });

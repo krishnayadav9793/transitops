@@ -18,9 +18,9 @@ const MaintenanceLogs = () => {
         getMaintenanceTypes(), 
         getVehicles()
       ]);
-      setLogs(logsRes.data);
-      setTypes(typesRes.data);
-      setVehicles(vehRes.data.filter(v => v.vehicle_statuses.status_name !== 'RETIRED'));
+      setLogs(Array.isArray(logsRes) ? logsRes : []);
+      setTypes(Array.isArray(typesRes) ? typesRes : []);
+      setVehicles(Array.isArray(vehRes) ? vehRes.filter(v => v.vehicle_statuses?.status_name !== 'RETIRED') : []);
     } catch (error) {
       console.error(error);
     }

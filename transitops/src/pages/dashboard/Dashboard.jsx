@@ -13,12 +13,17 @@ const EmptyState = ({ message }) => (
 export const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     apiClient
       .get('/dashboard/stats')
       .then((data) => setStats(data))
-      .catch(() => setStats(null))
+      .catch((err) => {
+        console.error("Dashboard error:", err);
+        setError(err.message || 'Failed to fetch dashboard stats');
+        setStats(null);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -38,8 +43,8 @@ export const Dashboard = () => {
     );
   }
 
-  if (!stats) {
-    return <EmptyState message="Could not load dashboard data. Check your connection." />;
+  if (error || !stats) {
+    return <EmptyState message={error || "Could not load dashboard data. Check your connection."} />;
   }
 
   const total = stats.totalVehicles || 1;

@@ -1,7 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiClient } from '../../services/apiClient';
 
 export const AnalyticsReports = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [stats, setStats] = useState(null);
+  const [trips, setTrips] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      apiClient.get('/dashboard/stats').catch(() => null),
+      apiClient.get('/trips').catch(() => [])
+    ])
+      .then(([statsData, tripsData]) => {
+        setStats(statsData);
+        setTrips(tripsData || []);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <span className="material-symbols-outlined text-4xl text-outline-variant animate-spin">
+          sync
+        </span>
+        <p className="mt-4 font-body-md text-on-surface-variant italic">Loading operational analytics reports...</p>
+      </div>
+    );
+  }
+
+  // Sizing and calculation from DB
+  const totalTrips = trips.length;
+  const completedTrips = trips.filter(t => t.trip_statuses?.status_name === 'COMPLETED').length;
+  const activeTrips = trips.filter(t => t.trip_statuses?.status_name === 'ON_TRIP').length;
+  const cancelledTrips = trips.filter(t => t.trip_statuses?.status_name === 'CANCELLED').length;
+  
+  const onTimeRate = totalTrips > 0 ? Math.round((completedTrips / totalTrips) * 100) : 100;
+
+  const totalV = stats?.totalVehicles || 1;
+  const activeP = stats?.totalVehicles > 0 ? Math.round((stats.activeVehicles / totalV) * 100) : 0;
+  const idleP = stats?.totalVehicles > 0 ? Math.round((stats.idleVehicles / totalV) * 100) : 0;
+  const maintP = stats?.totalVehicles > 0 ? Math.round((stats.vehiclesInMaintenance / totalV) * 100) : 0;
 
   return (
     <div className="space-y-lg">
@@ -53,32 +94,32 @@ export const AnalyticsReports = () => {
             <span className="material-symbols-outlined text-primary">local_shipping</span>
             <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Total Trips</span>
           </div>
-          <p className="font-kpi-lg text-kpi-lg text-on-surface">2,847</p>
-          <p className="text-body-sm text-primary mt-2 font-medium">+12% vs last month</p>
+          <p className="font-kpi-lg text-kpi-lg text-on-surface">{totalTrips}</p>
+          <p className="text-body-sm text-primary mt-2 font-medium">{activeTrips} active dispatches</p>
         </div>
         <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30">
           <div className="flex items-center gap-sm mb-2">
             <span className="material-symbols-outlined text-secondary">schedule</span>
             <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">On-Time Rate</span>
           </div>
-          <p className="font-kpi-lg text-kpi-lg text-on-surface">94.2%</p>
-          <p className="text-body-sm text-primary mt-2 font-medium">+2.1% vs last month</p>
+          <p className="font-kpi-lg text-kpi-lg text-on-surface">{onTimeRate}%</p>
+          <p className="text-body-sm text-primary mt-2 font-medium">{completedTrips} completed trips</p>
         </div>
         <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30">
           <div className="flex items-center gap-sm mb-2">
             <span className="material-symbols-outlined text-error">warning</span>
-            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Safety Incidents</span>
+            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Cancelled Trips</span>
           </div>
-          <p className="font-kpi-lg text-kpi-lg text-on-surface">3</p>
-          <p className="text-body-sm text-error mt-2 font-medium">-50% vs last month</p>
+          <p className="font-kpi-lg text-kpi-lg text-on-surface">{cancelledTrips}</p>
+          <p className="text-body-sm text-error mt-2 font-medium">{cancelledTrips > 0 ? 'Review routing parameters' : 'Perfect dispatch rate'}</p>
         </div>
         <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30">
           <div className="flex items-center gap-sm mb-2">
-            <span className="material-symbols-outlined text-primary">ev_station</span>
-            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Avg MPG</span>
+            <span className="material-symbols-outlined text-primary">payments</span>
+            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Total Expenses</span>
           </div>
-          <p className="font-kpi-lg text-kpi-lg text-on-surface">8.4</p>
-          <p className="text-body-sm text-primary mt-2 font-medium">+0.6 vs last month</p>
+          <p className="font-kpi-lg text-kpi-lg text-on-surface">${(stats?.expenses || 0).toLocaleString()}</p>
+          <p className="text-body-sm text-primary mt-2 font-medium">Logged fleet bills</p>
         </div>
       </div>
 
@@ -87,9 +128,9 @@ export const AnalyticsReports = () => {
         <div className="col-span-1 md:col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
           <h3 className="font-headline-sm text-headline-sm mb-lg">Monthly Revenue Trend</h3>
           <div className="h-64 flex items-end gap-md px-md">
-            {[65, 78, 55, 85, 92, 70, 82, 88, 76, 94, 86, 98].map((val, i) => (
+            {[30, 45, 55, 65, 80, 95, 85, 75, stats?.fleetUtilization || 88, 92, 86, 98].map((val, i) => (
               <div key={i} className="flex-1 flex items-end">
-                <div className="w-full bg-primary-container rounded-t hover:bg-primary/30 transition-all" style={{ height: `${val}%` }}></div>
+                <div className="w-full bg-[#1C5B3E] rounded-t hover:bg-[#1C5B3E]/80 transition-all animate-in fade-in slide-in-from-bottom duration-500" style={{ height: `${val}%` }}></div>
               </div>
             ))}
           </div>
@@ -101,25 +142,25 @@ export const AnalyticsReports = () => {
         <div className="col-span-1 md:col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
           <h3 className="font-headline-sm text-headline-sm mb-lg">Fleet Distribution</h3>
           <div className="h-48 flex items-center justify-center">
-            <div className="relative w-32 h-32 rounded-full border-8 border-primary flex items-center justify-center">
+            <div className="relative w-32 h-32 rounded-full border-8 border-[#1C5B3E] flex items-center justify-center">
               <div className="text-center">
-                <p className="font-kpi-md text-on-surface">68%</p>
+                <p className="font-kpi-md text-on-surface">{activeP}%</p>
                 <p className="text-xs text-on-surface-variant">Active</p>
               </div>
             </div>
           </div>
           <div className="mt-4 space-y-2">
             <div className="flex justify-between items-center text-xs">
-              <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-primary"></div> Active</div>
-              <span className="font-bold">68%</span>
+              <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[#1C5B3E]"></div> Active</div>
+              <span className="font-bold">{activeP}%</span>
             </div>
             <div className="flex justify-between items-center text-xs">
-              <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-secondary-container"></div> Idle</div>
-              <span className="font-bold">22%</span>
+              <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-yellow-500"></div> Idle</div>
+              <span className="font-bold">{idleP}%</span>
             </div>
             <div className="flex justify-between items-center text-xs">
-              <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-error"></div> Maintenance</div>
-              <span className="font-bold">10%</span>
+              <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-red-500"></div> Maintenance</div>
+              <span className="font-bold">{maintP}%</span>
             </div>
           </div>
         </div>
