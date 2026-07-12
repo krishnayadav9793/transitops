@@ -1,17 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { apiClient } from '../../services/apiClient';
 import StatusBadge from '../../components/ui/StatusBadge';
 import { SearchInput } from '../../components/ui/FilterBar';
+import DriverFormModal from './DriverFormModal';
+
+const prettyStatus = (status) => {
+  if (!status) return 'Unknown';
+  return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+};
 
 export const DriverList = () => {
+  const [drivers, setDrivers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  
+  // Modal states
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedDriver, setSelectedDriver] = useState(null);
 
-  // Mock data
-  const drivers = [
-    { id: 'TR-8842', name: 'Elena Rodriguez', status: 'On Trip', vehicle: 'Volvo FH Electric (TX-992-K)', licenseExpiry: 'Oct 24, 2025', safetyScore: 98, efficiency: 92 },
-    { id: 'TR-9104', name: 'David Miller', status: 'Off Duty', vehicle: null, licenseExpiry: 'Aug 12, 2024', safetyScore: 84, efficiency: 78 },
-    { id: 'TR-7721', name: 'Suki Tanaka', status: 'Active', vehicle: 'Scania R450 (KY-110-M)', licenseExpiry: 'Jan 30, 2026', safetyScore: 96, efficiency: 95 },
-    { id: 'TR-0051', name: 'Jordan Smyth', status: 'Suspended', vehicle: 'Grounded', licenseExpiry: 'Dec 05, 2024', safetyScore: 42, efficiency: 15 },
-  ];
+  const fetchDrivers = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await apiClient.get('/drivers');
+      setDrivers(data || []);
+    } catch (err) {
+      setError(err.message || 'Failed to retrieve driver registry.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDrivers();
+  }, []);
+
+  const handleDelete = async (driverId, driverName) => {
+    if (!window.confirm(`Are you sure you want to remove driver "${driverName}"?`)) return;
+    try {
+      await apiClient.delete(`/drivers/${driverId}`);
+      fetchDrivers();
+    } catch (err) {
+      alert(err.message || 'Failed to delete driver.');
+    }
+  };
+
+  const handleEdit = (driver) => {
+    setSelectedDriver(driver);
+    setModalOpen(true);
+  };
+
+  const handleAdd = () => {
+    setSelectedDriver(null);
+    setModalOpen(true);
+  };
+
+  // Filter & Search computation
+  const filteredDrivers = drivers.filter((d) => {
+    const statusName = d.driver_statuses?.status_name || 'AVAILABLE';
+    const matchesStatus = statusFilter === 'ALL' || statusName === statusFilter;
+
+    const query = searchQuery.toLowerCase();
+    const matchesSearch =
+      d.full_name.toLowerCase().includes(query) ||
+      d.license_number.toLowerCase().includes(query) ||
+      d.phone.includes(query) ||
+      (d.email && d.email.toLowerCase().includes(query));
+
+    return matchesStatus && matchesSearch;
+  });
+
+  // Calculate metrics
+  const activeCount = drivers.filter(d => d.driver_statuses?.status_name === 'ON_TRIP').length;
+  const suspendedCount = drivers.filter(d => d.driver_statuses?.status_name === 'SUSPENDED').length;
+  const avgSafetyScore = drivers.length > 0
+    ? (drivers.reduce((acc, d) => acc + Number(d.safety_score), 0) / drivers.length).toFixed(1)
+    : '0.0';
 
   return (
     <div className="space-y-lg">
@@ -21,7 +88,10 @@ export const DriverList = () => {
           <h2 className="font-headline-lg text-headline-lg text-on-surface">Driver Management</h2>
           <p className="text-on-surface-variant mt-xs">Manage your fleet drivers and their assignments.</p>
         </div>
-        <button className="bg-primary hover:bg-primary-container text-white font-headline-sm px-xl py-md rounded-lg flex items-center gap-sm transition-all shadow-md active:scale-95">
+        <button
+          onClick={handleAdd}
+          className="bg-primary hover:bg-primary-container text-white font-headline-sm px-xl py-md rounded-lg flex items-center gap-sm transition-all shadow-md active:scale-95 cursor-pointer"
+        >
           <span className="material-symbols-outlined">person_add</span>
           <span>Add Driver</span>
         </button>
@@ -31,34 +101,34 @@ export const DriverList = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-lg">
         <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/10">
           <p className="font-label-caps text-label-caps text-outline uppercase mb-1">Total Fleet Strength</p>
-          <h3 className="font-kpi-lg text-kpi-lg text-on-surface">1,284</h3>
+          <h3 className="font-kpi-lg text-kpi-lg text-on-surface">{drivers.length}</h3>
           <div className="mt-4 flex items-center text-primary font-bold text-body-sm">
             <span className="material-symbols-outlined mr-1">trending_up</span>
-            +4.2% from last month
+            Active records in system
           </div>
         </div>
         <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/10">
-          <p className="font-label-caps text-label-caps text-outline uppercase mb-1">Active Now</p>
-          <h3 className="font-kpi-lg text-kpi-lg text-on-surface">942</h3>
+          <p className="font-label-caps text-label-caps text-outline uppercase mb-1">Active on Trip</p>
+          <h3 className="font-kpi-lg text-kpi-lg text-on-surface">{activeCount}</h3>
           <div className="mt-4 flex items-center text-outline font-medium text-body-sm">
             <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
-            73% Utilization
+            {drivers.length > 0 ? ((activeCount / drivers.length) * 100).toFixed(0) : 0}% Utilization
           </div>
         </div>
         <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/10">
           <p className="font-label-caps text-label-caps text-outline uppercase mb-1">Safety Avg.</p>
-          <h3 className="font-kpi-lg text-kpi-lg text-on-surface">94.8</h3>
+          <h3 className="font-kpi-lg text-kpi-lg text-on-surface">{avgSafetyScore}</h3>
           <div className="mt-4 flex items-center text-primary font-bold text-body-sm">
             <span className="material-symbols-outlined mr-1">check_circle</span>
-            Top Tier Rating
+            Fleet average score
           </div>
         </div>
         <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/10">
-          <p className="font-label-caps text-label-caps text-error uppercase mb-1">Action Required</p>
-          <h3 className="font-kpi-lg text-kpi-lg text-error">12</h3>
+          <p className="font-label-caps text-label-caps text-error uppercase mb-1">Suspended Drivers</p>
+          <h3 className="font-kpi-lg text-kpi-lg text-error">{suspendedCount}</h3>
           <div className="mt-4 flex items-center text-error font-medium text-body-sm">
             <span className="material-symbols-outlined mr-1 text-[18px]">warning</span>
-            Licenses Expiring Soon
+            Compliance issues
           </div>
         </div>
       </div>
@@ -66,29 +136,57 @@ export const DriverList = () => {
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm p-lg mb-lg flex flex-wrap items-center gap-lg border border-surface-container">
         <div className="flex items-center bg-white p-1 rounded-xl shadow-sm border border-outline-variant/20">
-          <button className="px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase bg-primary text-on-primary">All Drivers</button>
-          <button className="px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase text-on-surface-variant hover:bg-surface-container transition-colors">Available</button>
-          <button className="px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase text-on-surface-variant hover:bg-surface-container transition-colors">Suspended</button>
-          <button className="px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase text-on-surface-variant hover:bg-surface-container transition-colors flex items-center gap-2">
-            Expired
-            <span className="w-2 h-2 bg-error rounded-full"></span>
+          <button
+            onClick={() => setStatusFilter('ALL')}
+            className={`px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase transition-colors cursor-pointer ${
+              statusFilter === 'ALL' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+          >
+            All Drivers
+          </button>
+          <button
+            onClick={() => setStatusFilter('AVAILABLE')}
+            className={`px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase transition-colors cursor-pointer ${
+              statusFilter === 'AVAILABLE' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+          >
+            Available
+          </button>
+          <button
+            onClick={() => setStatusFilter('ON_TRIP')}
+            className={`px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase transition-colors cursor-pointer ${
+              statusFilter === 'ON_TRIP' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+          >
+            On Trip
+          </button>
+          <button
+            onClick={() => setStatusFilter('SUSPENDED')}
+            className={`px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase transition-colors cursor-pointer ${
+              statusFilter === 'SUSPENDED' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+          >
+            Suspended
           </button>
         </div>
 
-        <div className="flex gap-md ml-auto">
-          <button className="flex items-center gap-2 px-lg py-2 border border-outline-variant rounded-lg font-body-sm font-semibold hover:bg-surface-container transition-all">
-            <span className="material-symbols-outlined text-[20px]">filter_list</span>
-            Advanced Filters
-          </button>
-          <button className="flex items-center gap-2 px-lg py-2 bg-primary text-on-primary rounded-lg font-body-sm font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all">
-            <span className="material-symbols-outlined text-[20px]">person_add</span>
-            Add Driver
-          </button>
+        <div className="flex-1 max-w-md">
+          <SearchInput
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by name, license, phone..."
+          />
         </div>
       </div>
 
       {/* Data Table */}
       <div className="bg-white rounded-xl shadow-sm border border-outline-variant/10 overflow-hidden">
+        {error && (
+          <div className="p-lg bg-error/10 text-error border-b border-error/20">
+            {error}
+          </div>
+        )}
+
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -96,90 +194,105 @@ export const DriverList = () => {
                 <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">Driver Name</th>
                 <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">Status</th>
                 <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">Assigned Vehicle</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">License Expiry</th>
+                <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">License Category / Expiry</th>
                 <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">Safety Score</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">Performance</th>
                 <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/10">
-              {drivers.map((driver) => (
-                <tr key={driver.id} className="hover:bg-surface-container-low/30 transition-colors group">
-                  <td className="px-lg py-md">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
-                        <span className="material-symbols-outlined text-outline">person</span>
-                      </div>
-                      <div>
-                        <p className="font-body-md font-bold text-on-surface">{driver.name}</p>
-                        <p className="font-body-sm text-outline">ID: {driver.id}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-lg py-md">
-                    <StatusBadge status={driver.status} />
-                  </td>
-                  <td className="px-lg py-md">
-                    {driver.vehicle ? (
-                      <div>
-                        <p className="font-body-md font-medium">{driver.vehicle.split(' (')[0]}</p>
-                        <p className="font-body-sm text-outline">Plate: {driver.vehicle.split('(')[1]?.replace(')', '') || 'N/A'}</p>
-                      </div>
-                    ) : (
-                      <p className="font-body-md text-outline italic">Not Assigned</p>
-                    )}
-                  </td>
-                  <td className="px-lg py-md">
-                    <div className="flex items-center gap-2">
-                      <span className="font-body-md text-body-md">{driver.licenseExpiry}</span>
-                    </div>
-                  </td>
-                  <td className="px-lg py-md">
-                    <div className="flex items-center gap-2">
-                      <span className={`font-kpi-md ${driver.safetyScore >= 90 ? 'text-primary' : driver.safetyScore >= 70 ? 'text-secondary' : 'text-error'}`}>
-                        {driver.safetyScore}
-                      </span>
-                      <div className="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
-                        <div className={`h-full ${driver.safetyScore >= 90 ? 'bg-primary' : driver.safetyScore >= 70 ? 'bg-secondary' : 'bg-error'}`} style={{ width: `${driver.safetyScore}%` }}></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-lg py-md">
-                    <div className="flex flex-col gap-1">
-                      <div className="flex justify-between text-[10px] font-bold text-outline">
-                        <span>Efficiency</span>
-                        <span>{driver.efficiency}%</span>
-                      </div>
-                      <div className="w-full h-1 bg-surface-container rounded-full overflow-hidden">
-                        <div className={`h-full ${driver.efficiency >= 90 ? 'bg-primary' : driver.efficiency >= 70 ? 'bg-secondary' : 'bg-error'}`} style={{ width: `${driver.efficiency}%` }}></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-lg py-md text-right">
-                    <button className="material-symbols-outlined text-outline group-hover:text-primary transition-colors">more_vert</button>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-lg py-8 text-center text-outline italic">
+                    Loading driver registries...
                   </td>
                 </tr>
-              ))}
+              ) : filteredDrivers.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-lg py-8 text-center text-outline italic">
+                    No drivers match search parameters or filters.
+                  </td>
+                </tr>
+              ) : (
+                filteredDrivers.map((driver) => {
+                  const activeAssignment = driver.trip_assignments?.find((ta) => ta.is_active);
+                  const vehicle = activeAssignment?.vehicles;
+                  
+                  return (
+                    <tr key={driver.driver_id} className="hover:bg-surface-container-low/30 transition-colors group">
+                      <td className="px-lg py-md">
+                        <Link to={`/drivers/${driver.driver_id}`} className="flex items-center gap-3 hover:text-primary">
+                          <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+                            <span className="material-symbols-outlined text-outline">person</span>
+                          </div>
+                          <div>
+                            <p className="font-body-md font-bold text-on-surface group-hover:text-primary transition-colors">{driver.full_name}</p>
+                            <p className="font-body-sm text-outline">ID: DRV-{driver.driver_id}</p>
+                          </div>
+                        </Link>
+                      </td>
+                      <td className="px-lg py-md">
+                        <StatusBadge status={prettyStatus(driver.driver_statuses?.status_name)} />
+                      </td>
+                      <td className="px-lg py-md">
+                        {vehicle ? (
+                          <div>
+                            <p className="font-body-md font-medium">{vehicle.vehicle_name || 'Assigned Vehicle'}</p>
+                            <p className="font-body-sm text-outline">Plate: {vehicle.registration_number}</p>
+                          </div>
+                        ) : (
+                          <p className="font-body-md text-outline italic">Not Assigned</p>
+                        )}
+                      </td>
+                      <td className="px-lg py-md">
+                        <div>
+                          <p className="font-body-md font-medium">{driver.license_categories?.category_name || 'N/A'}</p>
+                          <p className="font-body-sm text-outline">Expires: {new Date(driver.license_expiry_date).toLocaleDateString()}</p>
+                        </div>
+                      </td>
+                      <td className="px-lg py-md">
+                        <div className="flex items-center gap-2">
+                          <span className={`font-kpi-md ${driver.safety_score >= 90 ? 'text-primary' : driver.safety_score >= 70 ? 'text-secondary' : 'text-error'}`}>
+                            {Number(driver.safety_score).toFixed(0)}
+                          </span>
+                          <div className="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                            <div className={`h-full ${driver.safety_score >= 90 ? 'bg-primary' : driver.safety_score >= 70 ? 'bg-secondary' : 'bg-error'}`} style={{ width: `${driver.safety_score}%` }}></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-lg py-md text-right whitespace-nowrap">
+                        <button
+                          onClick={() => handleEdit(driver)}
+                          className="px-sm py-xs font-semibold text-primary hover:bg-primary/5 rounded mr-md transition-all cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(driver.driver_id, driver.full_name)}
+                          className="px-sm py-xs font-semibold text-error hover:bg-error/5 rounded transition-all cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination placeholder */}
         <div className="px-lg py-md bg-surface-container-low/30 border-t border-outline-variant/20 flex items-center justify-between">
-          <p className="font-body-sm text-outline">Showing <span className="font-bold text-on-surface">1-4</span> of <span className="font-bold text-on-surface">1,284</span> drivers</p>
-          <div className="flex gap-2">
-            <button className="p-1 border border-outline-variant rounded-md hover:bg-white transition-colors disabled:opacity-50" disabled>
-              <span className="material-symbols-outlined text-[20px]">chevron_left</span>
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-md bg-primary text-on-primary font-bold text-body-sm">1</button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white border border-transparent hover:border-outline-variant transition-all font-medium text-body-sm">2</button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white border border-transparent hover:border-outline-variant transition-all font-medium text-body-sm">3</button>
-            <button className="p-1 border border-outline-variant rounded-md hover:bg-white transition-colors">
-              <span className="material-symbols-outlined text-[20px]">chevron_right</span>
-            </button>
-          </div>
+          <p className="font-body-sm text-outline">Showing <span className="font-bold text-on-surface">{filteredDrivers.length}</span> of <span className="font-bold text-on-surface">{drivers.length}</span> drivers</p>
         </div>
       </div>
+
+      <DriverFormModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        driver={selectedDriver}
+        onSaved={fetchDrivers}
+      />
     </div>
   );
 };

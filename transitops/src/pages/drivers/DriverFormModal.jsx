@@ -1,175 +1,324 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiClient } from '../../services/apiClient';
 
-export const DriverFormModal = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    employeeId: '',
-    email: '',
-    phone: '',
-    address: '',
-    licenseNumber: '',
-    licenseClass: 'Class A (CDL)',
-    licenseExpiry: '',
-    hireDate: '',
-    region: 'Northeast Logistics Hub',
-  });
+const emptyForm = {
+  full_name: '',
+  phone: '',
+  email: '',
+  license_number: '',
+  license_expiry_date: '',
+  license_category_id: '',
+  driver_status_id: '',
+  safety_score: '100',
+  joining_date: '',
+};
+
+export const DriverFormModal = ({ isOpen, onClose, driver = null, onSaved }) => {
+  const [formData, setFormData] = useState(emptyForm);
+  const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  // Metadata loaders
+  const [categories, setCategories] = useState([]);
+  const [statuses, setStatuses] = useState([]);
+
+  const isEdit = Boolean(driver);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Fetch license categories and status definitions
+    (async () => {
+      try {
+        const meta = await apiClient.get('/drivers/meta');
+        setCategories(meta.categories || []);
+        setStatuses(meta.statuses || []);
+      } catch (err) {
+        setApiError('Failed to load form metadata options.');
+      }
+    })();
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (driver) {
+        setFormData({
+          full_name: driver.full_name ?? '',
+          phone: driver.phone ?? '',
+          email: driver.email ?? '',
+          license_number: driver.license_number ?? '',
+          license_expiry_date: driver.license_expiry_date ?? '',
+          license_category_id: driver.license_category_id ?? '',
+          driver_status_id: driver.driver_status_id ?? '',
+          safety_score: String(driver.safety_score ?? '100'),
+          joining_date: driver.joining_date ?? '',
+        });
+      } else {
+        setFormData(emptyForm);
+      }
+      setErrors({});
+      setApiError('');
+    }
+  }, [isOpen, driver]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validate = () => {
+    const next = {};
+    if (!formData.full_name.trim()) next.full_name = 'Full name is required.';
+    if (!formData.phone.trim()) next.phone = 'Phone number is required.';
+    if (!formData.license_number.trim()) next.license_number = 'License number is required.';
+    if (!formData.license_expiry_date) next.license_expiry_date = 'License expiry date is required.';
+    if (!formData.license_category_id) next.license_category_id = 'License category is required.';
+    if (!formData.driver_status_id) next.driver_status_id = 'Driver status is required.';
+    
+    const score = Number(formData.safety_score);
+    if (formData.safety_score !== '' && (isNaN(score) || score < 0 || score > 100)) {
+      next.safety_score = 'Safety score must be between 0 and 100.';
+    }
+
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setApiError('');
+    if (!validate()) return;
+
+    setSaving(true);
+    const payload = {
+      full_name: formData.full_name.trim(),
+      phone: formData.phone.trim(),
+      email: formData.email.trim() || null,
+      license_number: formData.license_number.trim(),
+      license_expiry_date: formData.license_expiry_date,
+      license_category_id: Number(formData.license_category_id),
+      driver_status_id: Number(formData.driver_status_id),
+      safety_score: Number(formData.safety_score) || 100,
+      joining_date: formData.joining_date || null,
+    };
+
+    try {
+      if (isEdit) {
+        await apiClient.put(`/drivers/${driver.driver_id}`, payload);
+      } else {
+        await apiClient.post('/drivers', payload);
+      }
+      onSaved?.();
+      onClose();
+    } catch (err) {
+      setApiError(err.message || 'An error occurred while saving the driver profile.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (!isOpen) return null;
+
+  const labelClass = 'font-body-sm text-body-sm text-on-surface-variant ml-xs';
+  const inputClass = 'w-full border border-outline-variant rounded-lg p-md text-body-md bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary transition-all';
+  const errorTextClass = 'text-xs text-error mt-1';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-lg">
-      <div className="bg-surface-container-lowest w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-surface-container-lowest w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        
+        {/* Header */}
         <div className="px-xl py-lg border-b border-outline-variant flex justify-between items-center">
           <div className="flex items-center gap-md">
             <div className="bg-primary-container p-sm rounded-lg text-on-primary-container">
               <span className="material-symbols-outlined">person_add</span>
             </div>
             <div>
-              <h2 className="font-headline-md text-headline-md text-on-surface">Register New Driver</h2>
-              <p className="font-body-sm text-body-sm text-on-surface-variant">Add a new driver to the TransitOps fleet.</p>
+              <h2 className="font-headline-md text-headline-md text-on-surface">
+                {isEdit ? 'Edit Driver Profile' : 'Register New Driver'}
+              </h2>
+              <p className="font-body-sm text-body-sm text-on-surface-variant">
+                Configure compliance details and metadata parameters.
+              </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-on-surface-variant hover:bg-surface-container-high p-sm rounded-full transition-colors">
+          <button onClick={onClose} className="text-on-surface-variant hover:bg-surface-container-high p-sm rounded-full transition-colors cursor-pointer">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
-            <div className="lg:col-span-8 space-y-2xl">
-              <section>
-                <div className="flex items-center gap-md mb-lg border-b border-surface-container-low pb-sm">
-                  <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">1</span>
-                  <h4 className="font-headline-sm text-headline-sm">Basic Information</h4>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-                  <div className="space-y-sm">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">FULL NAME</label>
-                    <input name="fullName" value={formData.fullName} onChange={handleChange} className="w-full border-outline-variant rounded-lg p-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="e.g. Jonathan Harker" type="text" />
-                  </div>
-                  <div className="space-y-sm">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">EMPLOYEE ID (OPTIONAL)</label>
-                    <input name="employeeId" value={formData.employeeId} onChange={handleChange} className="w-full border-outline-variant rounded-lg p-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="TX-9920" type="text" />
-                  </div>
-                  <div className="space-y-sm">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">EMAIL ADDRESS</label>
-                    <input name="email" value={formData.email} onChange={handleChange} className="w-full border-outline-variant rounded-lg p-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="j.harker@transitops.com" type="email" />
-                  </div>
-                  <div className="space-y-sm">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">PHONE NUMBER</label>
-                    <input name="phone" value={formData.phone} onChange={handleChange} className="w-full border-outline-variant rounded-lg p-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="+1 (555) 000-0000" type="tel" />
-                  </div>
-                  <div className="md:col-span-2 space-y-sm">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">RESIDENTIAL ADDRESS</label>
-                    <textarea name="address" value={formData.address} onChange={handleChange} className="w-full border-outline-variant rounded-lg p-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none" placeholder="Street address, City, State, ZIP code" rows="2" />
-                  </div>
-                </div>
-              </section>
+        {/* Content Form */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-xl space-y-lg">
+          {apiError && (
+            <div className="p-md rounded-lg bg-error/10 text-error text-body-sm border border-error/20">
+              {apiError}
+            </div>
+          )}
 
-              <section>
-                <div className="flex items-center gap-md mb-lg border-b border-surface-container-low pb-sm">
-                  <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">2</span>
-                  <h4 className="font-headline-sm text-headline-sm">License & Certifications</h4>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
-                  <div className="space-y-sm">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">LICENSE NUMBER</label>
-                    <input name="licenseNumber" value={formData.licenseNumber} onChange={handleChange} className="w-full border-outline-variant rounded-lg p-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="D-8829-331" type="text" />
-                  </div>
-                  <div className="space-y-sm">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">LICENSE CLASS</label>
-                    <select name="licenseClass" value={formData.licenseClass} onChange={handleChange} className="w-full border-outline-variant rounded-lg p-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all bg-surface-container-lowest appearance-none">
-                      <option>Class A (CDL)</option>
-                      <option>Class B (CDL)</option>
-                      <option>Class C (Standard)</option>
-                      <option>Specialist/Heavy</option>
-                    </select>
-                  </div>
-                  <div className="space-y-sm">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">EXPIRY DATE</label>
-                    <input name="licenseExpiry" value={formData.licenseExpiry} onChange={handleChange} className="w-full border-outline-variant rounded-lg p-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all" type="date" />
-                  </div>
-                </div>
-              </section>
-
-              <section>
-                <div className="flex items-center gap-md mb-lg border-b border-surface-container-low pb-sm">
-                  <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">3</span>
-                  <h4 className="font-headline-sm text-headline-sm">Employment Data</h4>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-                  <div className="space-y-sm">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">HIRE DATE</label>
-                    <input name="hireDate" value={formData.hireDate} onChange={handleChange} className="w-full border-outline-variant rounded-lg p-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all" type="date" />
-                  </div>
-                  <div className="space-y-sm">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">ASSIGNED REGION</label>
-                    <select name="region" value={formData.region} onChange={handleChange} className="w-full border-outline-variant rounded-lg p-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all bg-surface-container-lowest appearance-none">
-                      <option>Northeast Logistics Hub</option>
-                      <option>Southwest Distribution</option>
-                      <option>Pacific Coast Corridor</option>
-                      <option>Central Plains Route</option>
-                    </select>
-                  </div>
-                </div>
-              </section>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
+            
+            {/* Full Name */}
+            <div className="flex flex-col gap-xs">
+              <label className={labelClass}>Full Name <span className="text-error">*</span></label>
+              <input
+                type="text"
+                name="full_name"
+                value={formData.full_name}
+                onChange={handleChange}
+                placeholder="e.g. Elena Rodriguez"
+                className={inputClass}
+                required
+              />
+              {errors.full_name && <p className={errorTextClass}>{errors.full_name}</p>}
             </div>
 
-            <div className="lg:col-span-4 space-y-xl">
-              <div className="bg-surface-container-lowest rounded-xl p-lg border border-surface-container text-center">
-                <h5 className="font-label-caps text-label-caps text-on-surface-variant mb-lg uppercase">Profile Photo</h5>
-                <div className="w-32 h-32 mx-auto rounded-full bg-surface-container-high flex flex-col items-center justify-center border-2 border-dashed border-outline-variant group cursor-pointer hover:border-primary transition-all mb-md overflow-hidden">
-                  <span className="material-symbols-outlined text-outline-variant text-[40px] group-hover:text-primary">person_add</span>
-                  <p className="text-[10px] text-outline group-hover:text-primary-container px-sm leading-tight mt-sm">CLICK TO UPLOAD</p>
-                </div>
-                <p className="text-body-sm text-outline-variant italic">Accepted formats: JPG, PNG (Max 5MB)</p>
-              </div>
-
-              <div className="bg-surface-container-lowest rounded-xl p-lg border border-surface-container">
-                <h5 className="font-label-caps text-label-caps text-on-surface-variant mb-lg uppercase">Required Documents</h5>
-                <div className="space-y-md">
-                  {[
-                    { icon: 'badge', label: 'Driver License Scan', color: 'text-primary' },
-                    { icon: 'medical_services', label: 'Medical Certificate', color: 'text-secondary' },
-                    { icon: 'fact_check', label: 'Clearance Report', color: 'text-tertiary' },
-                  ].map((doc) => (
-                    <div key={doc.label} className="p-md rounded-lg bg-background border border-surface-container-high group cursor-pointer hover:border-primary/30 transition-all">
-                      <div className="flex items-center justify-between mb-xs">
-                        <div className="flex items-center gap-sm">
-                          <span className={`material-symbols-outlined ${doc.color}`}>{doc.icon}</span>
-                          <span className="font-body-md font-medium">{doc.label}</span>
-                        </div>
-                        <span className="material-symbols-outlined text-outline-variant group-hover:text-primary">cloud_upload</span>
-                      </div>
-                      <div className="h-1 bg-surface-container-high rounded-full overflow-hidden">
-                        <div className="w-0 h-full bg-primary group-hover:w-full transition-all duration-700"></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-lg p-md bg-secondary/5 border border-secondary/10 rounded-lg">
-                  <div className="flex gap-sm">
-                    <span className="material-symbols-outlined text-secondary text-[20px]">info</span>
-                    <p className="text-body-sm text-secondary-fixed-dim font-medium leading-tight">Documents must be current and clearly legible. System will auto-verify OCR data.</p>
-                  </div>
-                </div>
-              </div>
+            {/* Phone */}
+            <div className="flex flex-col gap-xs">
+              <label className={labelClass}>Phone Number <span className="text-error">*</span></label>
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="e.g. +1 (555) 019-2834"
+                className={inputClass}
+                required
+              />
+              {errors.phone && <p className={errorTextClass}>{errors.phone}</p>}
             </div>
+
+            {/* Email */}
+            <div className="flex flex-col gap-xs">
+              <label className={labelClass}>Email Address</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="e.g. e.rodriguez@transitops.com"
+                className={inputClass}
+              />
+            </div>
+
+            {/* License Number */}
+            <div className="flex flex-col gap-xs">
+              <label className={labelClass}>License Number <span className="text-error">*</span></label>
+              <input
+                type="text"
+                name="license_number"
+                value={formData.license_number}
+                onChange={handleChange}
+                placeholder="e.g. LIC-9920193-TX"
+                className={inputClass}
+                required
+              />
+              {errors.license_number && <p className={errorTextClass}>{errors.license_number}</p>}
+            </div>
+
+            {/* License Category */}
+            <div className="flex flex-col gap-xs">
+              <label className={labelClass}>License Category <span className="text-error">*</span></label>
+              <select
+                name="license_category_id"
+                value={formData.license_category_id}
+                onChange={handleChange}
+                className={inputClass}
+                required
+              >
+                <option value="">Select license category...</option>
+                {categories.map((c) => (
+                  <option key={c.license_category_id} value={c.license_category_id}>
+                    {c.category_name} ({c.category_code})
+                  </option>
+                ))}
+              </select>
+              {errors.license_category_id && <p className={errorTextClass}>{errors.license_category_id}</p>}
+            </div>
+
+            {/* License Expiry */}
+            <div className="flex flex-col gap-xs">
+              <label className={labelClass}>License Expiry Date <span className="text-error">*</span></label>
+              <input
+                type="date"
+                name="license_expiry_date"
+                value={formData.license_expiry_date}
+                onChange={handleChange}
+                className={inputClass}
+                required
+              />
+              {errors.license_expiry_date && <p className={errorTextClass}>{errors.license_expiry_date}</p>}
+            </div>
+
+            {/* Driver Status */}
+            <div className="flex flex-col gap-xs">
+              <label className={labelClass}>Driver Status <span className="text-error">*</span></label>
+              <select
+                name="driver_status_id"
+                value={formData.driver_status_id}
+                onChange={handleChange}
+                className={inputClass}
+                required
+              >
+                <option value="">Select operational status...</option>
+                {statuses.map((s) => (
+                  <option key={s.driver_status_id} value={s.driver_status_id}>
+                    {s.status_name.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())}
+                  </option>
+                ))}
+              </select>
+              {errors.driver_status_id && <p className={errorTextClass}>{errors.driver_status_id}</p>}
+            </div>
+
+            {/* Safety Score */}
+            <div className="flex flex-col gap-xs">
+              <label className={labelClass}>Safety Score (0 - 100)</label>
+              <input
+                type="number"
+                name="safety_score"
+                value={formData.safety_score}
+                onChange={handleChange}
+                min="0"
+                max="100"
+                className={inputClass}
+              />
+              {errors.safety_score && <p className={errorTextClass}>{errors.safety_score}</p>}
+            </div>
+
+            {/* Joining Date */}
+            <div className="flex flex-col gap-xs">
+              <label className={labelClass}>Joining Date</label>
+              <input
+                type="date"
+                name="joining_date"
+                value={formData.joining_date}
+                onChange={handleChange}
+                className={inputClass}
+              />
+            </div>
+
           </div>
-        </div>
 
-        <div className="px-xl py-lg bg-surface-container-low border-t border-outline-variant flex justify-end items-center gap-md">
-          <button onClick={onClose} className="px-xl py-md text-on-surface-variant font-medium hover:bg-surface-container transition-colors rounded-lg">Cancel</button>
-          <button className="px-3xl py-md bg-primary text-on-primary font-bold rounded-lg shadow-sm hover:bg-primary-container transition-all active:scale-95 flex items-center gap-md">
-            <span className="material-symbols-outlined">save</span>
-            Save Driver
-          </button>
-        </div>
+          {/* Form Actions */}
+          <div className="px-xl py-lg bg-surface-container-low border-t border-outline-variant flex justify-end items-center gap-md mt-lg -mx-xl -mb-xl">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-xl py-md text-on-surface-variant font-medium hover:bg-surface-container transition-colors rounded-lg cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-3xl py-md bg-primary text-on-primary font-bold rounded-lg shadow-sm hover:bg-primary-container transition-all active:scale-95 flex items-center gap-md cursor-pointer"
+            >
+              <span className="material-symbols-outlined">save</span>
+              <span>{saving ? 'Saving...' : 'Save Driver'}</span>
+            </button>
+          </div>
+        </form>
+
       </div>
     </div>
   );
