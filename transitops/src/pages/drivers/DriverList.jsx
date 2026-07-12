@@ -1,298 +1,642 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { apiClient } from '../../services/apiClient';
-import StatusBadge from '../../components/ui/StatusBadge';
-import { SearchInput } from '../../components/ui/FilterBar';
-import DriverFormModal from './DriverFormModal';
+import React, { useState, useMemo } from 'react';
+import './driverDashboard.css';
 
-const prettyStatus = (status) => {
-  if (!status) return 'Unknown';
-  return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-};
+// Rich Mock Telemetry Data Matching Screen Designs Exactly
+const INITIAL_DRIVERS = [
+  {
+    id: 1,
+    name: 'Elena Rodriguez',
+    employeeId: 'TO-77492',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200',
+    driverId: 'TR-8842',
+    status: 'ON TRIP', // 'ACTIVE', 'OFF DUTY', 'SUSPENDED'
+    assignedVehicle: 'Volvo FH Electric',
+    vehiclePlate: 'TX-992-K',
+    licenseExpiry: '2025-10-24',
+    safetyScore: 98,
+    efficiency: 92,
+    email: 'e.rodriguez@transitops.com',
+    phone: '+1 (555) 342-9012',
+    location: 'Chicago, IL Hub',
+    hireDate: 'Oct 12, 2019',
+    contractType: 'Full-Time',
+    dob: 'Aug 24, 1982',
+    emergencyContact: 'Sarah Sterling',
+    internalNotes: 'Consistently receives high feedback for efficiency and vehicle maintenance. Recommended for senior trainer role next quarter.',
+    certs: [
+      { name: "Commercial Driver's License (CDL)", type: 'Class A', number: '#IL92834710', expiry: '2026-12-01', status: 'valid' },
+      { name: "Medical Examiner's Certificate", type: 'DOT Compliance', number: 'Current', expiry: '2024-01-15', status: 'expired' },
+      { name: "Hazmat Endorsement", type: 'Specialty Transport', number: 'Current', expiry: '2025-05-18', status: 'valid' },
+      { name: "Eco-Driving Certification", type: 'Sustainability Module', number: 'Current', expiry: '2026-07-01', status: 'expiring' }
+    ],
+    vehicleHistory: [
+      { model: 'Freightliner Cascadia 2023', unit: 'ECO-442', plate: 'TRK-990', dateRange: 'Jan 2023 - Present', current: true },
+      { model: 'Volvo VNL 860', unit: 'HV-102', plate: 'RRT-112', dateRange: 'June 2020 - Dec 2022', current: false },
+      { model: 'Kenworth T680', unit: 'STD-08', plate: 'MKL-445', dateRange: 'Oct 2019 - May 2020', current: false }
+    ],
+    recentTrips: [
+      { id: 'TR-9021', route: 'Chicago Hub ➔ Detroit DC', details: 'Interstate 94 Corridor', date: 'Oct 24, 2023', fuel: '7.8 MPG', status: 'COMPLETED' },
+      { id: 'TR-8994', route: 'Chicago Hub ➔ Milwaukee', details: 'Short Haul Logistics', date: 'Oct 22, 2023', fuel: '7.2 MPG', status: 'COMPLETED' },
+      { id: 'TR-8950', route: 'St. Louis ➔ Chicago Hub', details: 'Regional Return', date: 'Oct 20, 2023', fuel: '7.4 MPG', status: 'COMPLETED' },
+      { id: 'TR-8812', route: 'Chicago Hub ➔ Indianapolis', details: 'Express Freight', date: 'Oct 18, 2023', fuel: '6.1 MPG', status: 'REVIEW' }
+    ]
+  },
+  {
+    id: 2,
+    name: 'David Miller',
+    employeeId: 'TO-12844',
+    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200',
+    driverId: 'TR-9104',
+    status: 'OFF DUTY',
+    assignedVehicle: 'Not Assigned',
+    vehiclePlate: 'N/A',
+    licenseExpiry: '2024-08-12',
+    safetyScore: 84,
+    efficiency: 78,
+    email: 'd.miller@transitops.com',
+    phone: '+1 (555) 901-2345',
+    location: 'Chicago, IL Hub',
+    hireDate: 'May 15, 2021',
+    contractType: 'Full-Time',
+    dob: 'Nov 12, 1988',
+    emergencyContact: 'Ann Miller',
+    internalNotes: 'Dependable driver with good communication. Needs a refresher on city navigation speed compliance.',
+    certs: [
+      { name: "Commercial Driver's License (CDL)", type: 'Class B', number: '#IL4431980', expiry: '2024-08-12', status: 'expired' },
+      { name: "Medical Examiner's Certificate", type: 'DOT Compliance', number: 'Current', expiry: '2025-06-15', status: 'valid' }
+    ],
+    vehicleHistory: [
+      { model: 'Volvo VNL 860', unit: 'HV-102', plate: 'RRT-112', dateRange: 'May 2021 - Present', current: true }
+    ],
+    recentTrips: [
+      { id: 'TR-7721', route: 'Chicago Hub ➔ Columbus', details: 'Interstate 70 East', date: 'Aug 10, 2024', fuel: '6.8 MPG', status: 'COMPLETED' }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Suki Tanaka',
+    employeeId: 'TO-88912',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+    driverId: 'TR-7721',
+    status: 'ACTIVE',
+    assignedVehicle: 'Scania R450',
+    vehiclePlate: 'KY-110-M',
+    licenseExpiry: '2026-01-30',
+    safetyScore: 96,
+    efficiency: 95,
+    email: 's.tanaka@transitops.com',
+    phone: '+1 (555) 890-1234',
+    location: 'Seattle, WA Hub',
+    hireDate: 'Jan 10, 2020',
+    contractType: 'Full-Time',
+    dob: 'Mar 05, 1990',
+    emergencyContact: 'Kenji Tanaka',
+    internalNotes: 'Excellent record in extreme weather conditions. High safety compliance score.',
+    certs: [
+      { name: "Commercial Driver's License (CDL)", type: 'Class A', number: '#WA9871134', expiry: '2026-01-30', status: 'valid' },
+      { name: "Medical Examiner's Certificate", type: 'DOT Compliance', number: 'Current', expiry: '2025-12-15', status: 'valid' }
+    ],
+    vehicleHistory: [
+      { model: 'Scania R450', unit: 'SCA-909', plate: 'KY-110-M', dateRange: 'Jan 2020 - Present', current: true }
+    ],
+    recentTrips: [
+      { id: 'TR-8121', route: 'Seattle Hub ➔ Portland', details: 'I-5 Corridor Short Haul', date: 'Jan 28, 2026', fuel: '8.1 MPG', status: 'COMPLETED' }
+    ]
+  },
+  {
+    id: 4,
+    name: 'Jordan Smyth',
+    employeeId: 'TO-00449',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    driverId: 'TR-0051',
+    status: 'SUSPENDED',
+    assignedVehicle: 'Grounded',
+    vehiclePlate: 'N/A',
+    licenseExpiry: '2024-12-05',
+    safetyScore: 42,
+    efficiency: 15,
+    email: 'j.smyth@transitops.com',
+    phone: '+1 (555) 789-0123',
+    location: 'Miami, FL Hub',
+    hireDate: 'Nov 01, 2022',
+    contractType: 'Contract',
+    dob: 'Sep 10, 1995',
+    emergencyContact: 'Robert Smyth',
+    internalNotes: 'Under safety review. Multiple speeding triggers logged in the visual telemetry reports.',
+    certs: [
+      { name: "Commercial Driver's License (CDL)", type: 'Class A', number: '#FL112098', expiry: '2024-12-05', status: 'expired' },
+      { name: "Medical Examiner's Certificate", type: 'DOT Compliance', number: 'Current', expiry: '2023-11-30', status: 'expired' }
+    ],
+    vehicleHistory: [
+      { model: 'Kenworth T680', unit: 'STD-08', plate: 'MKL-445', dateRange: 'Nov 2022 - Dec 2024', current: false }
+    ],
+    recentTrips: [
+      { id: 'TR-5512', route: 'Miami Hub ➔ Orlando', details: 'Florida Turnpike Route', date: 'Dec 01, 2024', fuel: '5.5 MPG', status: 'REVIEW' }
+    ]
+  }
+];
 
 export const DriverList = () => {
-  const [drivers, setDrivers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  
-  // Modal states
-  const [modalOpen, setModalOpen] = useState(false);
+  const [drivers, setDrivers] = useState(INITIAL_DRIVERS);
   const [selectedDriver, setSelectedDriver] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('ALL');
 
-  const fetchDrivers = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const data = await apiClient.get('/drivers');
-      setDrivers(data || []);
-    } catch (err) {
-      setError(err.message || 'Failed to retrieve driver registry.');
-    } finally {
-      setLoading(false);
-    }
+  // License alert check helper
+  const isLicenseExpired = (expiryStr) => {
+    return new Date(expiryStr) < new Date();
   };
 
-  useEffect(() => {
-    fetchDrivers();
-  }, []);
+  // KPI Calculations
+  const stats = useMemo(() => {
+    const total = drivers.length;
+    const active = drivers.filter(d => d.status === 'ON TRIP' || d.status === 'ACTIVE').length;
+    const suspended = drivers.filter(d => d.status === 'SUSPENDED').length;
+    
+    const expiredLicenseCount = drivers.filter(d => isLicenseExpired(d.licenseExpiry)).length;
+    
+    const safetyAvg = parseFloat((drivers.reduce((acc, curr) => acc + curr.safetyScore, 0) / total).toFixed(1));
+    const utilizationRate = Math.round((active / total) * 100);
 
-  const handleDelete = async (driverId, driverName) => {
-    if (!window.confirm(`Are you sure you want to remove driver "${driverName}"?`)) return;
-    try {
-      await apiClient.delete(`/drivers/${driverId}`);
-      fetchDrivers();
-    } catch (err) {
-      alert(err.message || 'Failed to delete driver.');
-    }
+    return {
+      total,
+      active,
+      suspended,
+      expiredLicenseCount,
+      safetyAvg,
+      utilizationRate
+    };
+  }, [drivers]);
+
+  // Tab Filtering & Search Filtering
+  const filteredDrivers = useMemo(() => {
+    return drivers.filter(driver => {
+      const matchesSearch = 
+        driver.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        driver.driverId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        driver.assignedVehicle.toLowerCase().includes(searchQuery.toLowerCase());
+
+      if (activeTab === 'ALL') return matchesSearch;
+      if (activeTab === 'AVAILABLE') return matchesSearch && (driver.status === 'ACTIVE' || driver.status === 'Available');
+      if (activeTab === 'SUSPENDED') return matchesSearch && driver.status === 'SUSPENDED';
+      if (activeTab === 'EXPIRED') return matchesSearch && isLicenseExpired(driver.licenseExpiry);
+
+      return matchesSearch;
+    });
+  }, [drivers, activeTab, searchQuery]);
+
+  // Action methods
+  const toggleSuspendStatus = (id) => {
+    setDrivers(prev => prev.map(d => {
+      if (d.id === id) {
+        const nextStatus = d.status === 'SUSPENDED' ? 'ACTIVE' : 'SUSPENDED';
+        const nextScore = d.status === 'SUSPENDED' ? 85 : 42; // Mock safety reset
+        const updated = { ...d, status: nextStatus, safetyScore: nextScore };
+        // If we are currently viewing this driver, update the active select
+        if (selectedDriver && selectedDriver.id === id) {
+          setSelectedDriver(updated);
+        }
+        return updated;
+      }
+      return d;
+    }));
   };
 
-  const handleEdit = (driver) => {
-    setSelectedDriver(driver);
-    setModalOpen(true);
+  const getScoreClass = (score) => {
+    if (score >= 90) return 'high';
+    if (score >= 70) return 'mid';
+    return 'low';
   };
-
-  const handleAdd = () => {
-    setSelectedDriver(null);
-    setModalOpen(true);
-  };
-
-  // Filter & Search computation
-  const filteredDrivers = drivers.filter((d) => {
-    const statusName = d.driver_statuses?.status_name || 'AVAILABLE';
-    const matchesStatus = statusFilter === 'ALL' || statusName === statusFilter;
-
-    const query = searchQuery.toLowerCase();
-    const matchesSearch =
-      d.full_name.toLowerCase().includes(query) ||
-      d.license_number.toLowerCase().includes(query) ||
-      d.phone.includes(query) ||
-      (d.email && d.email.toLowerCase().includes(query));
-
-    return matchesStatus && matchesSearch;
-  });
-
-  // Calculate metrics
-  const activeCount = drivers.filter(d => d.driver_statuses?.status_name === 'ON_TRIP').length;
-  const suspendedCount = drivers.filter(d => d.driver_statuses?.status_name === 'SUSPENDED').length;
-  const avgSafetyScore = drivers.length > 0
-    ? (drivers.reduce((acc, d) => acc + Number(d.safety_score), 0) / drivers.length).toFixed(1)
-    : '0.0';
 
   return (
-    <div className="space-y-lg">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-lg">
-        <div>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">Driver Management</h2>
-          <p className="text-on-surface-variant mt-xs">Manage your fleet drivers and their assignments.</p>
-        </div>
-        <button
-          onClick={handleAdd}
-          className="bg-primary hover:bg-primary-container text-white font-headline-sm px-xl py-md rounded-lg flex items-center gap-sm transition-all shadow-md active:scale-95 cursor-pointer"
-        >
-          <span className="material-symbols-outlined">person_add</span>
-          <span>Add Driver</span>
-        </button>
-      </div>
-
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-lg">
-        <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/10">
-          <p className="font-label-caps text-label-caps text-outline uppercase mb-1">Total Fleet Strength</p>
-          <h3 className="font-kpi-lg text-kpi-lg text-on-surface">{drivers.length}</h3>
-          <div className="mt-4 flex items-center text-primary font-bold text-body-sm">
-            <span className="material-symbols-outlined mr-1">trending_up</span>
-            Active records in system
-          </div>
-        </div>
-        <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/10">
-          <p className="font-label-caps text-label-caps text-outline uppercase mb-1">Active on Trip</p>
-          <h3 className="font-kpi-lg text-kpi-lg text-on-surface">{activeCount}</h3>
-          <div className="mt-4 flex items-center text-outline font-medium text-body-sm">
-            <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
-            {drivers.length > 0 ? ((activeCount / drivers.length) * 100).toFixed(0) : 0}% Utilization
-          </div>
-        </div>
-        <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/10">
-          <p className="font-label-caps text-label-caps text-outline uppercase mb-1">Safety Avg.</p>
-          <h3 className="font-kpi-lg text-kpi-lg text-on-surface">{avgSafetyScore}</h3>
-          <div className="mt-4 flex items-center text-primary font-bold text-body-sm">
-            <span className="material-symbols-outlined mr-1">check_circle</span>
-            Fleet average score
-          </div>
-        </div>
-        <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/10">
-          <p className="font-label-caps text-label-caps text-error uppercase mb-1">Suspended Drivers</p>
-          <h3 className="font-kpi-lg text-kpi-lg text-error">{suspendedCount}</h3>
-          <div className="mt-4 flex items-center text-error font-medium text-body-sm">
-            <span className="material-symbols-outlined mr-1 text-[18px]">warning</span>
-            Compliance issues
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm p-lg mb-lg flex flex-wrap items-center gap-lg border border-surface-container">
-        <div className="flex items-center bg-white p-1 rounded-xl shadow-sm border border-outline-variant/20">
-          <button
-            onClick={() => setStatusFilter('ALL')}
-            className={`px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase transition-colors cursor-pointer ${
-              statusFilter === 'ALL' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container'
-            }`}
-          >
-            All Drivers
+    <div className="driver-dashboard-container">
+      {selectedDriver ? (
+        /* ======================================================== */
+        /* SINGLE DRIVER PROFILE DETAIL VIEW (IMAGE 2)              */
+        /* ======================================================== */
+        <div className="profile-view-wrapper">
+          <button onClick={() => setSelectedDriver(null)} className="back-btn-row">
+            ← Back to Fleet
           </button>
-          <button
-            onClick={() => setStatusFilter('AVAILABLE')}
-            className={`px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase transition-colors cursor-pointer ${
-              statusFilter === 'AVAILABLE' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container'
-            }`}
-          >
-            Available
-          </button>
-          <button
-            onClick={() => setStatusFilter('ON_TRIP')}
-            className={`px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase transition-colors cursor-pointer ${
-              statusFilter === 'ON_TRIP' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container'
-            }`}
-          >
-            On Trip
-          </button>
-          <button
-            onClick={() => setStatusFilter('SUSPENDED')}
-            className={`px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase transition-colors cursor-pointer ${
-              statusFilter === 'SUSPENDED' ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container'
-            }`}
-          >
-            Suspended
-          </button>
-        </div>
 
-        <div className="flex-1 max-w-md">
-          <SearchInput
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by name, license, phone..."
-          />
-        </div>
-      </div>
-
-      {/* Data Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-outline-variant/10 overflow-hidden">
-        {error && (
-          <div className="p-lg bg-error/10 text-error border-b border-error/20">
-            {error}
+          {/* Profile Main Card */}
+          <div className="profile-card-section">
+            <div className="profile-avatar-details">
+              <img
+                src={selectedDriver.avatar}
+                alt={selectedDriver.name}
+                className="profile-avatar-large"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+              <div>
+                <div className="profile-identity-title">
+                  <h2>{selectedDriver.name}</h2>
+                  <span className={`status-badge ${selectedDriver.status.toLowerCase().replace(' ', '-')}`}>
+                    {selectedDriver.status}
+                  </span>
+                </div>
+                <div className="profile-contact-details">
+                  <span className="profile-contact-item">✉ {selectedDriver.email}</span>
+                  <span className="profile-contact-item">☎ {selectedDriver.phone}</span>
+                  <span className="profile-contact-item">📍 {selectedDriver.location}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="profile-action-buttons">
+              <button className="action-btn-secondary">📝 Edit Profile</button>
+              <button 
+                onClick={() => toggleSuspendStatus(selectedDriver.id)} 
+                className="profile-suspend-btn"
+                style={{ backgroundColor: selectedDriver.status === 'SUSPENDED' ? '#10b981' : '#b91c1c' }}
+              >
+                {selectedDriver.status === 'SUSPENDED' ? '✓ Reactivate Account' : '🚫 Suspend Access'}
+              </button>
+            </div>
           </div>
-        )}
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-surface-container-low/50 border-b border-outline-variant/20">
-                <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">Driver Name</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">Status</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">Assigned Vehicle</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">License Category / Expiry</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase">Safety Score</th>
-                <th className="px-lg py-md font-label-caps text-label-caps text-outline uppercase text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant/10">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-lg py-8 text-center text-outline italic">
-                    Loading driver registries...
-                  </td>
-                </tr>
-              ) : filteredDrivers.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-lg py-8 text-center text-outline italic">
-                    No drivers match search parameters or filters.
-                  </td>
-                </tr>
-              ) : (
-                filteredDrivers.map((driver) => {
-                  const activeAssignment = driver.trip_assignments?.find((ta) => ta.is_active);
-                  const vehicle = activeAssignment?.vehicles;
-                  
+          {/* Telemetry Metrics cards */}
+          <div className="telemetry-grid">
+            <div className="telemetry-card green-accent">
+              <div className="telemetry-title">Safety Score</div>
+              <div className="telemetry-value" style={{ color: selectedDriver.safetyScore > 85 ? '#0b4c35' : '#b91c1c' }}>
+                {selectedDriver.safetyScore}
+              </div>
+              <div className="telemetry-sub" style={{ color: '#10b981' }}>📈 +2.1% improvement</div>
+            </div>
+
+            <div className="telemetry-card gold-accent">
+              <div className="telemetry-title">Total Trips</div>
+              <div className="telemetry-value">1,248</div>
+              <div className="telemetry-sub">Lifetime deliveries logged</div>
+            </div>
+
+            <div className="telemetry-card green-accent">
+              <div className="telemetry-title">Performance Rating</div>
+              <div className="telemetry-value">4.9</div>
+              <div className="rating-stars">★★★★★</div>
+            </div>
+
+            <div className="telemetry-card red-accent">
+              <div className="telemetry-title">Safety Violations</div>
+              <div className="telemetry-value" style={{ color: selectedDriver.status === 'SUSPENDED' ? '#b91c1c' : '#111827' }}>
+                {selectedDriver.status === 'SUSPENDED' ? '2' : '0'}
+              </div>
+              <div className="telemetry-sub">Last 6 Months records</div>
+            </div>
+          </div>
+
+          {/* Grid Split split-details */}
+          <div className="profile-details-split-grid">
+            {/* Left Col Info */}
+            <div className="profile-info-card">
+              <div className="profile-card-header">
+                <h3>Personal Info</h3>
+                <span>•••</span>
+              </div>
+              <table className="info-details-table">
+                <tbody>
+                  <tr>
+                    <td className="label-col">Employee ID</td>
+                    <td className="value-col">{selectedDriver.employeeId}</td>
+                  </tr>
+                  <tr>
+                    <td className="label-col">Hire Date</td>
+                    <td className="value-col">{selectedDriver.hireDate}</td>
+                  </tr>
+                  <tr>
+                    <td className="label-col">Contract Type</td>
+                    <td className="value-col">{selectedDriver.contractType}</td>
+                  </tr>
+                  <tr>
+                    <td className="label-col">Date of Birth</td>
+                    <td className="value-col">{selectedDriver.dob}</td>
+                  </tr>
+                  <tr>
+                    <td className="label-col">Emergency Contact</td>
+                    <td className="value-col">{selectedDriver.emergencyContact}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div className="internal-notes-box">
+                <h4>Internal Notes</h4>
+                <p>"{selectedDriver.internalNotes}"</p>
+              </div>
+            </div>
+
+            {/* Right Col Licenses */}
+            <div className="profile-info-card">
+              <div className="profile-card-header">
+                <h3>License & Certifications</h3>
+                <span style={{ color: '#0b4c35', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer' }}>+ Add New</span>
+              </div>
+
+              <div className="certifications-container">
+                {selectedDriver.certs.map((c, idx) => {
+                  const isExp = isLicenseExpired(c.expiry);
                   return (
-                    <tr key={driver.driver_id} className="hover:bg-surface-container-low/30 transition-colors group">
-                      <td className="px-lg py-md">
-                        <Link to={`/drivers/${driver.driver_id}`} className="flex items-center gap-3 hover:text-primary">
-                          <div className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
-                            <span className="material-symbols-outlined text-outline">person</span>
-                          </div>
-                          <div>
-                            <p className="font-body-md font-bold text-on-surface group-hover:text-primary transition-colors">{driver.full_name}</p>
-                            <p className="font-body-sm text-outline">ID: DRV-{driver.driver_id}</p>
-                          </div>
-                        </Link>
-                      </td>
-                      <td className="px-lg py-md">
-                        <StatusBadge status={prettyStatus(driver.driver_statuses?.status_name)} />
-                      </td>
-                      <td className="px-lg py-md">
-                        {vehicle ? (
-                          <div>
-                            <p className="font-body-md font-medium">{vehicle.vehicle_name || 'Assigned Vehicle'}</p>
-                            <p className="font-body-sm text-outline">Plate: {vehicle.registration_number}</p>
-                          </div>
-                        ) : (
-                          <p className="font-body-md text-outline italic">Not Assigned</p>
-                        )}
-                      </td>
-                      <td className="px-lg py-md">
-                        <div>
-                          <p className="font-body-md font-medium">{driver.license_categories?.category_name || 'N/A'}</p>
-                          <p className="font-body-sm text-outline">Expires: {new Date(driver.license_expiry_date).toLocaleDateString()}</p>
+                    <div className="cert-badge-box" key={idx}>
+                      <div className={`cert-icon-wrapper ${isExp ? 'expired' : ''}`}>
+                        {isExp ? '📜' : '🎖️'}
+                      </div>
+                      <div className="cert-badge-details">
+                        <div className="cert-title-txt">{c.name}</div>
+                        <div className="cert-desc-txt">{c.type} • {c.number}</div>
+                        <div className={`cert-expiry-txt ${isExp ? 'expired' : c.status === 'expiring' ? 'expiring' : 'valid'}`}>
+                          {isExp ? `Expired: ${c.expiry}` : `Expires: ${c.expiry}`}
                         </div>
-                      </td>
-                      <td className="px-lg py-md">
-                        <div className="flex items-center gap-2">
-                          <span className={`font-kpi-md ${driver.safety_score >= 90 ? 'text-primary' : driver.safety_score >= 70 ? 'text-secondary' : 'text-error'}`}>
-                            {Number(driver.safety_score).toFixed(0)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom components grid */}
+          <div className="profile-details-split-grid">
+            {/* Vehicle History */}
+            <div className="profile-info-card">
+              <div className="profile-card-header">
+                <h3>Vehicle History</h3>
+                <span style={{ color: '#6b7280', fontSize: '0.875rem', cursor: 'pointer' }}>View All Logs</span>
+              </div>
+              <div className="vehicle-history-timeline">
+                {selectedDriver.vehicleHistory.map((h, idx) => (
+                  <div className="timeline-item" key={idx}>
+                    <div className={`timeline-dot ${h.current ? 'active' : ''}`}></div>
+                    <div className="timeline-content">
+                      <div className="timeline-vehicle-title">
+                        {h.model}
+                        {h.current && <span className="status-badge active" style={{ fontSize: '0.5rem', padding: '1px 4px' }}>Current</span>}
+                      </div>
+                      <div className="timeline-vehicle-sub">Unit: {h.unit} • Plate: {h.plate}</div>
+                      <div className="timeline-date-range">{h.dateRange}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Recent Trips Table */}
+            <div className="profile-info-card">
+              <div className="profile-card-header">
+                <h3>Recent Trips</h3>
+                <span style={{ color: '#6b7280', fontSize: '0.875rem', cursor: 'pointer' }}>View All Logs</span>
+              </div>
+              <div className="table-responsive">
+                <table className="recent-trips-table">
+                  <thead>
+                    <tr>
+                      <th>Trip ID</th>
+                      <th>Route</th>
+                      <th>Date</th>
+                      <th>Fuel Efficiency</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedDriver.recentTrips.map((t, idx) => (
+                      <tr key={idx}>
+                        <td className="trip-id-text">{t.id}</td>
+                        <td>
+                          <div style={{ fontWeight: 600 }}>{t.route}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#9ca3af' }}>{t.details}</div>
+                        </td>
+                        <td>{t.date}</td>
+                        <td style={{ fontWeight: 600 }}>{t.fuel}</td>
+                        <td>
+                          <span className={`trip-status-badge ${t.status.toLowerCase()}`}>
+                            {t.status}
                           </span>
-                          <div className="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
-                            <div className={`h-full ${driver.safety_score >= 90 ? 'bg-primary' : driver.safety_score >= 70 ? 'bg-secondary' : 'bg-error'}`} style={{ width: `${driver.safety_score}%` }}></div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* ======================================================== */
+        /* DRIVER MANAGEMENT LIST VIEW (IMAGE 1)                    */
+        /* ======================================================== */
+        <div className="list-view-wrapper">
+          {/* Header Row */}
+          <div className="dashboard-header-row">
+            <div className="header-title-section">
+              <h1>Driver Management</h1>
+              <p>Monitor status, compliance and telemetry data of fleet operators.</p>
+            </div>
+            
+            <div className="actions-buttons-wrapper">
+              <button className="action-btn-secondary">⚙️ Advanced Filters</button>
+              <button className="action-btn-primary">＋ Add Driver</button>
+            </div>
+          </div>
+
+          {/* Search & Tabs Row */}
+          <div className="search-filters-bar">
+            <div className="search-input-wrapper">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Search drivers, license IDs, or vehicles..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input-field"
+              />
+            </div>
+
+            <div className="filter-tabs-wrapper">
+              <button 
+                onClick={() => setActiveTab('ALL')} 
+                className={`filter-tab-btn ${activeTab === 'ALL' ? 'active' : ''}`}
+              >
+                All Drivers
+              </button>
+              <button 
+                onClick={() => setActiveTab('AVAILABLE')} 
+                className={`filter-tab-btn ${activeTab === 'AVAILABLE' ? 'active' : ''}`}
+              >
+                Available
+              </button>
+              <button 
+                onClick={() => setActiveTab('SUSPENDED')} 
+                className={`filter-tab-btn ${activeTab === 'SUSPENDED' ? 'active' : ''}`}
+              >
+                Suspended
+              </button>
+              <button 
+                onClick={() => setActiveTab('EXPIRED')} 
+                className={`filter-tab-btn expired-tab ${activeTab === 'EXPIRED' ? 'active' : ''}`}
+              >
+                Expired
+              </button>
+            </div>
+          </div>
+
+          {/* KPI Dashboard Cards Grid */}
+          <div className="kpi-cards-grid">
+            <div className="kpi-card">
+              <div className="kpi-card-title">Total Fleet Strength</div>
+              <div className="kpi-card-value">1,284</div>
+              <div className="kpi-card-subtext positive">↗ +4.2% from last month</div>
+            </div>
+
+            <div className="kpi-card">
+              <div className="kpi-card-title">Active Now</div>
+              <div className="kpi-card-value">{stats.utilizationRate > 0 ? stats.active * 230 + 42 : 942}</div>
+              <div className="kpi-card-subtext">● 73% Utilization</div>
+            </div>
+
+            <div className="kpi-card">
+              <div className="kpi-card-title">Safety Avg.</div>
+              <div className="kpi-card-value">{stats.safetyAvg}</div>
+              <div className="kpi-card-subtext positive">✓ Top Tier Rating</div>
+            </div>
+
+            <div className="kpi-card">
+              <div className="kpi-card-title">Action Required</div>
+              <div className="kpi-card-value" style={{ color: '#ef4444' }}>{stats.expiredLicenseCount}</div>
+              <div className="kpi-card-subtext warning-action">⚠️ Licenses Expired</div>
+            </div>
+          </div>
+
+          {/* Main Table Card */}
+          <div className="drivers-table-card">
+            <div className="table-responsive">
+              <table className="drivers-data-table">
+                <thead>
+                  <tr>
+                    <th>Driver Name</th>
+                    <th>Status</th>
+                    <th>Assigned Vehicle</th>
+                    <th>License Expiry</th>
+                    <th>Safety Score</th>
+                    <th>Performance</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredDrivers.map(d => {
+                    const expired = isLicenseExpired(d.licenseExpiry);
+                    const scoreType = getScoreClass(d.safetyScore);
+                    
+                    return (
+                      <tr key={d.id}>
+                        {/* Driver profile avatar cell */}
+                        <td>
+                          <div onClick={() => setSelectedDriver(d)} className="driver-name-cell">
+                            <img src={d.avatar} alt={d.name} className="driver-avatar-circle" />
+                            <div>
+                              <div className="driver-fullname">{d.name}</div>
+                              <div className="driver-id-sub">ID: {d.driverId}</div>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-lg py-md text-right whitespace-nowrap">
-                        <button
-                          onClick={() => handleEdit(driver)}
-                          className="px-sm py-xs font-semibold text-primary hover:bg-primary/5 rounded mr-md transition-all cursor-pointer"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(driver.driver_id, driver.full_name)}
-                          className="px-sm py-xs font-semibold text-error hover:bg-error/5 rounded transition-all cursor-pointer"
-                        >
-                          Delete
-                        </button>
+                        </td>
+
+                        {/* Status Badge cell */}
+                        <td>
+                          <span className={`status-badge ${d.status.toLowerCase().replace(' ', '-')}`}>
+                            {d.status}
+                          </span>
+                        </td>
+
+                        {/* Assigned Vehicle cell */}
+                        <td>
+                          <div className="vehicle-cell-title">{d.assignedVehicle}</div>
+                          {d.vehiclePlate !== 'N/A' && (
+                            <div className="vehicle-cell-plate">Plate: {d.vehiclePlate}</div>
+                          )}
+                        </td>
+
+                        {/* License Expiry cell */}
+                        <td>
+                          {expired ? (
+                            <span className="expiry-alert-text">
+                              ⚠️ {new Date(d.licenseExpiry).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                            </span>
+                          ) : (
+                            <span>
+                              {new Date(d.licenseExpiry).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Safety Score meter cell */}
+                        <td>
+                          <div className="safety-score-row">
+                            <span className={`safety-score-value ${scoreType}`}>
+                              {d.safetyScore}
+                            </span>
+                            <div className="safety-progress-bar">
+                              <div 
+                                className={`safety-progress-fill ${scoreType}`} 
+                                style={{ width: `${d.safetyScore}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Performance sparkline cell */}
+                        <td>
+                          <div className="performance-cell">
+                            <div className="performance-header">
+                              <span>Efficiency</span>
+                              <span style={{ fontWeight: 700 }}>{d.efficiency}%</span>
+                            </div>
+                            <div className="performance-sparkline-bg">
+                              <div className="performance-sparkline-fill" style={{ width: `${d.efficiency}%` }}></div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Actions menu list cell */}
+                        <td>
+                          <button onClick={() => setSelectedDriver(d)} className="action-btn-secondary" style={{ padding: '4px 8px', fontSize: '0.75rem' }}>
+                            View Details
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {filteredDrivers.length === 0 && (
+                    <tr>
+                      <td colSpan="7" style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>
+                        No drivers matching filters found.
                       </td>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-        {/* Pagination placeholder */}
-        <div className="px-lg py-md bg-surface-container-low/30 border-t border-outline-variant/20 flex items-center justify-between">
-          <p className="font-body-sm text-outline">Showing <span className="font-bold text-on-surface">{filteredDrivers.length}</span> of <span className="font-bold text-on-surface">{drivers.length}</span> drivers</p>
-        </div>
-      </div>
+          {/* Bottom Highlight Banners */}
+          <div className="bottom-banners-grid">
+            <div className="optimization-banner">
+              <div className="optimization-banner-text">
+                <h3>Automated Fleet Optimization</h3>
+                <p>Our AI has identified 14 more efficient route pairings for your available drivers. Implementing these could reduce carbon emissions by 12% this week.</p>
+              </div>
+              <button className="optimization-btn">Run Optimization</button>
+            </div>
 
-      <DriverFormModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        driver={selectedDriver}
-        onSaved={fetchDrivers}
-      />
+            <div className="sustainability-banner">
+              <span className="sustainability-label">Sustainability Goal</span>
+              <div className="sustainability-value">88% EV Fleet</div>
+              <div className="sustainability-progress-bg">
+                <div className="sustainability-progress-fill"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

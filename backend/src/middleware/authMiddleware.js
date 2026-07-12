@@ -1,24 +1,28 @@
-// Middleware for authentication and Role-Based Access Control (RBAC)
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_dev_secret';
 
 export const authenticateToken = (req, res, next) => {
-  // Mock authentication extraction (e.g. from Bearer Authorization header)
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    // In production, return 401. For local hackathon dev simplicity, fallback to guest user
-    req.user = { id: 1, email: 'admin@transitops.com', role: 'Fleet Manager' };
-    return next();
+    return res.status(401).json({ error: 'Authentication required.' });
   }
 
-  // Example verification code (mocked JWT decryption)
   try {
-    // Decode token details and mount to request body
-    // req.user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    req.user = { id: 1, email: 'admin@transitops.com', role: 'Fleet Manager' };
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = {
+      user_id: decoded.user_id,
+      email: decoded.email,
+      role: decoded.role_name,
+    };
     next();
   } catch (err) {
-    return res.status(403).json({ error: 'Token is invalid or expired.' });
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token has expired.' });
+    }
+    return res.status(403).json({ error: 'Token is invalid.' });
   }
 };
 

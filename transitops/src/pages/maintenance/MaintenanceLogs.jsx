@@ -1,255 +1,308 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { apiClient } from '../../services/apiClient';
-import StatusBadge from '../../components/ui/StatusBadge';
+import { supabase } from '../../utils/supabase';
+import { Badge } from '../../components/ui/Badge';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
 
-const prettyStatus = (status) => {
-  if (!status) return 'Unknown';
-  return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+// Live schema maintenance status names -> badge variants
+const STATUS_BADGE = {
+  PENDING: 'warning',
+  IN_PROGRESS: 'warning',
+  COMPLETED: 'success',
+  CANCELLED: 'danger',
+};
+
+// "OIL_CHANGE" -> "Oil Change"
+const pretty = (s) =>
+  (s || '').replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+
+const emptyForm = {
+  vehicle_id: '',
+  maintenance_type_id: '',
+  description: '',
+  estimated_cost: '',
+  start_date: new Date().toISOString().slice(0, 10),
+  expected_completion_date: '',
 };
 
 export const MaintenanceLogs = () => {
-  const navigate = useNavigate();
   const [logs, setLogs] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
+  const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
+  const [pageError, setPageError] = useState('');
 
-  const fetchLogs = async () => {
+  const [form, setForm] = useState(emptyForm);
+  const [formError, setFormError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [closingId, setClosingId] = useState(null);
+
+  const fetchAll = useCallback(async () => {
     setLoading(true);
-    setError('');
+    setPageError('');
     try {
-      const data = await apiClient.get('/maintenance');
-      setLogs(data || []);
+      const [logsData, vehiclesData, typesData] = await Promise.all([
+        apiClient.get('/maintenance'),
+        apiClient.get('/vehicles'),
+        supabase.from('maintenance_types').select('*').order('maintenance_type_id'),
+      ]);
+      setLogs(Array.isArray(logsData) ? logsData : []);
+      setVehicles(Array.isArray(vehiclesData) ? vehiclesData : []);
+      setTypes(typesData.data || []);
     } catch (err) {
-      setError(err.message || 'Failed to retrieve maintenance registries.');
+      setPageError(err.message);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchLogs();
   }, []);
 
-  const handleCloseLog = async (id) => {
-    const cost = window.prompt('Enter actual service cost (USD):', '250.00');
-    if (cost === null) return;
-    if (isNaN(Number(cost)) || Number(cost) < 0) {
-      return alert('Please enter a valid amount.');
+  useEffect(() => {
+    fetchAll();
+  }, [fetchAll]);
+
+  // Only Available vehicles can enter the shop (business rule)
+  const eligibleVehicles = useMemo(
+    () => vehicles.filter((v) => v.vehicle_statuses?.status_name === 'AVAILABLE'),
+    [vehicles]
+  );
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    setFormError('');
+
+    if (!form.vehicle_id) {
+      setFormError('Please select a vehicle.');
+      return;
+    }
+    if (!form.maintenance_type_id) {
+      setFormError('Please select a maintenance type.');
+      return;
+    }
+    if (form.estimated_cost !== '' && Number(form.estimated_cost) < 0) {
+      setFormError('Cost cannot be negative.');
+      return;
+    }
+    if (!form.start_date) {
+      setFormError('Please pick a start date.');
+      return;
     }
 
+    setSaving(true);
     try {
-      await apiClient.put(`/maintenance/${id}/close`, {
-        actual_cost: Number(cost),
-        actual_completion_date: new Date().toISOString().split('T')[0]
+      await apiClient.post('/maintenance', {
+        vehicle_id: Number(form.vehicle_id),
+        maintenance_type_id: Number(form.maintenance_type_id),
+        description: form.description,
+        estimated_cost: form.estimated_cost === '' ? null : Number(form.estimated_cost),
+        start_date: form.start_date,
+        expected_completion_date: form.expected_completion_date || null,
       });
-      fetchLogs();
+      setForm(emptyForm);
+      fetchAll(); // refreshes logs AND vehicle statuses (vehicle is now In Shop)
     } catch (err) {
-      alert(err.message || 'Failed to close maintenance log.');
+      setFormError(err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
-  // Filter tasks based on activeTab
-  const filteredTasks = logs.filter((task) => {
-    const status = task.maintenance_statuses?.status_name || 'PENDING';
-    if (activeTab === 'all') return true;
-    if (activeTab === 'pending') return status === 'PENDING';
-    if (activeTab === 'active') return status === 'IN_PROGRESS';
-    if (activeTab === 'completed') return status === 'COMPLETED';
-    return true;
-  });
+  const handleClose = async (log) => {
+    const typeName = pretty(log.maintenance_types?.type_name) || 'maintenance';
+    if (!window.confirm(`Close this ${typeName} record? The vehicle will return to the dispatch pool.`)) return;
+    setPageError('');
+    setClosingId(log.maintenance_id);
+    try {
+      await apiClient.put(`/maintenance/${log.maintenance_id}/close`, {});
+      fetchAll();
+    } catch (err) {
+      setPageError(err.message);
+    } finally {
+      setClosingId(null);
+    }
+  };
 
-  const activeJobs = logs.filter(l => l.maintenance_statuses?.status_name === 'IN_PROGRESS').length;
-  const pendingJobs = logs.filter(l => l.maintenance_statuses?.status_name === 'PENDING').length;
-  const totalCost = logs.reduce((sum, l) => sum + Number(l.actual_cost || l.estimated_cost || 0), 0);
+  const isOpenStatus = (log) => {
+    const s = log.maintenance_statuses?.status_name;
+    return s === 'PENDING' || s === 'IN_PROGRESS';
+  };
+
+  const selectClass =
+    'px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100';
 
   return (
-    <div className="space-y-lg">
-      
-      {/* Page Header */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-lg">
-        <div>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Maintenance Operations</h2>
-          <div className="flex items-center gap-md mt-xs">
-            <div className="flex items-center gap-xs text-primary font-medium text-body-sm">
-              <span className="w-2 h-2 bg-primary rounded-full"></span>
-              {activeJobs} Active Jobs
-            </div>
-            <div className="text-outline-variant text-body-sm">•</div>
-            <div className="text-on-surface-variant text-body-sm">{pendingJobs} Pending Requests</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-md w-full lg:w-auto">
-          <Link
-            to="/maintenance/schedule"
-            className="flex-grow lg:flex-none px-lg py-md bg-primary text-on-primary rounded-lg font-bold text-body-md flex items-center justify-center gap-sm shadow-md hover:opacity-90 transition-opacity cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-[20px]">calendar_today</span>
-            <span>Schedule Maintenance</span>
-          </Link>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Maintenance Logs</h1>
+        <p className="text-gray-500 dark:text-gray-400">
+          Opening a log moves the vehicle to <span className="font-medium">In Shop</span> and removes it from dispatch;
+          closing it restores the vehicle to <span className="font-medium">Available</span> (unless retired).
+        </p>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
-        <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30">
-          <p className="font-label-caps text-label-caps text-on-surface-variant uppercase mb-sm">Total Scheduled Tasks</p>
-          <div className="flex justify-between items-end">
-            <p className="font-kpi-lg text-kpi-lg text-on-surface">{logs.length}</p>
-          </div>
+      {pageError && (
+        <div className="px-3 py-2 rounded-md bg-red-100 text-red-800 text-sm dark:bg-red-900/30 dark:text-red-400">
+          {pageError}
         </div>
-        <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30">
-          <p className="font-label-caps text-label-caps text-on-surface-variant uppercase mb-sm">Active Jobs In Shop</p>
-          <div className="flex justify-between items-end">
-            <p className="font-kpi-lg text-kpi-lg text-on-surface">{activeJobs}</p>
-          </div>
-        </div>
-        <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30">
-          <p className="font-label-caps text-label-caps text-on-surface-variant uppercase mb-sm">Pending Request Queue</p>
-          <div className="flex justify-between items-end">
-            <p className="font-kpi-lg text-kpi-lg text-on-surface">{pendingJobs}</p>
-          </div>
-        </div>
-        <div className="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-outline-variant/30">
-          <p className="font-label-caps text-label-caps text-on-surface-variant uppercase mb-sm">Total Expenditures</p>
-          <div className="flex justify-between items-end">
-            <p className="font-kpi-lg text-kpi-lg text-on-surface">${totalCost.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-          </div>
-        </div>
-      </div>
+      )}
 
-      {/* Filters & Table */}
-      <div className="flex flex-col xl:flex-row gap-xl items-start">
-        
-        {/* Table Section */}
-        <div className="flex-1 w-full bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
-          {error && (
-            <div className="p-lg bg-error/10 text-error border-b border-error/20 font-body-sm">
-              {error}
-            </div>
-          )}
+      {/* Create form */}
+      <form
+        onSubmit={handleCreate}
+        className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-950 p-4 space-y-4"
+      >
+        <h2 className="font-semibold text-gray-900 dark:text-gray-100">New Maintenance Record</h2>
 
-          <div className="p-lg border-b border-outline-variant/30 flex flex-wrap gap-md items-center justify-between">
-            <div className="flex gap-md overflow-x-auto pb-xs lg:pb-0">
-              {[
-                { label: 'All Tasks', tab: 'all' },
-                { label: 'Pending', tab: 'pending' },
-                { label: 'Active', tab: 'active' },
-                { label: 'Completed', tab: 'completed' },
-              ].map(({ label, tab }) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-md py-sm rounded-full text-body-sm font-medium whitespace-nowrap transition-colors cursor-pointer ${
-                    activeTab === tab
-                      ? 'bg-primary text-on-primary'
-                      : 'hover:bg-surface-container-low text-on-surface-variant'
-                  }`}
-                >
-                  {label}
-                </button>
+        {formError && (
+          <div className="px-3 py-2 rounded-md bg-red-100 text-red-800 text-sm dark:bg-red-900/30 dark:text-red-400">
+            {formError}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Vehicle <span className="text-red-500">*</span>
+            </label>
+            <select name="vehicle_id" value={form.vehicle_id} onChange={handleChange} className={selectClass}>
+              <option value="">Select vehicle…</option>
+              {eligibleVehicles.map((v) => (
+                <option key={v.vehicle_id} value={v.vehicle_id}>
+                  {v.registration_number} ({v.vehicle_name})
+                </option>
               ))}
-            </div>
+            </select>
+            {eligibleVehicles.length === 0 && !loading && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">No Available vehicles right now.</span>
+            )}
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-surface-container-low">
-                <tr>
-                  <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Record / Vehicle</th>
-                  <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Service Type</th>
-                  <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Description</th>
-                  <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Scheduled Date</th>
-                  <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Status</th>
-                  <th className="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Cost Estimate</th>
-                  <th className="px-lg py-md text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-outline-variant/20">
-                {loading ? (
-                  <tr>
-                    <td colSpan={7} className="px-lg py-8 text-center text-outline italic">
-                      Loading maintenance records...
-                    </td>
-                  </tr>
-                ) : filteredTasks.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-lg py-8 text-center text-outline italic">
-                      No maintenance entries found.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredTasks.map((task) => {
-                    const status = task.maintenance_statuses?.status_name || 'PENDING';
-                    return (
-                      <tr key={task.maintenance_id} className="hover:bg-surface-bright transition-colors group">
-                        
-                        {/* Record ID / Vehicle */}
-                        <td className="px-lg py-md">
-                          <Link to={`/maintenance/${task.maintenance_id}`} className="hover:text-primary">
-                            <p className="font-body-md font-bold text-on-surface group-hover:text-primary">#MNT-{task.maintenance_id}</p>
-                            <p className="text-body-sm text-on-surface-variant">{task.vehicles?.registration_number || 'N/A'}</p>
-                          </Link>
-                        </td>
-
-                        {/* Service Type */}
-                        <td className="px-lg py-md text-body-md text-on-surface font-semibold">
-                          {prettyStatus(task.maintenance_types?.type_name)}
-                        </td>
-
-                        {/* Problem Description */}
-                        <td className="px-lg py-md text-body-sm text-on-surface-variant max-w-xs truncate" title={task.problem_description}>
-                          {task.problem_description}
-                        </td>
-
-                        {/* Date */}
-                        <td className="px-lg py-md text-body-sm text-on-surface">
-                          {task.start_date ? new Date(task.start_date).toLocaleDateString() : 'N/A'}
-                        </td>
-
-                        {/* Status */}
-                        <td className="px-lg py-md">
-                          <StatusBadge status={prettyStatus(status)} />
-                        </td>
-
-                        {/* Cost */}
-                        <td className="px-lg py-md font-body-md font-bold text-on-surface">
-                          ${Number(task.actual_cost || task.estimated_cost || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                        </td>
-
-                        {/* Actions */}
-                        <td className="px-lg py-md text-right whitespace-nowrap">
-                          {status === 'IN_PROGRESS' && (
-                            <button
-                              onClick={() => handleCloseLog(task.maintenance_id)}
-                              className="px-sm py-xs font-semibold text-primary hover:bg-primary/5 rounded mr-md transition-all cursor-pointer"
-                            >
-                              Close Job
-                            </button>
-                          )}
-                          <Link
-                            to={`/maintenance/${task.maintenance_id}`}
-                            className="px-sm py-xs font-semibold text-outline hover:bg-surface-container rounded transition-all inline-block"
-                          >
-                            Details
-                          </Link>
-                        </td>
-
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Type <span className="text-red-500">*</span>
+            </label>
+            <select name="maintenance_type_id" value={form.maintenance_type_id} onChange={handleChange} className={selectClass}>
+              <option value="">Select type…</option>
+              {types.map((t) => (
+                <option key={t.maintenance_type_id} value={t.maintenance_type_id}>
+                  {pretty(t.type_name)}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="p-lg bg-surface-container-low flex justify-between items-center">
-            <span className="text-body-sm text-on-surface-variant">
-              Showing {filteredTasks.length} of {logs.length} entries
-            </span>
-          </div>
+
+          <Input
+            label="Description"
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            placeholder="e.g. Routine oil change"
+          />
+          <Input
+            label="Estimated Cost"
+            type="number"
+            name="estimated_cost"
+            value={form.estimated_cost}
+            onChange={handleChange}
+            placeholder="e.g. 2500"
+            min="0"
+            step="any"
+          />
+          <Input
+            label="Start Date"
+            type="date"
+            name="start_date"
+            value={form.start_date}
+            onChange={handleChange}
+            required
+          />
+          <Input
+            label="Est. Completion"
+            type="date"
+            name="expected_completion_date"
+            value={form.expected_completion_date}
+            onChange={handleChange}
+          />
         </div>
 
+        <div className="flex justify-end">
+          <Button type="submit" disabled={saving || eligibleVehicles.length === 0}>
+            {saving ? 'Creating…' : 'Create Record'}
+          </Button>
+        </div>
+      </form>
+
+      {/* Logs table */}
+      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800 text-sm">
+          <thead className="bg-gray-50 dark:bg-slate-900">
+            <tr>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Vehicle</th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Type</th>
+              <th className="px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">Est. Cost</th>
+              <th className="px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">Actual Cost</th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Start Date</th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Status</th>
+              <th className="px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-slate-950">
+            {loading ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                  Loading maintenance logs…
+                </td>
+              </tr>
+            ) : logs.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                  No maintenance records yet.
+                </td>
+              </tr>
+            ) : (
+              logs.map((log) => {
+                const statusName = log.maintenance_statuses?.status_name;
+                return (
+                  <tr key={log.maintenance_id} className="hover:bg-gray-50 dark:hover:bg-slate-900/60">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                      {log.vehicles
+                        ? `${log.vehicles.registration_number} (${log.vehicles.vehicle_name})`
+                        : `Vehicle #${log.vehicle_id}`}
+                    </td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{pretty(log.maintenance_types?.type_name)}</td>
+                    <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">
+                      {log.estimated_cost != null ? Number(log.estimated_cost).toLocaleString() : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">
+                      {log.actual_cost != null ? Number(log.actual_cost).toLocaleString() : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{log.start_date}</td>
+                    <td className="px-4 py-3">
+                      <Badge status={STATUS_BADGE[statusName] || 'default'}>{pretty(statusName) || 'Unknown'}</Badge>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {isOpenStatus(log) && (
+                        <Button
+                          variant="secondary"
+                          className="!px-3 !py-1 text-xs"
+                          onClick={() => handleClose(log)}
+                          disabled={closingId === log.maintenance_id}
+                        >
+                          {closingId === log.maintenance_id ? 'Closing…' : 'Close'}
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

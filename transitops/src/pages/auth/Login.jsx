@@ -197,7 +197,7 @@ export const Login = () => {
             {/* Footer Copyright */}
             <div className="mt-lg">
               <p className="font-label-caps text-label-caps text-on-surface-variant/40">
-                © <span className="font-data-mono">2024</span> TransitOps Logistics SA. All rights reserved.
+                © <span className="font-data-mono">2026</span> TransitOps Logistics SA. All rights reserved.
               </p>
             </div>
           </div>
