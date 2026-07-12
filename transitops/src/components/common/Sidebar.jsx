@@ -1,64 +1,142 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+
+const navItems = [
+  { name: 'Dashboard', path: '/dashboard', icon: 'dashboard', roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst'] },
+  { name: 'Vehicles', path: '/vehicles', icon: 'directions_bus', roles: ['Fleet Manager', 'Financial Analyst'] },
+  { name: 'Drivers', path: '/drivers', icon: 'person_pin_circle', roles: ['Fleet Manager', 'Safety Officer'] },
+  { name: 'Trips', path: '/trips', icon: 'route', roles: ['Fleet Manager', 'Driver'] },
+  { name: 'Maintenance', path: '/maintenance', icon: 'build', roles: ['Fleet Manager'] },
+  { name: 'Expenses', path: '/expenses', icon: 'receipt_long', roles: ['Fleet Manager', 'Financial Analyst', 'Driver'] },
+  { name: 'Reports', path: '/reports', icon: 'analytics', roles: ['Fleet Manager', 'Financial Analyst'] },
+];
+
+const footerItems = [
+  { name: 'Settings', icon: 'settings' },
+  { name: 'Support', icon: 'help_outline' },
+];
 
 export const Sidebar = ({ isOpen, toggleSidebar }) => {
   const { user, logout } = useAuthStore();
 
-  const links = [
-    { name: 'Dashboard', path: '/dashboard', roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst'] },
-    { name: 'Vehicles', path: '/vehicles', roles: ['Fleet Manager', 'Financial Analyst'] },
-    { name: 'Drivers', path: '/drivers', roles: ['Fleet Manager', 'Safety Officer'] },
-    { name: 'Trips', path: '/trips', roles: ['Fleet Manager', 'Driver'] },
-    { name: 'Maintenance', path: '/maintenance', roles: ['Fleet Manager'] },
-    { name: 'Expenses', path: '/expenses', roles: ['Fleet Manager', 'Financial Analyst', 'Driver'] },
-    { name: 'Reports', path: '/reports', roles: ['Fleet Manager', 'Financial Analyst'] }
-  ];
-
   const userRole = user?.role || 'Guest';
 
-  // Filter links by role permissions
-  const filteredLinks = links.filter(link => link.roles.includes(userRole));
+  const filteredNav = navItems.filter(
+    (item) => item.roles.includes(userRole)
+  );
 
   return (
-    <div className={`fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-slate-100 transform ${isOpen ? 'translate-x-0' : '-translate-x-0'} transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:flex md:flex-col border-r border-slate-800`}>
-      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
-        <h1 className="text-xl font-bold tracking-wider text-indigo-400">TransitOps</h1>
-        <button onClick={toggleSidebar} className="md:hidden text-slate-300 hover:text-white">
-          ✕
-        </button>
-      </div>
+    <>
+      {/* Backdrop for mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
 
-      <div className="flex-1 px-4 py-6 overflow-y-auto space-y-1">
-        {filteredLinks.map(link => (
-          <NavLink
-            key={link.path}
-            to={link.path}
-            className={({ isActive }) => `flex items-center px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${isActive ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'}`}
+      {/* SideNavBar Shell */}
+      <aside
+        className={`
+          fixed left-0 top-0 h-full w-[260px] bg-inverse-surface flex flex-col py-lg px-md z-50
+          transition-all duration-300
+          md:static md:translate-x-0
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        {/* Brand Identity */}
+        <div className="flex items-center gap-md mb-3xl px-sm">
+          <div className="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary-container">
+            <span className="material-symbols-outlined text-2xl">directions_bus</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-headline-md text-headline-md font-bold text-surface-container-lowest leading-none">
+              TransitOps
+            </span>
+            <span className="font-body-sm text-body-sm text-on-surface-variant opacity-60">
+              Fleet Management
+            </span>
+          </div>
+          <button
+            onClick={toggleSidebar}
+            className="ml-auto text-on-surface-variant hover:text-surface-container-lowest md:hidden"
           >
-            {link.name}
-          </NavLink>
-        ))}
-      </div>
-
-      <div className="p-4 border-t border-slate-800">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white uppercase">
-            {user?.email?.charAt(0) || 'U'}
-          </div>
-          <div className="overflow-hidden">
-            <p className="text-sm font-medium truncate">{user?.email || 'admin@transitops.com'}</p>
-            <p className="text-xs text-indigo-400 font-semibold">{userRole}</p>
-          </div>
+            <span className="material-symbols-outlined text-[20px]">close</span>
+          </button>
         </div>
-        <button
-          onClick={logout}
-          className="w-full px-4 py-2 rounded-md bg-slate-800 text-sm font-medium hover:bg-red-900/40 hover:text-red-200 transition-colors text-center block"
-        >
-          Sign Out
-        </button>
-      </div>
-    </div>
+
+        {/* Navigation Tabs */}
+        <nav className="flex-1 space-y-xs">
+          {filteredNav.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === '/dashboard'}
+              onClick={toggleSidebar}
+              className={({ isActive }) =>
+                `nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group ${
+                  isActive
+                    ? 'text-surface-container-lowest border-l-4 border-secondary font-bold bg-surface-variant/5'
+                    : 'text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <span
+                    className={`material-symbols-outlined ${isActive ? 'text-primary' : ''} group-hover:text-primary-fixed-dim`}
+                    style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                  >
+                    {item.icon}
+                  </span>
+                  <span className="font-body-md">{item.name}</span>
+                </>
+              )}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* Footer Actions */}
+        <div className="mt-auto pt-lg border-t border-surface-variant/10 space-y-xs">
+          {footerItems.map((item) => (
+            <span
+              key={item.name}
+              className="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98] cursor-pointer"
+            >
+              <span className="material-symbols-outlined group-hover:text-primary-fixed-dim">
+                {item.icon}
+              </span>
+              <span className="font-body-md">{item.name}</span>
+            </span>
+          ))}
+
+          {/* User Profile */}
+          <div className="flex items-center gap-md px-md py-sm mt-lg">
+            <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center font-bold text-on-primary-container uppercase">
+              {user?.email?.charAt(0) || 'U'}
+            </div>
+            <div className="overflow-hidden">
+              <p className="font-body-sm font-medium truncate text-surface-container-lowest">
+                {user?.email || 'admin@transitops.com'}
+              </p>
+              <p className="font-label-caps text-label-caps text-primary-fixed-dim">
+                {userRole}
+              </p>
+            </div>
+          </div>
+
+          {/* Sign Out */}
+          <button
+            onClick={logout}
+            className="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg w-full text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]"
+          >
+            <span className="material-symbols-outlined">logout</span>
+            <span className="font-body-md">Sign Out</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 };
+
 export default Sidebar;

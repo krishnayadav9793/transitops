@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Production
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Mac
+.DS_Store
+
+# VS Code
+.vscode/
+
+# IDE
+.idea/
+
+# Cache
+.cache/
+.vite/
+
+# Coverage
+coverage/

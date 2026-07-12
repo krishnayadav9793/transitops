@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/common/Layout';
 import ProtectedRoute from './routes/protectedRoute';
 
@@ -12,11 +12,15 @@ import TripList from './pages/trips/TripList';
 import MaintenanceLogs from './pages/maintenance/MaintenanceLogs';
 import ExpenseLedger from './pages/expenses/ExpenseLedger';
 import AnalyticsReports from './pages/reports/AnalyticsReports';
+import VehicleDetails from './pages/vehicles/VehicleDetails';
+import DriverProfile from './pages/drivers/DriverProfile';
+import TripDetails from './pages/trips/TripDetails';
+import MaintenanceDetails from './pages/maintenance/MaintenanceDetails';
+import ScheduleMaintenance from './pages/maintenance/ScheduleMaintenance';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <Routes>
         {/* Auth Route */}
         <Route path="/login" element={<Login />} />
 
@@ -43,6 +47,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="vehicles/:id"
+            element={
+              <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
+                <VehicleDetails />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Drivers (Manager, Safety) */}
           <Route
@@ -50,6 +62,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['Fleet Manager', 'Safety Officer']}>
                 <DriverList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="drivers/:id"
+            element={
+              <ProtectedRoute allowedRoles={['Fleet Manager', 'Safety Officer']}>
+                <DriverProfile />
               </ProtectedRoute>
             }
           />
@@ -63,6 +83,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="trips/:id"
+            element={
+              <ProtectedRoute allowedRoles={['Fleet Manager', 'Driver']}>
+                <TripDetails />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Maintenance (Manager) */}
           <Route
@@ -70,6 +98,22 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['Fleet Manager']}>
                 <MaintenanceLogs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="maintenance/schedule"
+            element={
+              <ProtectedRoute allowedRoles={['Fleet Manager']}>
+                <ScheduleMaintenance />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="maintenance/:id"
+            element={
+              <ProtectedRoute allowedRoles={['Fleet Manager']}>
+                <MaintenanceDetails />
               </ProtectedRoute>
             }
           />
@@ -98,7 +142,6 @@ function App() {
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
-    </BrowserRouter>
   );
 }
 
