@@ -2,7 +2,6 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/common/Layout';
 import ProtectedRoute from './routes/protectedRoute';
-
 // Page imports
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -24,17 +23,19 @@ function App() {
         {/* Auth Route */}
         <Route path="/login" element={<Login />} />
 
-        {/* Dashboard and Core App routes wrapped in Layout */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          {/* Default Redirect to Dashboard */}
-          <Route index element={<Navigate to="/dashboard" replace />} />
+      
+      <Route path="/" element={<Layout />}>
+        
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="vehicles" element={<VehicleList />} />
+        <Route path="drivers" element={<DriverList />} />
+        <Route path="trips" element={<TripList />} />
+        <Route path="maintenance" element={<MaintenanceLogs />} />
+        <Route path="expenses" element={<ExpenseLedger />} />
+        <Route path="reports" element={<AnalyticsReports />} />
+      </Route>
 
           <Route path="dashboard" element={<Dashboard />} />
 
@@ -137,7 +138,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-        </Route>
+       
 
         {/* Fallback route */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
@@ -146,4 +147,3 @@ function App() {
 }
 
 export default App;
-

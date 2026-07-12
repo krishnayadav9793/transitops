@@ -1,8 +1,10 @@
 import express from 'express';
 import { configDotenv } from 'dotenv';
 import cors from 'cors';
+import http from 'http';
 import apiRouter from './src/routes/index.js';
 import { errorHandler } from './src/middleware/errorMiddleware.js';
+import { initWebSocket } from './src/config/socket.js';
 
 configDotenv();
 
@@ -19,12 +21,16 @@ app.get("/", (req, res) => {
 });
 
 
-app.use('/api', apiRouter);
-
-
 app.use(errorHandler);
 
+
+const server = http.createServer(app);
+
+
+initWebSocket(server);
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`[TransitOps Server] running on http://localhost:${PORT}`);
 });
+
