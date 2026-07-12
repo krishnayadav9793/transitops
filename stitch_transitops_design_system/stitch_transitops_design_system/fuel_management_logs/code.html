@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps | Fuel &amp; Expenses Management</title>
+<!-- Google Fonts: Sora (Headlines), Inter (Body), IBM Plex Sans (KPIs) -->
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&amp;family=Inter:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#191c1a",
+                    "on-background": "#191c1a",
+                    "inverse-primary": "#95d4b3",
+                    "secondary": "#86530d",
+                    "on-primary-container": "#a8e7c5",
+                    "on-error-container": "#93000a",
+                    "surface-variant": "#e1e3df",
+                    "surface-container-high": "#e7e9e5",
+                    "on-tertiary-container": "#dbd8dc",
+                    "surface-container": "#eceeea",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#2b1700",
+                    "on-primary-fixed-variant": "#0e5138",
+                    "primary": "#0f5238",
+                    "primary-fixed": "#b1f0ce",
+                    "background": "#f8faf6",
+                    "primary-container": "#2d6a4f",
+                    "on-secondary": "#ffffff",
+                    "surface-container-highest": "#e1e3df",
+                    "tertiary": "#47474a",
+                    "surface-tint": "#2c694e",
+                    "tertiary-fixed": "#e4e1e6",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#47464a",
+                    "secondary-container": "#fdb96c",
+                    "on-tertiary-fixed": "#1b1b1e",
+                    "outline-variant": "#bfc9c1",
+                    "inverse-surface": "#2e312f",
+                    "tertiary-container": "#5f5e62",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#c8c5ca",
+                    "secondary-fixed": "#ffddbb",
+                    "secondary-fixed-dim": "#fdb96c",
+                    "on-secondary-container": "#774700",
+                    "surface-container-low": "#f2f4f0",
+                    "surface": "#f8faf6",
+                    "on-secondary-fixed-variant": "#673d00",
+                    "outline": "#707973",
+                    "primary-fixed-dim": "#95d4b3",
+                    "inverse-on-surface": "#eff1ed",
+                    "surface-dim": "#d8dbd7",
+                    "on-primary-fixed": "#002114",
+                    "surface-bright": "#f8faf6",
+                    "on-surface-variant": "#404943",
+                    "on-primary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "3xl": "64px",
+                    "xs": "4px",
+                    "container-max": "1440px",
+                    "sm": "8px",
+                    "lg": "24px",
+                    "sidebar-width": "260px",
+                    "2xl": "48px",
+                    "xl": "32px",
+                    "md": "16px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Sora"],
+                    "label-caps": ["Inter"],
+                    "headline-lg": ["Sora"],
+                    "headline-sm": ["Sora"],
+                    "display-lg": ["Sora"],
+                    "body-md": ["Inter"],
+                    "kpi-lg": ["IBM Plex Sans"],
+                    "kpi-md": ["IBM Plex Sans"]
+            },
+            "fontSize": {
+                    "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "kpi-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "kpi-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #f8faf6; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .table-row-hover:hover { background-color: rgba(45, 106, 79, 0.04); }
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(225, 227, 223, 0.5); }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- Side Navigation Shell -->
+<nav class="fixed left-0 top-0 h-full w-[260px] bg-inverse-surface dark:bg-on-surface flex flex-col py-md shadow-md z-40">
+<div class="px-lg mb-3xl">
+<h1 class="font-headline-sm text-headline-sm font-bold text-white tracking-tight">TransitOps</h1>
+<p class="text-[10px] text-primary-fixed-dim uppercase tracking-widest font-bold opacity-70">Enterprise Logistics</p>
+</div>
+<div class="flex-1 overflow-y-auto px-sm space-y-1">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-variant/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-variant/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">directions_bus</span>
+<span class="font-body-sm text-body-sm">Fleet</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-variant/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-sm text-body-sm">Drivers</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-variant/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">route</span>
+<span class="font-body-sm text-body-sm">Trips</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-variant/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="font-body-sm text-body-sm">Maintenance</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-white border-l-4 border-secondary-container bg-surface-variant/10 translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined">local_gas_station</span>
+<span class="font-body-sm text-body-sm">Fuel &amp; Expenses</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-variant/5 transition-colors group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+</div>
+<div class="px-sm pt-xl border-t border-white/10 mt-auto">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-variant/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-variant/5 transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-sm text-body-sm">Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-[260px] min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center w-full px-lg py-sm bg-surface shadow-sm z-30 sticky top-0 border-b border-surface-variant/50">
+<div class="flex items-center gap-xl">
+<div class="flex items-center text-on-surface-variant gap-xs font-body-md text-body-md">
+<span>Fleet</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-primary font-bold">Fuel &amp; Expenses</span>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<div class="relative flex items-center bg-surface-container-low px-md py-xs rounded-full border border-outline-variant focus-within:ring-2 focus-within:ring-primary-container transition-all">
+<span class="material-symbols-outlined text-outline">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm font-body-sm w-64 placeholder:text-outline" placeholder="Search registration or logs..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all">help_outline</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a corporate logistics executive in a modern, sunlit office. The image has a clean, high-key aesthetic with soft shadows and a neutral color palette. The executive wears a minimalist grey blazer and looks confidently towards the camera, reflecting an atmosphere of authoritative professional management and precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_WVUEcjKJg8wtiBrTap_pH5WKccN8J2rl5GmkaRkFjHoUGQjyy51ujvOvt2DUkdVCIxZuiX3fROQ4jw3rWsq4lyuk5BLuszS89XtTyJxbkatsLJGcsei2Bp3RtFonmus3EkFsiCEm7NEkMhhvxPhq6hlFw0Dv1fFcIfaWF1x2wmuD1jpyo_84s3NRYYgAZT1g-QjOY4fACW8PTiQGlq7R-6JTX4-IUccDVwt35uS16GyxWNZWOCD-q-K1PLvLsRhj5vGfqoEdSUEF"/>
+</div>
+</div>
+</header>
+<!-- Page Header Content -->
+<div class="px-xl py-lg flex justify-between items-end">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-semibold">Fuel Management</h2>
+<p class="text-on-surface-variant font-body-md text-body-md mt-xs">Detailed oversight of fleet fuel consumption and efficiency metrics.</p>
+</div>
+<button class="bg-primary-container text-white px-lg py-sm rounded-lg flex items-center gap-sm font-body-md font-semibold shadow-sm hover:opacity-90 transition-all" onclick="toggleSideForm(true)">
+<span class="material-symbols-outlined">add</span>
+                Log Fuel Entry
+            </button>
+</div>
+<!-- KPI Bento Grid Section -->
+<div class="px-xl grid grid-cols-1 md:grid-cols-4 gap-lg mb-xl">
+<div class="bg-white p-lg rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+<div>
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase">Avg. Efficiency</span>
+<div class="flex items-baseline gap-xs mt-xs">
+<span class="font-kpi-lg text-kpi-lg text-primary">8.4</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">L/100km</span>
+</div>
+</div>
+<div class="flex items-center gap-xs mt-sm text-primary text-body-sm font-semibold">
+<span class="material-symbols-outlined text-sm">trending_down</span>
+<span>2.4% vs last month</span>
+</div>
+</div>
+<div class="bg-white p-lg rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+<div>
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase">Total Spend (MTD)</span>
+<div class="flex items-baseline gap-xs mt-xs">
+<span class="font-kpi-lg text-kpi-lg text-on-surface">$14,280</span>
+</div>
+</div>
+<div class="flex items-center gap-xs mt-sm text-error text-body-sm font-semibold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>12% inflation impact</span>
+</div>
+</div>
+<div class="bg-white p-lg rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between">
+<div>
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase">Total Volume</span>
+<div class="flex items-baseline gap-xs mt-xs">
+<span class="font-kpi-lg text-kpi-lg text-on-surface">12,450</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">Liters</span>
+</div>
+</div>
+<div class="flex items-center gap-xs mt-sm text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-sm">event</span>
+<span>August Period</span>
+</div>
+</div>
+<div class="bg-white p-lg rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between border-l-4 border-secondary-container">
+<div>
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase">Critical Alerts</span>
+<div class="flex items-baseline gap-xs mt-xs text-secondary">
+<span class="font-kpi-lg text-kpi-lg">03</span>
+<span class="text-body-sm font-body-sm">High Deviation</span>
+</div>
+</div>
+<a class="text-secondary font-semibold text-body-sm underline decoration-secondary/30 mt-sm" href="#">Review Logs</a>
+</div>
+</div>
+<!-- Table Container -->
+<div class="px-xl pb-2xl">
+<div class="bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
+<!-- Table Filters -->
+<div class="flex items-center justify-between px-lg py-md border-b border-surface-variant/50">
+<div class="flex gap-md">
+<div class="relative">
+<select class="appearance-none bg-surface-container-low border border-outline-variant rounded-lg pl-md pr-8 py-sm font-body-sm text-body-sm text-on-surface focus:ring-primary-container focus:border-primary-container min-w-[140px]">
+<option>All Vehicles</option>
+<option>Bus #102</option>
+<option>Truck #044</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-base">expand_more</span>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface-container-low border border-outline-variant rounded-lg pl-md pr-8 py-sm font-body-sm text-body-sm text-on-surface focus:ring-primary-container focus:border-primary-container min-w-[140px]">
+<option>This Month</option>
+<option>Last Month</option>
+<option>Custom Range</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-base">calendar_today</span>
+</div>
+</div>
+<div class="flex gap-sm">
+<button class="flex items-center gap-xs px-md py-sm rounded-lg border border-outline-variant text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-variant/20 transition-all">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                            Export
+                        </button>
+<button class="flex items-center gap-xs px-md py-sm rounded-lg border border-outline-variant text-body-sm font-body-sm text-on-surface-variant hover:bg-surface-variant/20 transition-all">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                            More Filters
+                        </button>
+</div>
+</div>
+<!-- Main Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low/50">
+<tr>
+<th class="px-lg py-md text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">Registration</th>
+<th class="px-lg py-md text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">Date</th>
+<th class="px-lg py-md text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">Liters</th>
+<th class="px-lg py-md text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">Mileage (Odometer)</th>
+<th class="px-lg py-md text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">Station</th>
+<th class="px-lg py-md text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">Unit Price</th>
+<th class="px-lg py-md text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">Total Cost</th>
+<th class="px-lg py-md text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">Efficiency</th>
+<th class="px-lg py-md text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant/30">
+<!-- Row 1 -->
+<tr class="table-row-hover transition-all">
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center text-primary font-bold text-[10px]">BUS</div>
+<span class="font-body-md text-body-md font-semibold">TX-9902</span>
+</div>
+</td>
+<td class="px-lg py-md font-body-md text-body-md">Oct 12, 2023 <span class="text-on-surface-variant text-[11px] block">09:14 AM</span></td>
+<td class="px-lg py-md font-body-md text-body-md">120.50 L</td>
+<td class="px-lg py-md font-body-md text-body-md">145,230 km</td>
+<td class="px-lg py-md font-body-md text-body-md">Shell Express North</td>
+<td class="px-lg py-md font-body-md text-body-md">$1.84</td>
+<td class="px-lg py-md font-body-md text-body-md font-semibold text-primary">$221.72</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-sm py-xs rounded bg-[#f1f8f6] text-primary text-[11px] font-bold">7.8 L/100km</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="material-symbols-outlined text-outline hover:text-on-surface transition-all">more_vert</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="table-row-hover transition-all">
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-secondary-fixed flex items-center justify-center text-secondary font-bold text-[10px]">TRK</div>
+<span class="font-body-md text-body-md font-semibold">LR-1104</span>
+</div>
+</td>
+<td class="px-lg py-md font-body-md text-body-md">Oct 12, 2023 <span class="text-on-surface-variant text-[11px] block">07:45 AM</span></td>
+<td class="px-lg py-md font-body-md text-body-md">450.00 L</td>
+<td class="px-lg py-md font-body-md text-body-md">82,144 km</td>
+<td class="px-lg py-md font-body-md text-body-md">BP Logistics Hub</td>
+<td class="px-lg py-md font-body-md text-body-md">$1.82</td>
+<td class="px-lg py-md font-body-md text-body-md font-semibold text-primary">$819.00</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-sm py-xs rounded bg-[#fef5ec] text-secondary text-[11px] font-bold">12.2 L/100km</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="material-symbols-outlined text-outline hover:text-on-surface transition-all">more_vert</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="table-row-hover transition-all bg-error-container/5">
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center text-primary font-bold text-[10px]">BUS</div>
+<span class="font-body-md text-body-md font-semibold">TX-4401</span>
+</div>
+</td>
+<td class="px-lg py-md font-body-md text-body-md">Oct 11, 2023 <span class="text-on-surface-variant text-[11px] block">04:20 PM</span></td>
+<td class="px-lg py-md font-body-md text-body-md">85.20 L</td>
+<td class="px-lg py-md font-body-md text-body-md">210,500 km</td>
+<td class="px-lg py-md font-body-md text-body-md">City Central Fuel</td>
+<td class="px-lg py-md font-body-md text-body-md">$1.95</td>
+<td class="px-lg py-md font-body-md text-body-md font-semibold text-primary">$166.14</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-sm py-xs rounded bg-error-container text-error text-[11px] font-bold">14.5 L/100km</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="material-symbols-outlined text-error transition-all">warning</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="table-row-hover transition-all">
+<td class="px-lg py-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center text-primary font-bold text-[10px]">BUS</div>
+<span class="font-body-md text-body-md font-semibold">TX-9822</span>
+</div>
+</td>
+<td class="px-lg py-md font-body-md text-body-md">Oct 11, 2023 <span class="text-on-surface-variant text-[11px] block">11:02 AM</span></td>
+<td class="px-lg py-md font-body-md text-body-md">115.00 L</td>
+<td class="px-lg py-md font-body-md text-body-md">34,550 km</td>
+<td class="px-lg py-md font-body-md text-body-md">Shell Express West</td>
+<td class="px-lg py-md font-body-md text-body-md">$1.84</td>
+<td class="px-lg py-md font-body-md text-body-md font-semibold text-primary">$211.60</td>
+<td class="px-lg py-md">
+<span class="inline-flex items-center px-sm py-xs rounded bg-[#f1f8f6] text-primary text-[11px] font-bold">8.1 L/100km</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="material-symbols-outlined text-outline hover:text-on-surface transition-all">more_vert</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination -->
+<div class="flex items-center justify-between px-lg py-md border-t border-surface-variant/50">
+<span class="text-body-sm text-on-surface-variant">Showing <span class="font-bold text-on-surface">1 - 4</span> of 142 entries</span>
+<div class="flex gap-xs">
+<button class="p-xs rounded border border-outline-variant text-on-surface-variant hover:bg-surface-variant/20 disabled:opacity-30"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="px-sm py-xs rounded bg-primary-container text-white text-body-sm font-bold">1</button>
+<button class="px-sm py-xs rounded border border-outline-variant text-on-surface-variant hover:bg-surface-variant/20 text-body-sm font-semibold">2</button>
+<button class="px-sm py-xs rounded border border-outline-variant text-on-surface-variant hover:bg-surface-variant/20 text-body-sm font-semibold">3</button>
+<button class="p-xs rounded border border-outline-variant text-on-surface-variant hover:bg-surface-variant/20"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Slide-over 'Log Fuel' Form Overlay -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity opacity-0 pointer-events-none duration-300" id="form-overlay">
+<div class="absolute right-0 top-0 h-full w-full max-w-md glass-panel translate-x-full transition-transform duration-300 ease-out shadow-2xl flex flex-col" id="form-panel">
+<!-- Form Header -->
+<div class="px-lg py-xl border-b border-surface-variant/50 flex items-center justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Log Fuel Entry</h3>
+<p class="text-body-sm text-on-surface-variant mt-xs">Record fuel purchase and odometer data.</p>
+</div>
+<button class="p-sm rounded-full hover:bg-surface-variant/20 transition-all text-on-surface-variant" onclick="toggleSideForm(false)">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Form Body -->
+<div class="flex-1 overflow-y-auto px-lg py-xl space-y-lg scrollbar-hide">
+<div class="space-y-sm">
+<label class="font-body-sm text-body-sm font-semibold text-on-surface-variant block">Vehicle</label>
+<div class="relative">
+<select class="w-full appearance-none bg-white border border-outline-variant rounded-lg px-md py-sm font-body-md text-on-surface focus:ring-2 focus:ring-primary-container focus:border-primary-container">
+<option value="">Select a vehicle...</option>
+<option>TX-9902 (Transit Bus)</option>
+<option>LR-1104 (Freight Truck)</option>
+<option>TX-4401 (Transit Bus)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">directions_bus</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div class="space-y-sm">
+<label class="font-body-sm text-body-sm font-semibold text-on-surface-variant block">Date</label>
+<input class="w-full bg-white border border-outline-variant rounded-lg px-md py-sm font-body-md text-on-surface focus:ring-2 focus:ring-primary-container" type="date"/>
+</div>
+<div class="space-y-sm">
+<label class="font-body-sm text-body-sm font-semibold text-on-surface-variant block">Time</label>
+<input class="w-full bg-white border border-outline-variant rounded-lg px-md py-sm font-body-md text-on-surface focus:ring-2 focus:ring-primary-container" type="time"/>
+</div>
+</div>
+<div class="space-y-sm">
+<label class="font-body-sm text-body-sm font-semibold text-on-surface-variant block">Station Name</label>
+<input class="w-full bg-white border border-outline-variant rounded-lg px-md py-sm font-body-md text-on-surface focus:ring-2 focus:ring-primary-container" placeholder="e.g. Shell North Central" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div class="space-y-sm">
+<label class="font-body-sm text-body-sm font-semibold text-on-surface-variant block">Liters</label>
+<div class="relative">
+<input class="w-full bg-white border border-outline-variant rounded-lg pl-md pr-12 py-sm font-body-md text-on-surface focus:ring-2 focus:ring-primary-container" placeholder="0.00" step="0.01" type="number"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-body-sm font-bold text-outline">L</span>
+</div>
+</div>
+<div class="space-y-sm">
+<label class="font-body-sm text-body-sm font-semibold text-on-surface-variant block">Odometer</label>
+<div class="relative">
+<input class="w-full bg-white border border-outline-variant rounded-lg pl-md pr-12 py-sm font-body-md text-on-surface focus:ring-2 focus:ring-primary-container" placeholder="Current km" type="number"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-body-sm font-bold text-outline">KM</span>
+</div>
+</div>
+</div>
+<div class="space-y-sm">
+<label class="font-body-sm text-body-sm font-semibold text-on-surface-variant block">Total Cost</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-body-md font-bold text-on-surface">$</span>
+<input class="w-full bg-white border border-outline-variant rounded-lg pl-8 pr-md py-sm font-body-md font-bold text-primary focus:ring-2 focus:ring-primary-container" placeholder="0.00" step="0.01" type="number"/>
+</div>
+</div>
+<div class="p-md rounded-lg bg-surface-container-low border border-outline-variant/50">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">auto_graph</span>
+<span class="font-body-sm text-body-sm font-semibold">Estimated Efficiency: </span>
+<span class="font-body-sm text-body-sm text-primary font-bold ml-auto">-- L/100km</span>
+</div>
+</div>
+</div>
+<!-- Form Footer -->
+<div class="p-lg border-t border-surface-variant/50 flex gap-md">
+<button class="flex-1 px-lg py-sm rounded-lg border border-outline-variant font-body-md font-semibold text-on-surface hover:bg-surface-variant/20 transition-all" onclick="toggleSideForm(false)">Cancel</button>
+<button class="flex-1 px-lg py-sm rounded-lg bg-primary-container text-white font-body-md font-semibold hover:opacity-90 transition-all shadow-sm">Save Log</button>
+</div>
+</div>
+</div>
+<script>
+        function toggleSideForm(show) {
+            const overlay = document.getElementById('form-overlay');
+            const panel = document.getElementById('form-panel');
+            if (show) {
+                overlay.classList.remove('pointer-events-none', 'opacity-0');
+                overlay.classList.add('opacity-100');
+                panel.classList.remove('translate-x-full');
+            } else {
+                overlay.classList.add('opacity-0');
+                overlay.classList.remove('opacity-100');
+                panel.classList.add('translate-x-full');
+                setTimeout(() => overlay.classList.add('pointer-events-none'), 300);
+            }
+        }
+
+        // Close form on backdrop click
+        document.getElementById('form-overlay').addEventListener('click', function(e) {
+            if (e.target === this) toggleSideForm(false);
+        });
+
+        // Micro-interactions for table rows
+        document.querySelectorAll('tr.table-row-hover').forEach(row => {
+            row.addEventListener('click', () => {
+                // Future Detail View trigger logic
+                console.log('Row clicked');
+            });
+        });
+    </script>
+</body></html>

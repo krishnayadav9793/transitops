@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps | Fleet Management Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#2b1700",
+                        "primary-container": "#2d6a4f",
+                        "surface-dim": "#dadad8",
+                        "on-surface-variant": "#404943",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#1a1c1b",
+                        "surface-container-highest": "#e2e3e1",
+                        "inverse-primary": "#95d4b3",
+                        "surface": "#f9f9f7",
+                        "on-tertiary-container": "#dbd8dc",
+                        "tertiary-fixed-dim": "#c8c5ca",
+                        "primary-fixed-dim": "#95d4b3",
+                        "inverse-surface": "#2f3130",
+                        "outline": "#707973",
+                        "surface-container-high": "#e8e8e6",
+                        "on-primary-container": "#a8e7c5",
+                        "on-primary": "#ffffff",
+                        "primary": "#0f5238",
+                        "outline-variant": "#bfc9c1",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#f9f9f7",
+                        "background": "#f9f9f7",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "on-primary-fixed": "#002114",
+                        "on-surface": "#1a1c1b",
+                        "tertiary": "#47474a",
+                        "tertiary-fixed": "#e4e1e6",
+                        "secondary-fixed-dim": "#fdb96c",
+                        "secondary-container": "#fdb96c",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#f1f1ef",
+                        "tertiary-container": "#5f5e62",
+                        "surface-variant": "#e2e3e1",
+                        "secondary": "#86530d",
+                        "surface-tint": "#2c694e",
+                        "on-tertiary-fixed": "#1b1b1e",
+                        "on-tertiary-fixed-variant": "#47464a",
+                        "surface-container-low": "#f4f4f2",
+                        "secondary-fixed": "#ffddbb",
+                        "surface-container": "#eeeeec",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#673d00",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#b1f0ce",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#774700"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "sidebar-width": "280px",
+                        "2xl": "48px",
+                        "3xl": "64px",
+                        "container-max": "1440px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "lg": "24px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "kpi-value": ["IBM Plex Sans"],
+                        "label-caps": ["Inter"],
+                        "data-mono": ["IBM Plex Sans"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Sora"],
+                        "display-lg": ["Sora"],
+                        "display-lg-mobile": ["Sora"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "kpi-value": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f9f9f7;
+            color: #1a1c1b;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .custom-shadow-sm {
+            box-shadow: 0px 4px 20px rgba(45, 106, 79, 0.04);
+        }
+
+        .custom-shadow-md {
+            box-shadow: 0px 12px 32px rgba(45, 106, 79, 0.08);
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Status Badge Variants */
+        .badge-in-transit { background-color: rgba(15, 82, 56, 0.1); color: #0f5238; }
+        .badge-loading { background-color: rgba(134, 83, 13, 0.1); color: #86530d; }
+        .badge-maintenance { background-color: rgba(186, 26, 26, 0.1); color: #ba1a1a; }
+        .badge-idle { background-color: rgba(71, 71, 74, 0.1); color: #47474a; }
+
+        .sidebar-active {
+            border-left: 4px solid #95d4b3;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="overflow-hidden">
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar-width bg-inverse-surface flex flex-col py-lg z-50">
+<div class="px-lg mb-xl">
+<h1 class="text-headline-md font-headline-md font-bold text-surface-container-lowest leading-tight">TransitOps</h1>
+<p class="text-body-sm font-body-sm text-surface-variant/60">Enterprise Logistics</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="sidebar-active flex items-center gap-3 px-6 py-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span class="text-body-sm font-body-sm">Fleet Management</span>
+</a>
+<a class="text-surface-variant/80 hover:text-white hover:bg-white/5 flex items-center gap-3 px-6 py-3 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+<span class="text-body-sm font-body-sm">Driver Dispatch</span>
+</a>
+<a class="text-surface-variant/80 hover:text-white hover:bg-white/5 flex items-center gap-3 px-6 py-3 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="build">build</span>
+<span class="text-body-sm font-body-sm">Maintenance</span>
+</a>
+<a class="text-surface-variant/80 hover:text-white hover:bg-white/5 flex items-center gap-3 px-6 py-3 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="local_gas_station">local_gas_station</span>
+<span class="text-body-sm font-body-sm">Fuel Tracking</span>
+</a>
+<a class="text-surface-variant/80 hover:text-white hover:bg-white/5 flex items-center gap-3 px-6 py-3 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-body-sm font-body-sm">Analytics</span>
+</a>
+</nav>
+<div class="px-6 mb-md">
+<button class="w-full bg-primary py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 hover:bg-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                New Dispatch
+            </button>
+</div>
+<div class="border-t border-white/10 pt-md space-y-1">
+<a class="text-surface-variant/80 hover:text-white hover:bg-white/5 flex items-center gap-3 px-6 py-3 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-body-sm font-body-sm">Settings</span>
+</a>
+<a class="text-surface-variant/80 hover:text-white hover:bg-white/5 flex items-center gap-3 px-6 py-3 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="text-body-sm font-body-sm">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-lg z-40">
+<div class="flex items-center gap-4 bg-surface-container-low px-4 py-2 rounded-full w-96">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-full" placeholder="Search vehicles, drivers, or alerts..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors relative">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="apps">apps</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="text-body-sm font-semibold">Administrator</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Fleet Lead</p>
+</div>
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a middle-aged logistics administrator with a clean-cut appearance, wearing a dark navy corporate polo shirt. The background is a blurred high-tech logistics center with soft green and amber lights. The image has a crisp, professional commercial photography style with soft rim lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjv9irMITj00qgeTH4gI-MfPob5eZLYjBACIcxfB3h3WuEN94iBIzKx4ugtxOI-wvwXaN7ucX-_lL7xz15J_B1-Tsb8HBCFEx5wEGRFLYOQ3MUxNquJSYjRCaZbIrsppJrdGHK1HB-bXhZMzquGBAxNINRD6RDNsm3614k8EtOoDjnXfT73s24VJDdf2TdGxjo3dodbN9M9R8LuZcZB0x02manEIFzsSgfQ1RvPcr9TqazzvMt8Z3mvAln6dW3lh6UpnicsxBLQQsW"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Dashboard Content -->
+<div class="mt-16 p-lg space-y-lg overflow-y-auto h-[calc(100vh-64px)]">
+<!-- Top Row: Metric Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-lg">
+<!-- Total Fleet -->
+<div class="bg-white p-lg rounded-xl custom-shadow-sm border border-outline-variant/30 transition-transform hover:scale-[1.02] duration-300">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-widest">Total Fleet</span>
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-kpi-value font-kpi-value">1,248</span>
+<span class="text-body-sm font-medium text-primary-container">+4.2%</span>
+</div>
+<div class="mt-2 w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%]"></div>
+</div>
+</div>
+<!-- Active Vehicles -->
+<div class="bg-white p-lg rounded-xl custom-shadow-sm border border-outline-variant/30 transition-transform hover:scale-[1.02] duration-300">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-widest">Active Now</span>
+<span class="material-symbols-outlined text-secondary" data-icon="sensors">sensors</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-kpi-value font-kpi-value">912</span>
+<span class="text-body-sm font-medium text-secondary-container">73% cap.</span>
+</div>
+<div class="mt-2 w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[73%]"></div>
+</div>
+</div>
+<!-- Idle Assets -->
+<div class="bg-white p-lg rounded-xl custom-shadow-sm border border-outline-variant/30 transition-transform hover:scale-[1.02] duration-300">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-widest">Idle Assets</span>
+<span class="material-symbols-outlined text-tertiary" data-icon="hourglass_empty">hourglass_empty</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-kpi-value font-kpi-value">214</span>
+<span class="text-body-sm font-medium text-on-surface-variant/60">-12 this week</span>
+</div>
+<div class="mt-2 w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[17%]"></div>
+</div>
+</div>
+<!-- Maintenance Alerts -->
+<div class="bg-white p-lg rounded-xl custom-shadow-sm border border-outline-variant/30 transition-transform hover:scale-[1.02] duration-300">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-widest">Maint. Alerts</span>
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-kpi-value font-kpi-value">32</span>
+<span class="text-body-sm font-medium text-error">High Priority</span>
+</div>
+<div class="mt-2 w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-error h-full w-[35%]"></div>
+</div>
+</div>
+</div>
+<!-- Middle Row: Map and Status Summary -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-lg h-[400px]">
+<!-- Fleet Status Map -->
+<div class="xl:col-span-2 bg-white rounded-xl custom-shadow-md border border-outline-variant/30 relative overflow-hidden group">
+<div class="absolute top-4 left-4 z-10 flex gap-2">
+<button class="bg-white/90 backdrop-blur px-4 py-2 rounded-lg text-body-sm font-semibold shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="layers">layers</span>
+                            Satellite View
+                        </button>
+<button class="bg-white/90 backdrop-blur px-4 py-2 rounded-lg text-body-sm font-semibold shadow-sm flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[18px]" data-icon="near_me">near_me</span>
+                            Real-time
+                        </button>
+</div>
+<div class="w-full h-full bg-cover bg-center grayscale-[0.2] transition-transform duration-700 group-hover:scale-105" data-location="Chicago, IL" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuArZ9lLQ2kspd9_CqeqCQrPBlWClNjkV8mbYupBF_0L-PcEGKuy29SEEOturQFR8OlgNjGYOLpgbwbRQ5kGlU3KnAkmRQIW3Le1nK1h9gyyVnRZT0R7CVtzRFjubn-id9QGFLllteK7ImUej7rHr52hBPhmggP_btA506ozXaENrcVvzkJ310MLuPxqY_6_emxDwBM5AZFgshk2t-9hUnpM-jVG5r66qqgjRmm4NWazlS2LsrsxstJ3SessSmW1Q5Dlf1ud9rXQGqgY')"></div>
+<!-- Mock Map Markers -->
+<div class="absolute top-1/4 left-1/3 w-4 h-4 bg-primary border-4 border-white rounded-full shadow-lg animate-pulse"></div>
+<div class="absolute top-1/2 left-1/2 w-4 h-4 bg-secondary border-4 border-white rounded-full shadow-lg"></div>
+<div class="absolute bottom-1/4 right-1/4 w-4 h-4 bg-primary border-4 border-white rounded-full shadow-lg"></div>
+</div>
+<!-- Fleet Status Summary -->
+<div class="bg-white p-lg rounded-xl custom-shadow-md border border-outline-variant/30 flex flex-col">
+<h3 class="text-headline-md font-headline-md mb-md">Fleet Status</h3>
+<div class="space-y-4 flex-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg badge-in-transit flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="moving">moving</span>
+</div>
+<div>
+<p class="text-body-sm font-bold">In Transit</p>
+<p class="text-[11px] text-on-surface-variant">Active delivery routes</p>
+</div>
+</div>
+<span class="text-data-mono font-data-mono text-primary font-bold">642</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg badge-loading flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+</div>
+<div>
+<p class="text-body-sm font-bold">At Terminal</p>
+<p class="text-[11px] text-on-surface-variant">Loading/Unloading</p>
+</div>
+</div>
+<span class="text-data-mono font-data-mono text-secondary font-bold">128</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg badge-maintenance flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="engineering">engineering</span>
+</div>
+<div>
+<p class="text-body-sm font-bold">Service Bay</p>
+<p class="text-[11px] text-on-surface-variant">Routine maintenance</p>
+</div>
+</div>
+<span class="text-data-mono font-data-mono text-error font-bold">42</span>
+</div>
+</div>
+<button class="mt-md w-full border border-outline-variant py-2.5 rounded-lg text-body-sm font-semibold hover:bg-surface-container-low transition-colors">
+                        View Detailed Report
+                    </button>
+</div>
+</div>
+<!-- Bottom Row: Recent Activity Table -->
+<div class="bg-white rounded-xl custom-shadow-md border border-outline-variant/30 overflow-hidden">
+<div class="px-lg py-md border-b border-outline-variant flex justify-between items-center">
+<h3 class="text-headline-md font-headline-md">Recent Activity</h3>
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="filter_list">filter_list</span>
+</button>
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-lg py-3 text-label-caps font-label-caps text-on-surface-variant tracking-wider">Vehicle ID</th>
+<th class="px-lg py-3 text-label-caps font-label-caps text-on-surface-variant tracking-wider">Operator</th>
+<th class="px-lg py-3 text-label-caps font-label-caps text-on-surface-variant tracking-wider">Destination</th>
+<th class="px-lg py-3 text-label-caps font-label-caps text-on-surface-variant tracking-wider">Status</th>
+<th class="px-lg py-3 text-label-caps font-label-caps text-on-surface-variant tracking-wider">Est. Arrival</th>
+<th class="px-lg py-3 text-label-caps font-label-caps text-on-surface-variant tracking-wider">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-data-mono font-data-mono font-bold uppercase">XF-2048</span>
+</div>
+</td>
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full" data-alt="Close up portrait of a young professional truck driver, diverse background, wearing a high-visibility yellow safety vest over a dark t-shirt. Smiling confidently towards the camera with a blurry logistics warehouse interior background in shades of gray and emerald green." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBC9KfqF774XxEJjqdWeJK7B_55SmemQQY777GBs1vA315AD6MPFGU0HQPFwMzrrrfQgfYgPWtfJIfaWtZprAJuf38fwYX1Qrhv0gIr8Jkf6tV1AwBFZ-Gh33-wxRzMagW1kRdSnUqI97j_omZiU4DgP_0wUx-jXQ9b0_mcPbofcGFzi6Vbi3ECaJfaFS0Pr200REKyd_fpg4O3eW1MujYO0OtblHGMT9YCthJw2Z_znW7FGMGxqMtNn1OHSp7U5-Ww3asr3pYB1giI"/>
+<span class="text-body-sm">Marcus Chen</span>
+</div>
+</td>
+<td class="px-lg py-4 text-body-sm">Chicago Hub (ORD-02)</td>
+<td class="px-lg py-4">
+<span class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider badge-in-transit">In Transit</span>
+</td>
+<td class="px-lg py-4 text-data-mono font-data-mono">14:20 CST</td>
+<td class="px-lg py-4">
+<button class="text-primary hover:underline text-body-sm font-semibold">Track</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="text-data-mono font-data-mono font-bold uppercase">TR-7712</span>
+</div>
+</td>
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full" data-alt="Headshot of an experienced female logistics driver with salt-and-pepper hair, wearing a clean company uniform with the TransitOps logo subtly visible. The lighting is bright and natural, suggesting a morning setting. The aesthetic is clean, professional, and trustworthy, with premium clarity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmzMakuwz2x2-_Gn9sXEchnaBA0_R8rHEGD_FIldq5jjDlQzdKlUmqgWRTQebwyKouLepjzfOL74-1FWCh6MtvrHs6OOwdasE8-c_Wz_5yI0T9wjAla48ur1VdDS0f7X9WJOz2LR_DRC4dUuEc0Xrf9WlwAPzybkqtvspNeWG_k1uaTUvVEc7zT6muqemDpxh5aH8uVcJKk9xWLD-pB-JKnK_JwHXmq16iRjGM-XmrFLGJyTNURi0DIF621Y96XdxFIInhZBr2xsTA"/>
+<span class="text-body-sm">Sarah Jenkins</span>
+</div>
+</td>
+<td class="px-lg py-4 text-body-sm">Terminal B - Loading Bay 4</td>
+<td class="px-lg py-4">
+<span class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider badge-loading">Loading</span>
+</td>
+<td class="px-lg py-4 text-data-mono font-data-mono">16:45 CST</td>
+<td class="px-lg py-4">
+<button class="text-primary hover:underline text-body-sm font-semibold">Track</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<span class="text-data-mono font-data-mono font-bold uppercase">HV-0091</span>
+</div>
+</td>
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold">DA</div>
+<span class="text-body-sm">David Alvarez</span>
+</div>
+</td>
+<td class="px-lg py-4 text-body-sm">Maintenance Center West</td>
+<td class="px-lg py-4">
+<span class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider badge-maintenance">Maintenance</span>
+</td>
+<td class="px-lg py-4 text-data-mono font-data-mono">Delayed</td>
+<td class="px-lg py-4">
+<button class="text-primary hover:underline text-body-sm font-semibold">View Logs</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-data-mono font-data-mono font-bold uppercase">ZT-5520</span>
+</div>
+</td>
+<td class="px-lg py-4">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full" data-alt="Portrait of a diverse young man working as a fleet driver, wearing a modern gray uniform with emerald green accents. He is leaning against a clean white truck in a brightly lit industrial park. The shot is high-end commercial style with a shallow depth of field and soft morning sunlight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-Zs5-kTdwYtMJsUVodfEQaYAmmynNVQfHr2o7bfCnoWvf4U8rUj-9tF_kCFnnVbns9NWA7wtMmU0kr63hMDFy5rTs2okPMp7r5RsWUTAe9ySFvYQQxzXBvvw7To0thWW3j1OMW4jzwPeu0GZqry34kDOyCrO8mwgE1xSi-p4koX5Gu1tJco0uAmfjpvBaOUMSZ1eYfKwVbcaJ5v_0Nq1H9WeR7O3dRS-Ky_5UbvhYmSrj2BiYgnZJCqQ74e3OwVl1mrnRuLYC_w-L"/>
+<span class="text-body-sm">Jordan Smith</span>
+</div>
+</td>
+<td class="px-lg py-4 text-body-sm">Remote Staging Yard</td>
+<td class="px-lg py-4">
+<span class="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider badge-idle">Idle</span>
+</td>
+<td class="px-lg py-4 text-data-mono font-data-mono">N/A</td>
+<td class="px-lg py-4">
+<button class="text-primary hover:underline text-body-sm font-semibold">Assign</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Simple hover effect for table rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+                row.style.transition = 'transform 0.2s ease-out';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[type="text"]');
+        const searchContainer = searchInput.parentElement;
+        searchInput.addEventListener('focus', () => {
+            searchContainer.classList.add('ring-2', 'ring-primary/20', 'border-primary');
+            searchContainer.style.backgroundColor = 'white';
+        });
+        searchInput.addEventListener('blur', () => {
+            searchContainer.classList.remove('ring-2', 'ring-primary/20', 'border-primary');
+            searchContainer.style.backgroundColor = '';
+        });
+    </script>
+</body></html>

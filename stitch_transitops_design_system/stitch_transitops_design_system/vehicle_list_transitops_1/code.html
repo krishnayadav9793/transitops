@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps - Vehicle Management</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=Sora:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "primary-fixed": "#b1f0ce",
+                "error": "#ba1a1a",
+                "primary": "#0f5238",
+                "on-secondary": "#ffffff",
+                "on-primary": "#ffffff",
+                "secondary-fixed-dim": "#fdb96c",
+                "primary-fixed-dim": "#95d4b3",
+                "on-primary-container": "#a8e7c5",
+                "on-error": "#ffffff",
+                "surface-tint": "#2c694e",
+                "surface-container-highest": "#e1e3df",
+                "on-secondary-fixed-variant": "#673d00",
+                "on-background": "#191c1a",
+                "inverse-primary": "#95d4b3",
+                "on-tertiary-fixed": "#1b1b1e",
+                "background": "#f8faf6",
+                "surface-container-lowest": "#ffffff",
+                "tertiary-fixed": "#e4e1e6",
+                "surface": "#f8faf6",
+                "surface-container": "#eceeea",
+                "surface-bright": "#f8faf6",
+                "outline-variant": "#bfc9c1",
+                "on-tertiary-container": "#dbd8dc",
+                "surface-container-low": "#f2f4f0",
+                "on-tertiary-fixed-variant": "#47464a",
+                "error-container": "#ffdad6",
+                "on-tertiary": "#ffffff",
+                "on-error-container": "#93000a",
+                "inverse-on-surface": "#eff1ed",
+                "inverse-surface": "#2e312f",
+                "surface-container-high": "#e7e9e5",
+                "primary-container": "#2d6a4f",
+                "outline": "#707973",
+                "secondary-fixed": "#ffddbb",
+                "on-primary-fixed-variant": "#0e5138",
+                "on-primary-fixed": "#002114",
+                "tertiary": "#47474a",
+                "on-surface-variant": "#404943",
+                "surface-dim": "#d8dbd7",
+                "secondary-container": "#fdb96c",
+                "on-secondary-container": "#774700",
+                "tertiary-fixed-dim": "#c8c5ca",
+                "secondary": "#86530d",
+                "tertiary-container": "#5f5e62",
+                "on-surface": "#191c1a",
+                "surface-variant": "#e1e3df",
+                "on-secondary-fixed": "#2b1700"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              "spacing": {
+                "xs": "4px",
+                "sm": "8px",
+                "sidebar-width": "260px",
+                "md": "16px",
+                "container-max": "1440px",
+                "2xl": "48px",
+                "base": "4px",
+                "3xl": "64px",
+                "xl": "32px",
+                "lg": "24px"
+              },
+              "fontFamily": {
+                "kpi-md": ["IBM Plex Sans"],
+                "headline-sm": ["Sora"],
+                "display-lg": ["Sora"],
+                "headline-md": ["Sora"],
+                "body-md": ["Inter"],
+                "headline-lg": ["Sora"],
+                "label-caps": ["Inter"],
+                "body-lg": ["Inter"],
+                "kpi-lg": ["IBM Plex Sans"],
+                "body-sm": ["Inter"]
+              },
+              "fontSize": {
+                "kpi-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "kpi-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f7f7f5;
+            color: #191c1a;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .card-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
+        }
+        .nav-item-active {
+            border-left-width: 4px;
+        }
+        /* Custom scrollbar for ERP density */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e1e3df; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #707973; }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-sidebar-width h-full fixed left-0 top-0 bg-inverse-surface dark:bg-inverse-surface shadow-md flex flex-col py-lg px-md z-50 overflow-y-auto">
+<div class="mb-3xl">
+<h1 class="font-headline-md text-headline-md font-bold text-surface-lowest">TransitOps</h1>
+<p class="text-surface-variant font-body-sm opacity-70">Logistics ERP</p>
+</div>
+<nav class="flex-1 flex flex-col gap-xs">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-surface dark:text-surface-bright border-l-4 border-secondary-container bg-surface-container-highest/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="directions_bus">directions_bus</span>
+<span class="font-body-md">Vehicles</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-body-md">Drivers</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="route">route</span>
+<span class="font-body-md">Trips</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings_suggest">settings_suggest</span>
+<span class="font-body-md">Maintenance</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="local_gas_station">local_gas_station</span>
+<span class="font-body-md">Fuel</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-body-md">Expenses</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-body-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto pt-lg">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="ml-sidebar-width min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex justify-between items-center h-16 px-xl sticky top-0 z-40 bg-surface/80 backdrop-blur-md shadow-sm">
+<div class="flex items-center gap-lg flex-1">
+<div class="relative w-full max-w-md focus-within:ring-2 focus-within:ring-primary rounded-lg transition-all">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg py-sm pl-3xl pr-md text-body-md placeholder:text-on-surface-variant/60 focus:ring-0" placeholder="Search operations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-sm rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-sm rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-sm"></div>
+<div class="flex items-center gap-md group cursor-pointer">
+<div class="text-right">
+<p class="font-body-md font-semibold text-on-surface leading-none">Operations Manager</p>
+<p class="font-body-sm text-on-surface-variant">Fleet Admin</p>
+</div>
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a corporate fleet operations manager with a confident expression, set against a blurred office background with warm lighting, wearing executive business attire in a modern professional portrait style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5T10jl_RyCZxK23tXYIBs3gxziVjr-yO3Ip3Zg9538UZvtv3NhQYVfFkh0k1X6h-K_qzPp6KgHvpSxNIICu1i9lGocXjkT30Ptj27TGuMoHvb8IAEPL8SSdLCN9OtcPs5UHrlmDSAyvCuaWsJIL52kYQMckaKVxy562tZJX4jPIkqXc2HmDahtH6I9vU1csaq3tlhaVjfvMHTGTTetFxJ7eTnHFsKGOrG0hGKG1mSN1S6bOdRB6lzKiphG3KEd5p5wXrBqx_i39eE"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-xl max-w-container-max w-full mx-auto flex-1 overflow-y-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Vehicle Management</h2>
+<nav class="flex text-on-surface-variant font-body-sm gap-xs mt-xs">
+<span>Fleet</span>
+<span>/</span>
+<span class="text-primary font-semibold">Vehicles</span>
+</nav>
+</div>
+<button class="bg-primary-container hover:bg-primary-container/90 text-on-primary-container px-lg py-md rounded-lg font-body-md font-semibold flex items-center gap-sm transition-all shadow-md active:scale-95">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>Add Vehicle</span>
+</button>
+</div>
+<!-- Filters Section -->
+<section class="bg-surface-container-lowest rounded-xl card-shadow p-lg mb-xl">
+<div class="flex flex-wrap gap-md items-center">
+<!-- Status Chips -->
+<div class="flex p-1 bg-surface-container rounded-lg">
+<button class="px-lg py-sm rounded-md font-body-md font-medium text-on-primary-container bg-primary-container shadow-sm">All</button>
+<button class="px-lg py-sm rounded-md font-body-md font-medium text-on-surface-variant hover:text-on-surface transition-colors">Active</button>
+<button class="px-lg py-sm rounded-md font-body-md font-medium text-on-surface-variant hover:text-on-surface transition-colors">Maintenance</button>
+<button class="px-lg py-sm rounded-md font-body-md font-medium text-on-surface-variant hover:text-on-surface transition-colors">Idle</button>
+</div>
+<div class="h-8 w-px bg-outline-variant hidden lg:block"></div>
+<!-- Dropdowns -->
+<div class="flex flex-wrap gap-md">
+<div class="relative min-w-[140px]">
+<select class="w-full bg-surface border-outline-variant rounded-lg py-sm px-md text-body-sm font-medium appearance-none focus:border-primary focus:ring-1 focus:ring-primary">
+<option>All Regions</option>
+<option>North America</option>
+<option>Western Europe</option>
+<option>East Asia</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+<div class="relative min-w-[140px]">
+<select class="w-full bg-surface border-outline-variant rounded-lg py-sm px-md text-body-sm font-medium appearance-none focus:border-primary focus:ring-1 focus:ring-primary">
+<option>Capacity</option>
+<option>Under 5 Tons</option>
+<option>5-15 Tons</option>
+<option>Over 15 Tons</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+<div class="relative min-w-[140px]">
+<select class="w-full bg-surface border-outline-variant rounded-lg py-sm px-md text-body-sm font-medium appearance-none focus:border-primary focus:ring-1 focus:ring-primary">
+<option>Vehicle Type</option>
+<option>Heavy Duty Truck</option>
+<option>Light Cargo Van</option>
+<option>Trailer</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+</div>
+<button class="ml-auto flex items-center gap-sm text-on-surface-variant hover:text-primary transition-colors font-body-md font-medium">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+                        Clear Filters
+                    </button>
+</div>
+</section>
+<!-- Data Table Card -->
+<section class="bg-surface-container-lowest rounded-xl card-shadow overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Registration</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Model</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Capacity</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-right">Odometer</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-center">Status</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-6 h-4 bg-gray-200 rounded-sm overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A very small, clean flag of the United States with high precision details, representing the US region in a logistics software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByzOFGXv1JG1gGjLt-HZWwCEAJysSqFDo33Y-UpW3iIaZdZrWHkrnAU_fRiylNfZuQFtvFbAP-8MBijk-wHWQtPK5qKtGsm1YRo6PyPhoEiG_snwKav20kPeLA2Bbl4Wk8qTLc3xPxP66G4LMgFbNo-2pL2w3rN-QPTkDKoMISja85ojG-vpgtK1KxT65hu35OzvgoZN-uRzoVpa6y937nlOqDeMiikXii1KTYs25TTPpdukczgI8cdvIf1UizhaIKhe8MO9PkvPgS"/>
+</div>
+<span class="font-body-md font-semibold text-on-surface">NY-9921-TRK</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<p class="font-body-md text-on-surface">Freightliner Cascadia</p>
+<p class="font-body-sm text-on-surface-variant">Class 8 Heavy Truck</p>
+</td>
+<td class="px-lg py-md text-on-surface font-body-md">18 Tons</td>
+<td class="px-lg py-md text-right font-kpi-md text-[16px] text-on-surface">142,504 <span class="text-body-sm text-on-surface-variant ml-1">km</span></td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-sm py-1 rounded-full bg-primary-fixed-dim/20 text-primary font-body-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-2"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-lg py-md text-right">
+<div class="flex justify-end gap-sm">
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="visibility">visibility</span></button>
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
+<button class="p-sm text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="archive">archive</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-6 h-4 bg-gray-200 rounded-sm overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A small, high-fidelity flag of Germany, rendered with realistic colors and sharp details for a logistics data table region indicator." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkq4Hen8aKw0VLtt_pd9Hv1aO5FAAHoKpqW3XgFfYe0ytxsrZWELOeEBTI3jU9CVxdK4uXRM9J0lcn9qZRQcxvHj1B8r5ZH7C8lRGiAT3FoK0HogGGCltEDGZEBDlyYjlZWyIkkzEwj-mBDXWNfliaC3Xbj1nQfrZR3JdI8bc1zLzd8uwofYd8xzomoDCERFgz78RRqvHW-b5zpLZtUeY3_PXbGrVWRWDu7q-ThQMC7M2ucdZYa6wUyE4Ty5l8VJwGl1X7yz1VcJMZ"/>
+</div>
+<span class="font-body-md font-semibold text-on-surface">BE-7712-VAN</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<p class="font-body-md text-on-surface">Mercedes Sprinter</p>
+<p class="font-body-sm text-on-surface-variant">Light Cargo Van</p>
+</td>
+<td class="px-lg py-md text-on-surface font-body-md">3.5 Tons</td>
+<td class="px-lg py-md text-right font-kpi-md text-[16px] text-on-surface">68,210 <span class="text-body-sm text-on-surface-variant ml-1">km</span></td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-sm py-1 rounded-full bg-secondary-fixed/30 text-secondary font-body-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-2"></span>
+                                    Maintenance
+                                </span>
+</td>
+<td class="px-lg py-md text-right">
+<div class="flex justify-end gap-sm">
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="visibility">visibility</span></button>
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
+<button class="p-sm text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="archive">archive</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-6 h-4 bg-gray-200 rounded-sm overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A high-resolution miniature flag of the United Kingdom, perfectly centered and scaled for a data dashboard's region selection column." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmsxeQA0q3yIA9AbxJ-1mEsOFQmQXHddQkwHLdkuJMXhlDT2wf0mMSEiLNQsqCM4lswhZar3t8LEorkgIk3xjFXsnplC36RhW9ttsyzUsBy52Rq-DSv5qEwWGoDiKYpJugwvGLye0N8Mp4ao6VnM2P99b1eI94FR9mDg1Dbq85EfVGZSR-pTBMg6YPypEKey0mMFtX1pqemtkj0-aIrPA9iH677iZhO3Pjmqa7we98hA0kaudK_0C6jGDVtwNoadROygFyIFo8iDFh"/>
+</div>
+<span class="font-body-md font-semibold text-on-surface">LD-1288-TRK</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<p class="font-body-md text-on-surface">Scania R450</p>
+<p class="font-body-sm text-on-surface-variant">Heavy Duty Hauler</p>
+</td>
+<td class="px-lg py-md text-on-surface font-body-md">24 Tons</td>
+<td class="px-lg py-md text-right font-kpi-md text-[16px] text-on-surface">289,112 <span class="text-body-sm text-on-surface-variant ml-1">km</span></td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-sm py-1 rounded-full bg-error-container/30 text-error font-body-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error mr-2"></span>
+                                    Out of Service
+                                </span>
+</td>
+<td class="px-lg py-md text-right">
+<div class="flex justify-end gap-sm">
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="visibility">visibility</span></button>
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
+<button class="p-sm text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="archive">archive</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-6 h-4 bg-gray-200 rounded-sm overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A small and sharp flag of France, designed as a regional asset icon for a global transit and logistics software platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxrVDbgjixOvmMmRasRF6LuTtf6fchMI7sK5CkzaqZChemHXPwbhaAjF2-rkXUAVMeZsYhNJghwwpyLjmeq-h79rdkwlleNXph2_xjqmF-ETMtSD8pu6s1MRziIlZ123TuTOO9ZluS8HINiCkCk8IT1Jw2uT2CNOzZmFoG6mfF3Aa3eB6PdDlR9nLL5bQ0nMZX_gK4BtnEb0eADiu3lspUZWKb7P6r96BYPDDhbkJV-drLfLhhHhzMHqKfR3IaHTqNO5N5BqkUs0zA"/>
+</div>
+<span class="font-body-md font-semibold text-on-surface">PA-0044-TRK</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<p class="font-body-md text-on-surface">Volvo FH16</p>
+<p class="font-body-sm text-on-surface-variant">Heavy Duty Truck</p>
+</td>
+<td class="px-lg py-md text-on-surface font-body-md">20 Tons</td>
+<td class="px-lg py-md text-right font-kpi-md text-[16px] text-on-surface">12,400 <span class="text-body-sm text-on-surface-variant ml-1">km</span></td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-sm py-1 rounded-full bg-primary-fixed-dim/20 text-primary font-body-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-2"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-lg py-md text-right">
+<div class="flex justify-end gap-sm">
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="visibility">visibility</span></button>
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
+<button class="p-sm text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="archive">archive</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-6 h-4 bg-gray-200 rounded-sm overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A miniature Canadian flag icon, clean and professional, used as a region designator within an enterprise ERP interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_RAwTMT45aa9lWKJWAHtUyZvayWPJUC8z8_036OV3EWIgDzNoSHd78zpsQD9W1vOSipHPG9pbA7ddYvYuyyopUYqetPtcjxKiiQmYNgglA5u9GMDYaqWd8iO7lqpJvnlrWyvZP8KJ6Uxy5aGd4outK7rVUgZDLwXZl2UhOOow7jV7amSmNaMwaSTk1_-MOIcq3GZP-_j1kGSyDGfkbXB-FRoZBZjUXLHQ9UukuRKAX2KHIlYyJ_8HV57lPRMTHvCsdAPxYguXjWMN"/>
+</div>
+<span class="font-body-md font-semibold text-on-surface">TO-9882-VAN</span>
+</div>
+</td>
+<td class="px-lg py-md">
+<p class="font-body-md text-on-surface">Ford Transit High Roof</p>
+<p class="font-body-sm text-on-surface-variant">Cargo Van</p>
+</td>
+<td class="px-lg py-md text-on-surface font-body-md">5 Tons</td>
+<td class="px-lg py-md text-right font-kpi-md text-[16px] text-on-surface">45,902 <span class="text-body-sm text-on-surface-variant ml-1">km</span></td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-sm py-1 rounded-full bg-surface-container-highest/50 text-on-surface-variant font-body-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant mr-2"></span>
+                                    Idle
+                                </span>
+</td>
+<td class="px-lg py-md text-right">
+<div class="flex justify-end gap-sm">
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="visibility">visibility</span></button>
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
+<button class="p-sm text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[20px]" data-icon="archive">archive</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination -->
+<div class="px-lg py-md flex items-center justify-between border-t border-outline-variant bg-surface-container-lowest">
+<p class="font-body-sm text-on-surface-variant">Showing <span class="font-semibold text-on-surface">1-5</span> of <span class="font-semibold text-on-surface">48</span> vehicles</p>
+<div class="flex gap-xs">
+<button class="px-md py-sm border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-body-md font-semibold">1</button>
+<button class="px-md py-sm border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors font-body-md">2</button>
+<button class="px-md py-sm border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors font-body-md">3</button>
+<span class="px-sm py-sm text-on-surface-variant">...</span>
+<button class="px-md py-sm border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors font-body-md">10</button>
+<button class="px-md py-sm border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<script>
+        // Micro-interaction: Sidebar highlight simulation
+        document.querySelectorAll('aside nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                document.querySelectorAll('aside nav a').forEach(l => {
+                    l.classList.remove('text-surface', 'dark:text-surface-bright', 'border-l-4', 'border-secondary-container', 'bg-surface-container-highest/10');
+                    l.classList.add('text-on-surface-variant', 'dark:text-surface-variant');
+                });
+                link.classList.add('text-surface', 'dark:text-surface-bright', 'border-l-4', 'border-secondary-container', 'bg-surface-container-highest/10');
+                link.classList.remove('text-on-surface-variant', 'dark:text-surface-variant');
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[type="text"]');
+        const searchContainer = searchInput.parentElement;
+        searchInput.addEventListener('focus', () => searchContainer.classList.add('ring-2', 'ring-primary'));
+        searchInput.addEventListener('blur', () => searchContainer.classList.remove('ring-2', 'ring-primary'));
+    </script>
+</body></html>

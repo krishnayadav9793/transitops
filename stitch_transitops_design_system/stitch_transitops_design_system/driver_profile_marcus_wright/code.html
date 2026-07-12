@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Driver Details | TransitOps ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Sora:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #f8faf6;
+            color: #191c1a;
+            -webkit-font-smoothing: antialiased;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(229, 229, 225, 0.5);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#707973",
+                        "surface-container-low": "#f2f4f0",
+                        "on-tertiary-container": "#dbd8dc",
+                        "background": "#f8faf6",
+                        "tertiary-container": "#5f5e62",
+                        "primary": "#0f5238",
+                        "on-primary-fixed": "#002114",
+                        "surface-container-highest": "#e1e3df",
+                        "outline-variant": "#bfc9c1",
+                        "secondary": "#86530d",
+                        "on-tertiary-fixed": "#1b1b1e",
+                        "surface-tint": "#2c694e",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#fdb96c",
+                        "on-secondary-fixed-variant": "#673d00",
+                        "surface-bright": "#f8faf6",
+                        "inverse-on-surface": "#eff1ed",
+                        "tertiary-fixed": "#e4e1e6",
+                        "inverse-surface": "#2e312f",
+                        "secondary-fixed": "#ffddbb",
+                        "on-surface": "#191c1a",
+                        "surface-container": "#eceeea",
+                        "primary-container": "#2d6a4f",
+                        "surface-container-high": "#e7e9e5",
+                        "primary-fixed": "#b1f0ce",
+                        "on-tertiary-fixed-variant": "#47464a",
+                        "on-error": "#ffffff",
+                        "tertiary": "#47474a",
+                        "on-surface-variant": "#404943",
+                        "surface-variant": "#e1e3df",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8faf6",
+                        "on-background": "#191c1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d8dbd7",
+                        "primary-fixed-dim": "#95d4b3",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#95d4b3",
+                        "on-secondary-container": "#774700",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c8c5ca",
+                        "on-primary-container": "#a8e7c5",
+                        "secondary-container": "#fdb96c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "lg": "24px",
+                        "base": "4px",
+                        "md": "16px",
+                        "3xl": "64px",
+                        "container-max": "1440px",
+                        "sidebar-width": "260px",
+                        "2xl": "48px",
+                        "xs": "4px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "kpi-lg": ["IBM Plex Sans"],
+                        "headline-sm": ["Sora"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Sora"],
+                        "kpi-md": ["IBM Plex Sans"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Sora"],
+                        "display-lg": ["Sora"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "kpi-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "kpi-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- Fixed Side Navigation -->
+<aside class="fixed left-0 top-0 h-full w-[260px] bg-inverse-surface dark:bg-surface-dim flex flex-col py-lg shadow-sm z-50">
+<div class="px-lg mb-3xl">
+<h1 class="font-headline-md text-headline-md text-surface-container-lowest font-bold">TransitOps ERP</h1>
+<p class="text-outline-variant font-body-sm">Enterprise Logistics</p>
+</div>
+<nav class="flex-grow space-y-base px-sm">
+<!-- Active: Driver Fleet -->
+<a class="flex items-center gap-md px-md py-sm transition-colors hover:text-surface-container-highest hover:bg-surface-variant/10 rounded-lg text-outline-variant font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm transition-colors text-surface-container-lowest font-bold border-l-4 border-secondary-fixed bg-surface-variant/10 rounded-r-lg" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span>Driver Fleet</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm transition-colors hover:text-surface-container-highest hover:bg-surface-variant/10 rounded-lg text-outline-variant font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="route">route</span>
+<span>Routes</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm transition-colors hover:text-surface-container-highest hover:bg-surface-variant/10 rounded-lg text-outline-variant font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+<span>Safety Metrics</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm transition-colors hover:text-surface-container-highest hover:bg-surface-variant/10 rounded-lg text-outline-variant font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Maintenance</span>
+</a>
+</nav>
+<div class="mt-auto px-sm pt-lg border-t border-surface-variant/20">
+<button class="w-full bg-primary-container text-on-primary-container py-md px-lg rounded-xl font-bold mb-lg flex items-center justify-center gap-sm active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>New Dispatch</span>
+</button>
+<a class="flex items-center gap-md px-md py-sm text-outline-variant hover:text-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-outline-variant hover:text-surface-container-lowest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</aside>
+<!-- Top App Bar -->
+<header class="fixed top-0 right-0 w-[calc(100%-260px)] h-16 bg-surface dark:bg-surface-dim shadow-sm flex justify-between items-center px-xl z-40">
+<div class="flex items-center gap-xl">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+<span class="font-body-md font-medium">Back to Fleet</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-primary font-bold">Driver Management</h2>
+</div>
+<div class="flex items-center gap-lg">
+<div class="flex items-center gap-md px-md">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="history">history</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="download">download</span>
+</div>
+<div class="h-8 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-sm">
+<div class="text-right">
+<p class="font-body-sm font-bold leading-none">Admin User</p>
+<p class="text-[10px] text-outline uppercase tracking-wider">Fleet Manager</p>
+</div>
+<img class="w-10 h-10 rounded-full object-cover ring-2 ring-surface-variant" data-alt="Close-up professional portrait of a fleet management administrator in a clean office setting, featuring high-end corporate lighting and a focused, professional expression. The style is modern, with soft warm neutral tones and a slight depth of field blurring a background of operational monitors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFqbNExsLvKhdxBzpYuU3TK92kZI5nDU4tgJdPziwyUPjzl80hNvbaey3-PVvog-YMdGgALk_zWbklbZ-OgZKKehelIPEIcvz5aZdRA_kLjzHk1tQGr2v87tAegP-YkmaTLaiNmIOtmMe6SY0C6UzBHlVFimfd9wADgB78Ag7lt59iz44ygMJ75ihV6Iw70MvLMJPF6ilIbXs_dKnFMM4SFTP3_RN46MizhGPZRfFfy_48QKxzZRuBzKVuigXIAhdGSprBBt2oobvk"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[260px] pt-16 min-h-screen p-xl max-w-[1440px]">
+<!-- Header / Profile Summary Section -->
+<section class="mb-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-lg bg-surface-container-lowest p-lg rounded-xl shadow-sm">
+<div class="flex items-center gap-lg">
+<div class="relative">
+<img class="w-24 h-24 rounded-2xl object-cover" data-alt="A professional headshot of a seasoned male driver in a clean TransitOps uniform. The background is a slightly blurred morning logistics hub with soft sunlight. The style is sharp, editorial, and uses an organic emerald and warm neutral color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZHywwb9Qbe30UVjv2OP00wEOvdu62hrcyyDlyxr3ACBrRZ1IHyGnYjefzxgW9eB19gz6hxEQpbXgE3UhhuGBFSH0DGdUDz-AxNAG7k77PS5HrtInoC_yCb_O-FuHfsTQnuKv-8J0wtl18yvOQiuIoyEjmjKv6biwg3i9h95s2KZG_u2hTBS5GWhbJ6c9jX2cxbXIjLnrnp8s35foPsV_tUswLHZyk-RinbSbi6rv4N1erz3GzRgFw8M0R6Q7qceQ3WMDFQmy4Kl_3"/>
+<div class="absolute -bottom-2 -right-2 bg-primary text-white p-1 rounded-lg border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-md mb-xs">
+<h1 class="font-headline-lg text-headline-lg">Marcus Sterling</h1>
+<span class="px-md py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-primary-fixed text-on-primary-fixed">Active • On Route</span>
+</div>
+<div class="flex flex-wrap gap-xl text-on-surface-variant">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-md" data-icon="mail">mail</span>
+<span class="font-body-md">m.sterling@transitops.com</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-md" data-icon="phone">phone</span>
+<span class="font-body-md">+1 (555) 342-9012</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-md" data-icon="location_on">location_on</span>
+<span class="font-body-md">Chicago, IL Hub</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex gap-md">
+<button class="px-xl py-md bg-surface-variant text-on-surface-variant font-bold rounded-xl flex items-center gap-sm hover:bg-outline-variant transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+<span>Edit Profile</span>
+</button>
+<button class="px-xl py-md bg-error text-on-error font-bold rounded-xl flex items-center gap-sm hover:opacity-90 transition-opacity active:scale-95">
+<span class="material-symbols-outlined" data-icon="block">block</span>
+<span>Suspend Access</span>
+</button>
+</div>
+</section>
+<!-- KPI Grid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg mb-xl">
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border-l-4 border-primary">
+<p class="text-outline font-label-caps uppercase mb-sm">Safety Score</p>
+<div class="flex items-end justify-between">
+<h3 class="font-kpi-lg text-kpi-lg text-primary">98.4</h3>
+<div class="flex items-center text-primary font-bold text-sm mb-1">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span>+2.1%</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border-l-4 border-secondary">
+<p class="text-outline font-label-caps uppercase mb-sm">Total Trips</p>
+<div class="flex items-end justify-between">
+<h3 class="font-kpi-lg text-kpi-lg text-secondary">1,248</h3>
+<div class="text-outline font-body-sm mb-1">Lifetime</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border-l-4 border-primary-container">
+<p class="text-outline font-label-caps uppercase mb-sm">Performance Rating</p>
+<div class="flex items-end justify-between">
+<h3 class="font-kpi-lg text-kpi-lg text-primary-container">4.9</h3>
+<div class="flex gap-xs mb-1">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border-l-4 border-error">
+<p class="text-outline font-label-caps uppercase mb-sm">Safety Violations</p>
+<div class="flex items-end justify-between">
+<h3 class="font-kpi-lg text-kpi-lg text-error">0</h3>
+<div class="text-outline font-body-sm mb-1">Last 6 Months</div>
+</div>
+</div>
+</section>
+<!-- Detailed Bento Grid -->
+<div class="bento-grid">
+<!-- Personal Information -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest p-lg rounded-xl shadow-sm space-y-lg">
+<div class="flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm">Personal Info</h3>
+<span class="material-symbols-outlined text-outline cursor-pointer" data-icon="more_horiz">more_horiz</span>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between border-b border-surface-container pb-sm">
+<span class="text-outline font-body-sm">Employee ID</span>
+<span class="font-bold">TO-77492</span>
+</div>
+<div class="flex justify-between border-b border-surface-container pb-sm">
+<span class="text-outline font-body-sm">Hire Date</span>
+<span class="font-bold">Oct 12, 2019</span>
+</div>
+<div class="flex justify-between border-b border-surface-container pb-sm">
+<span class="text-outline font-body-sm">Contract Type</span>
+<span class="font-bold">Full-Time</span>
+</div>
+<div class="flex justify-between border-b border-surface-container pb-sm">
+<span class="text-outline font-body-sm">Date of Birth</span>
+<span class="font-bold">Aug 24, 1982</span>
+</div>
+<div class="flex justify-between">
+<span class="text-outline font-body-sm">Emergency Contact</span>
+<span class="font-bold text-primary">Sarah Sterling</span>
+</div>
+</div>
+<div class="pt-md">
+<p class="text-outline font-label-caps uppercase mb-xs">Internal Notes</p>
+<p class="text-body-sm bg-surface-container p-md rounded-lg italic">
+                        "Consistently receives high feedback for efficiency and vehicle maintenance. Recommended for senior trainer role next quarter."
+                    </p>
+</div>
+</div>
+<!-- License & Certifications -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest p-lg rounded-xl shadow-sm">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-sm text-headline-sm">License & Certifications</h3>
+<button class="text-primary font-bold text-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm" data-icon="add_circle">add_circle</span>
+                        Add New
+                    </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="p-md border border-surface-container rounded-xl flex items-center gap-md">
+<div class="bg-primary-fixed p-sm rounded-lg text-on-primary-fixed">
+<span class="material-symbols-outlined" data-icon="badge">badge</span>
+</div>
+<div class="flex-grow">
+<p class="font-bold">Commercial Driver's License (CDL)</p>
+<p class="text-outline text-body-sm">Class A • #IL92834710</p>
+</div>
+<div class="text-right">
+<p class="text-outline text-xs uppercase font-bold">Expires</p>
+<p class="font-bold text-primary">Dec 2026</p>
+</div>
+</div>
+<div class="p-md border border-surface-container rounded-xl flex items-center gap-md">
+<div class="bg-secondary-fixed p-sm rounded-lg text-on-secondary-fixed">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+</div>
+<div class="flex-grow">
+<p class="font-bold">Medical Examiner's Certificate</p>
+<p class="text-outline text-body-sm">DOT Compliance • Current</p>
+</div>
+<div class="text-right">
+<p class="text-outline text-xs uppercase font-bold">Expires</p>
+<p class="font-bold text-error">Jan 2024</p>
+</div>
+</div>
+<div class="p-md border border-surface-container rounded-xl flex items-center gap-md">
+<div class="bg-surface-container-high p-sm rounded-lg text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="hazardous_materials">award_meal</span>
+</div>
+<div class="flex-grow">
+<p class="font-bold">Hazmat Endorsement</p>
+<p class="text-outline text-body-sm">Specialty Transport</p>
+</div>
+<div class="text-right">
+<p class="text-outline text-xs uppercase font-bold">Expires</p>
+<p class="font-bold">May 2025</p>
+</div>
+</div>
+<div class="p-md border border-surface-container rounded-xl flex items-center gap-md">
+<div class="bg-surface-container-high p-sm rounded-lg text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="eco">eco</span>
+</div>
+<div class="flex-grow">
+<p class="font-bold">Eco-Driving Certification</p>
+<p class="text-outline text-body-sm">Sustainability Module</p>
+</div>
+<div class="text-right">
+<span class="px-md py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-xs font-bold uppercase">No Expiry</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Assigned Vehicle History -->
+<div class="col-span-12 lg:col-span-5 bg-surface-container-lowest p-lg rounded-xl shadow-sm">
+<h3 class="font-headline-sm text-headline-sm mb-lg">Vehicle History</h3>
+<div class="space-y-lg">
+<div class="flex gap-md items-start">
+<div class="relative">
+<div class="w-2 h-2 bg-primary rounded-full absolute -left-1 top-2 ring-4 ring-surface-container-lowest"></div>
+<div class="h-16 w-px bg-surface-variant ml-[3px]"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold">Freightliner Cascadia 2023</p>
+<p class="text-body-sm text-outline">Unit: #ECO-442 • Illinois Plate: TRK-990</p>
+</div>
+<span class="bg-primary-container/10 text-primary-container px-md py-0.5 rounded-full text-[10px] font-bold uppercase">Current</span>
+</div>
+<p class="text-xs text-outline-variant mt-1">Assigned: Jan 2023 - Present</p>
+</div>
+</div>
+<div class="flex gap-md items-start">
+<div class="relative">
+<div class="w-2 h-2 bg-outline rounded-full absolute -left-1 top-2 ring-4 ring-surface-container-lowest"></div>
+<div class="h-16 w-px bg-surface-variant ml-[3px]"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold">Volvo VNL 860</p>
+<p class="text-body-sm text-outline">Unit: #HV-102 • Illinois Plate: RRT-112</p>
+</div>
+</div>
+<p class="text-xs text-outline-variant mt-1">Assigned: June 2020 - Dec 2022</p>
+</div>
+</div>
+<div class="flex gap-md items-start">
+<div class="relative">
+<div class="w-2 h-2 bg-outline rounded-full absolute -left-1 top-2 ring-4 ring-surface-container-lowest"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-bold">Kenworth T680</p>
+<p class="text-body-sm text-outline">Unit: #STD-08 • Illinois Plate: MKL-445</p>
+</div>
+</div>
+<p class="text-xs text-outline-variant mt-1">Assigned: Oct 2019 - May 2020</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Trips Table -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-lowest p-lg rounded-xl shadow-sm">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-sm text-headline-sm">Recent Trips</h3>
+<button class="text-outline font-bold text-sm hover:text-primary transition-colors">View All Logs</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container border-b border-surface-variant">
+<th class="px-md py-sm font-label-caps uppercase text-outline">Trip ID</th>
+<th class="px-md py-sm font-label-caps uppercase text-outline">Route</th>
+<th class="px-md py-sm font-label-caps uppercase text-outline">Date</th>
+<th class="px-md py-sm font-label-caps uppercase text-outline text-right">Fuel Efficiency</th>
+<th class="px-md py-sm font-label-caps uppercase text-outline text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md font-bold">#TR-9021</td>
+<td class="px-md py-md">
+<p class="text-body-sm font-medium">Chicago Hub → Detroit DC</p>
+<p class="text-[10px] text-outline">Interstate 94 Corridor</p>
+</td>
+<td class="px-md py-md text-body-sm">Oct 24, 2023</td>
+<td class="px-md py-md text-right font-bold text-primary">7.8 MPG</td>
+<td class="px-md py-md text-right">
+<span class="bg-primary-fixed text-on-primary-fixed px-md py-0.5 rounded-full text-[10px] font-bold uppercase">Completed</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md font-bold">#TR-8994</td>
+<td class="px-md py-md">
+<p class="text-body-sm font-medium">Chicago Hub → Milwaukee</p>
+<p class="text-[10px] text-outline">Short Haul Logistics</p>
+</td>
+<td class="px-md py-md text-body-sm">Oct 22, 2023</td>
+<td class="px-md py-md text-right font-bold">7.2 MPG</td>
+<td class="px-md py-md text-right">
+<span class="bg-primary-fixed text-on-primary-fixed px-md py-0.5 rounded-full text-[10px] font-bold uppercase">Completed</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md font-bold">#TR-8950</td>
+<td class="px-md py-md">
+<p class="text-body-sm font-medium">St. Louis → Chicago Hub</p>
+<p class="text-[10px] text-outline">Regional Return</p>
+</td>
+<td class="px-md py-md text-body-sm">Oct 20, 2023</td>
+<td class="px-md py-md text-right font-bold">7.4 MPG</td>
+<td class="px-md py-md text-right">
+<span class="bg-primary-fixed text-on-primary-fixed px-md py-0.5 rounded-full text-[10px] font-bold uppercase">Completed</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-md py-md font-bold">#TR-8812</td>
+<td class="px-md py-md">
+<p class="text-body-sm font-medium">Chicago Hub → Indianapolis</p>
+<p class="text-[10px] text-outline">Express Freight</p>
+</td>
+<td class="px-md py-md text-body-sm">Oct 18, 2023</td>
+<td class="px-md py-md text-right font-bold text-error">6.1 MPG</td>
+<td class="px-md py-md text-right">
+<span class="bg-surface-variant text-on-surface-variant px-md py-0.5 rounded-full text-[10px] font-bold uppercase">Review</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple interactivity for the suspend button
+        document.querySelector('.bg-error').addEventListener('click', function() {
+            if(confirm('Are you sure you want to suspend access for Marcus Sterling? This will revoke all active dispatch permissions immediately.')) {
+                alert('Access suspended. Driver status updated.');
+            }
+        });
+
+        // Toggle hover states or search bar focus micro-interactions
+        const searchInput = document.querySelector('header input');
+        if(searchInput) {
+            searchInput.addEventListener('focus', () => {
+                searchInput.parentElement.classList.add('ring-2', 'ring-primary');
+            });
+            searchInput.addEventListener('blur', () => {
+                searchInput.parentElement.classList.remove('ring-2', 'ring-primary');
+            });
+        }
+    </script>
+</body></html>

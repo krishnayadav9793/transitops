@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps | Vehicle Management</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Sora:wght@500;600;700;800&amp;family=IBM+Plex+Sans:wght@500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#ffddbb",
+                        "on-tertiary-fixed-variant": "#47464a",
+                        "surface-container-low": "#f2f4f0",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#b1f0ce",
+                        "on-secondary-container": "#774700",
+                        "on-secondary-fixed-variant": "#673d00",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eceeea",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#e4e1e6",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#fdb96c",
+                        "secondary-fixed-dim": "#fdb96c",
+                        "tertiary": "#47474a",
+                        "on-surface": "#191c1a",
+                        "background": "#f8faf6",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "on-primary-fixed": "#002114",
+                        "on-tertiary-fixed": "#1b1b1e",
+                        "surface-tint": "#2c694e",
+                        "secondary": "#86530d",
+                        "inverse-on-surface": "#eff1ed",
+                        "tertiary-container": "#5f5e62",
+                        "surface-variant": "#e1e3df",
+                        "outline": "#707973",
+                        "inverse-surface": "#2e312f",
+                        "surface-container-high": "#e7e9e5",
+                        "primary-fixed-dim": "#95d4b3",
+                        "primary": "#0f5238",
+                        "surface-bright": "#f8faf6",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#bfc9c1",
+                        "on-primary-container": "#a8e7c5",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#2d6a4f",
+                        "surface-dim": "#d8dbd7",
+                        "on-surface-variant": "#404943",
+                        "on-secondary-fixed": "#2b1700",
+                        "surface": "#f8faf6",
+                        "on-tertiary-container": "#dbd8dc",
+                        "tertiary-fixed-dim": "#c8c5ca",
+                        "on-background": "#191c1a",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#95d4b3",
+                        "surface-container-highest": "#e1e3df"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "sm": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "container-max": "1440px",
+                        "sidebar-width": "260px",
+                        "2xl": "48px",
+                        "3xl": "64px",
+                        "xs": "4px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Sora"],
+                        "headline-md": ["Sora"],
+                        "body-sm": ["Inter"],
+                        "headline-sm": ["Sora"],
+                        "kpi-lg": ["IBM Plex Sans"],
+                        "display-lg": ["Sora"],
+                        "kpi-md": ["IBM Plex Sans"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                        "kpi-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "kpi-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .nav-item-transition {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body {
+            background-color: #f7f7f5;
+            color: #191c1a;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e1e3df; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #707973; }
+    </style>
+</head>
+<body class="font-body-md text-on-background min-h-screen flex overflow-hidden">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full w-[260px] bg-inverse-surface flex flex-col py-lg px-md z-50 transition-all duration-300" id="side-nav">
+<!-- Brand Identity -->
+<div class="flex items-center gap-md mb-3xl px-sm">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-2xl">directions_bus</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-surface-container-lowest leading-none">TransitOps</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant opacity-60">Fleet Management</span>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 space-y-xs">
+<a class="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-primary-fixed-dim">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-surface-container-lowest border-l-4 border-secondary font-bold bg-surface-variant/5" href="#">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">directions_bus</span>
+<span class="font-body-md">Vehicles</span>
+</a>
+<a class="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-primary-fixed-dim">person_pin_circle</span>
+<span class="font-body-md">Drivers</span>
+</a>
+<a class="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-primary-fixed-dim">route</span>
+<span class="font-body-md">Trips</span>
+</a>
+<a class="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-primary-fixed-dim">build</span>
+<span class="font-body-md">Maintenance</span>
+</a>
+<a class="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-primary-fixed-dim">local_gas_station</span>
+<span class="font-body-md">Fuel</span>
+</a>
+<a class="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-primary-fixed-dim">receipt_long</span>
+<span class="font-body-md">Expenses</span>
+</a>
+<a class="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-primary-fixed-dim">analytics</span>
+<span class="font-body-md">Reports</span>
+</a>
+</nav>
+<!-- Footer Actions -->
+<div class="mt-auto pt-lg border-t border-surface-variant/10 space-y-xs">
+<a class="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-primary-fixed-dim">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<a class="nav-item-transition flex items-center gap-md px-md py-sm rounded-lg group text-on-surface-variant font-medium hover:bg-surface-variant/10 hover:text-surface-container-lowest active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-primary-fixed-dim">help_outline</span>
+<span class="font-body-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-[260px] flex flex-col h-screen overflow-y-auto">
+<!-- TopNavBar Shell -->
+<header class="sticky top-0 z-40 bg-surface/80 backdrop-blur-md flex justify-between items-center w-full px-xl py-sm h-16 border-b border-outline-variant shadow-sm transition-opacity duration-200">
+<!-- Left: Search & Breadcrumbs -->
+<div class="flex items-center gap-xl flex-1">
+<div class="relative w-full max-w-md group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full pl-11 pr-md py-sm bg-surface-container-lowest border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-body-md" placeholder="Search vehicles, VIN, or registration..." type="text"/>
+<div class="absolute right-md top-1/2 -translate-y-1/2 flex items-center gap-xs">
+<kbd class="px-1.5 py-0.5 rounded border border-outline-variant bg-surface-container-low text-[10px] font-medium text-on-surface-variant">⌘</kbd>
+<kbd class="px-1.5 py-0.5 rounded border border-outline-variant bg-surface-container-low text-[10px] font-medium text-on-surface-variant">K</kbd>
+</div>
+</div>
+<nav class="hidden lg:flex items-center gap-sm text-on-surface-variant font-medium">
+<a class="hover:text-primary transition-colors cursor-pointer font-body-sm" href="#">Fleet</a>
+<span class="material-symbols-outlined text-sm opacity-30">chevron_right</span>
+<span class="text-primary font-bold font-body-sm border-b-2 border-primary pb-1">Vehicles</span>
+</nav>
+</div>
+<!-- Right: Actions & Profile -->
+<div class="flex items-center gap-lg">
+<button class="bg-primary text-on-primary px-lg py-sm rounded-xl font-body-md font-semibold flex items-center gap-sm hover:opacity-90 active:scale-95 transition-all shadow-sm">
+<span class="material-symbols-outlined text-sm">add</span>
+                    Add Vehicle
+                </button>
+<div class="flex items-center gap-sm pr-md border-r border-outline-variant">
+<button class="p-2 rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary relative group">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full ring-2 ring-surface group-hover:ring-surface-container-low transition-all"></span>
+</button>
+<button class="p-2 rounded-lg hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-primary" id="theme-toggle">
+<span class="material-symbols-outlined">contrast</span>
+</button>
+</div>
+<!-- Profile -->
+<div class="flex items-center gap-md pl-sm cursor-pointer group">
+<div class="flex flex-col text-right">
+<span class="font-body-md font-semibold text-on-surface group-hover:text-primary transition-colors">Alex Fleet</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant opacity-70">Fleet Administrator</span>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant group-hover:border-primary transition-all overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of Alex Fleet" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpkT-_10-zb6Zu5J2zd7nOBjrAOB4NVFz32P9SMYFPg0W41z6_nuymXKPAEUKK6IJdl2sSAqQl6TR3jwYexlkmO641CMEGJVEg-CBfO22Hj4SaobT4Vumi9jriwX2-sjSNny8eHRt0BSAGndTmDazVDcCCjvYrynBtKGVLL18M_biQeEarp8Y6OKLOo7wcNA0-tWlLiotwVYfJxM8iz7WlWeRCy58q8tS34DNSvjnr9pyg9hsr4sKfu0g0JZpGhkXbv8DcOFhV7qrs"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<section class="p-xl max-w-[1440px] w-full mx-auto space-y-lg">
+<!-- Header -->
+<div class="flex flex-col gap-xs">
+<div class="flex items-center gap-sm text-on-surface-variant opacity-60">
+<span class="font-label-caps text-label-caps">Workspaces</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="font-label-caps text-label-caps">Vehicle List</span>
+</div>
+<div class="flex items-center justify-between">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Vehicle Management</h1>
+<div class="flex gap-sm">
+<button class="px-md py-sm rounded-lg border border-outline-variant font-body-sm font-medium hover:bg-surface-container-low transition-colors flex items-center gap-sm">
+<span class="material-symbols-outlined text-sm">file_download</span>
+                            Export CSV
+                        </button>
+</div>
+</div>
+</div>
+<!-- Enhanced Filters Section -->
+<section class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-lg shadow-sm">
+<div class="flex flex-wrap gap-md items-center">
+<!-- Status Chips -->
+<div class="flex p-1 bg-surface-container-low rounded-xl">
+<button class="px-lg py-sm rounded-lg font-body-sm font-semibold text-on-primary bg-primary shadow-sm transition-all">All</button>
+<button class="px-lg py-sm rounded-lg font-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all">Active</button>
+<button class="px-lg py-sm rounded-lg font-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all">Maintenance</button>
+<button class="px-lg py-sm rounded-lg font-body-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all">Idle</button>
+</div>
+<div class="h-8 w-px bg-outline-variant/30 hidden lg:block mx-sm"></div>
+<!-- Dropdowns -->
+<div class="flex flex-wrap gap-sm">
+<div class="relative">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-xl py-sm pl-md pr-10 text-body-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+<option>North America</option>
+<option>Western Europe</option>
+<option>East Asia</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-sm">expand_more</span>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-xl py-sm pl-md pr-10 text-body-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+<option>All Capacities</option>
+<option>Under 5 Tons</option>
+<option>5-15 Tons</option>
+<option>Over 15 Tons</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-sm">expand_more</span>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant rounded-xl py-sm pl-md pr-10 text-body-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+<option>Vehicle Type</option>
+<option>Heavy Duty Truck</option>
+<option>Light Cargo Van</option>
+<option>Reefer Trailer</option>
+</select>
+<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-sm">expand_more</span>
+</div>
+</div>
+<button class="ml-auto flex items-center gap-sm text-on-surface-variant hover:text-primary transition-colors font-body-sm font-semibold">
+<span class="material-symbols-outlined text-sm">filter_alt_off</span>
+                        Clear Filters
+                    </button>
+</div>
+</section>
+<!-- Main Data Table Container -->
+<div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50 border-b border-outline-variant/30">
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant tracking-wider">Registration</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant tracking-wider">Vehicle Details</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant tracking-wider">Capacity</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant tracking-wider text-right">Odometer</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant tracking-wider text-center">Status</th>
+<th class="px-lg py-md font-label-caps text-label-caps text-on-surface-variant tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<!-- Vehicle Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-6 bg-surface-dim rounded-sm overflow-hidden border border-outline-variant/20 flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="US Region" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByzOFGXv1JG1gGjLt-HZWwCEAJysSqFDo33Y-UpW3iIaZdZrWHkrnAU_fRiylNfZuQFtvFbAP-8MBijk-wHWQtPK5qKtGsm1YRo6PyPhoEiG_snwKav20kPeLA2Bbl4Wk8qTLc3xPxP66G4LMgFbNo-2pL2w3rN-QPTkDKoMISja85ojG-vpgtK1KxT65hu35OzvgoZN-uRzoVpa6y937nlOqDeMiikXii1KTYs25TTPpdukczgI8cdvIf1UizhaIKhe8MO9PkvPgS"/>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">NY-9921-TRK</p>
+<p class="text-[11px] text-on-surface-variant font-mono">VIN: 1HGCM82635...</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md">
+<p class="font-body-md font-semibold text-on-surface">Freightliner Cascadia</p>
+<p class="font-body-sm text-on-surface-variant opacity-70">Class 8 Heavy Truck • 2023</p>
+</td>
+<td class="px-lg py-md">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-body-sm">18 Tons</span>
+</td>
+<td class="px-lg py-md text-right">
+<span class="font-kpi-md text-on-surface text-[16px]">142,504 <span class="text-body-sm text-on-surface-variant">km</span></span>
+</td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary font-label-caps text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-2 animate-pulse"></span>
+                                    ACTIVE
+                                </span>
+</td>
+<td class="px-lg py-md text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-error/10 hover:text-error transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Vehicle Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-6 bg-surface-dim rounded-sm overflow-hidden border border-outline-variant/20 flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Germany Region" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkq4Hen8aKw0VLtt_pd9Hv1aO5FAAHoKpqW3XgFfYe0ytxsrZWELOeEBTI3jU9CVxdK4uXRM9J0lcn9qZRQcxvHj1B8r5ZH7C8lRGiAT3FoK0HogGGCltEDGZEBDlyYjlZWyIkkzEwj-mBDXWNfliaC3Xbj1nQfrZR3JdI8bc1zLzd8uwofYd8xzomoDCERFgz78RRqvHW-b5zpLZtUeY3_PXbGrVWRWDu7q-ThQMC7M2ucdZYa6wUyE4Ty5l8VJwGl1X7yz1VcJMZ"/>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">BE-7712-VAN</p>
+<p class="text-[11px] text-on-surface-variant font-mono">VIN: WDB906637...</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md">
+<p class="font-body-md font-semibold text-on-surface">Mercedes Sprinter</p>
+<p class="font-body-sm text-on-surface-variant opacity-70">Light Cargo Van • 2022</p>
+</td>
+<td class="px-lg py-md">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-body-sm">3.5 Tons</span>
+</td>
+<td class="px-lg py-md text-right">
+<span class="font-kpi-md text-on-surface text-[16px]">68,210 <span class="text-body-sm text-on-surface-variant">km</span></span>
+</td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-secondary/10 text-secondary font-label-caps text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-2"></span>
+                                    MAINTENANCE
+                                </span>
+</td>
+<td class="px-lg py-md text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-error/10 hover:text-error transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Vehicle Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-6 bg-surface-dim rounded-sm overflow-hidden border border-outline-variant/20 flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="UK Region" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmsxeQA0q3yIA9AbxJ-1mEsOFQmQXHddQkwHLdkuJMXhlDT2wf0mMSEiLNQsqCM4lswhZar3t8LEorkgIk3xjFXsnplC36RhW9ttsyzUsBy52Rq-DSv5qEwWGoDiKYpJugwvGLye0N8Mp4ao6VnM2P99b1eI94FR9mDg1Dbq85EfVGZSR-pTBMg6YPypEKey0mMFtX1pqemtkj0-aIrPA9iH677iZhO3Pjmqa7we98hA0kaudK_0C6jGDVtwNoadROygFyIFo8iDFh"/>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">LD-1288-TRK</p>
+<p class="text-[11px] text-on-surface-variant font-mono">VIN: YS2R4X2000...</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md">
+<p class="font-body-md font-semibold text-on-surface">Scania R450</p>
+<p class="font-body-sm text-on-surface-variant opacity-70">Heavy Duty Hauler • 2021</p>
+</td>
+<td class="px-lg py-md">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-body-sm">24 Tons</span>
+</td>
+<td class="px-lg py-md text-right">
+<span class="font-kpi-md text-on-surface text-[16px]">289,112 <span class="text-body-sm text-on-surface-variant">km</span></span>
+</td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-error/10 text-error font-label-caps text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-error mr-2"></span>
+                                    OUT OF SERVICE
+                                </span>
+</td>
+<td class="px-lg py-md text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-error/10 hover:text-error transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Vehicle Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-6 bg-surface-dim rounded-sm overflow-hidden border border-outline-variant/20 flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="France Region" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxrVDbgjixOvmMmRasRF6LuTtf6fchMI7sK5CkzaqZChemHXPwbhaAjF2-rkXUAVMeZsYhNJghwwpyLjmeq-h79rdkwlleNXph2_xjqmF-ETMtSD8pu6s1MRziIlZ123TuTOO9ZluS8HINiCkCk8IT1Jw2uT2CNOzZmFoG6mfF3Aa3eB6PdDlR9nLL5bQ0nMZX_gK4BtnEb0eADiu3lspUZWKb7P6r96BYPDDhbkJV-drLfLhhHhzMHqKfR3IaHTqNO5N5BqkUs0zA"/>
+</div>
+<div>
+<p class="font-body-md font-bold text-on-surface">PA-0044-TRK</p>
+<p class="text-[11px] text-on-surface-variant font-mono">VIN: YV2RT40G8L...</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md">
+<p class="font-body-md font-semibold text-on-surface">Volvo FH16</p>
+<p class="font-body-sm text-on-surface-variant opacity-70">Heavy Duty Truck • 2024</p>
+</td>
+<td class="px-lg py-md">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-body-sm">20 Tons</span>
+</td>
+<td class="px-lg py-md text-right">
+<span class="font-kpi-md text-on-surface text-[16px]">12,400 <span class="text-body-sm text-on-surface-variant">km</span></span>
+</td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary font-label-caps text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-2 animate-pulse"></span>
+                                    ACTIVE
+                                </span>
+</td>
+<td class="px-lg py-md text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-primary/10 hover:text-primary transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-error/10 hover:text-error transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">delete_outline</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination -->
+<div class="px-lg py-md flex items-center justify-between bg-surface-container-low/30 border-t border-outline-variant/30">
+<p class="font-body-sm text-on-surface-variant">Showing <span class="font-bold text-on-surface">1-4</span> of <span class="font-bold text-on-surface">48</span> vehicles</p>
+<div class="flex gap-xs">
+<button class="p-2 rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-on-primary font-bold shadow-sm">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container transition-colors">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container transition-colors">3</button>
+<span class="w-10 h-10 flex items-center justify-center text-on-surface-variant">...</span>
+<button class="p-2 rounded-lg border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Contextual FAB -->
+<div class="fixed bottom-xl right-xl">
+<button class="w-14 h-14 rounded-full bg-primary text-on-primary shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group">
+<span class="material-symbols-outlined text-2xl group-hover:rotate-90 transition-transform">bolt</span>
+<div class="absolute right-full mr-md px-md py-sm bg-inverse-surface text-surface rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-body-sm">
+                    Quick Actions
+                </div>
+</button>
+</div>
+</main>
+<script>
+        // Micro-interaction for Theme Toggle
+        const themeBtn = document.getElementById('theme-toggle');
+        themeBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Search Input Keyboard Shortcut
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                document.querySelector('input[type="text"]').focus();
+            }
+        });
+
+        // Dynamic Active State Simulation
+        const navItems = document.querySelectorAll('aside nav a');
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                navItems.forEach(i => {
+                    i.classList.remove('text-surface-container-lowest', 'border-l-4', 'border-secondary', 'font-bold', 'bg-surface-variant/5');
+                    i.classList.add('text-on-surface-variant', 'font-medium');
+                    const icon = i.querySelector('.material-symbols-outlined');
+                    if(icon) {
+                        icon.style.fontVariationSettings = "'FILL' 0";
+                        icon.classList.remove('text-primary');
+                    }
+                });
+                item.classList.add('text-surface-container-lowest', 'border-l-4', 'border-secondary', 'font-bold', 'bg-surface-variant/5');
+                item.classList.remove('text-on-surface-variant', 'font-medium');
+                const icon = item.querySelector('.material-symbols-outlined');
+                if(icon) {
+                    icon.style.fontVariationSettings = "'FILL' 1";
+                    icon.classList.add('text-primary');
+                }
+            });
+        });
+    </script>
+</body></html>
