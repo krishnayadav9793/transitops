@@ -31,9 +31,9 @@ function App() {
         >
           {/* Default Redirect to Dashboard */}
           <Route index element={<Navigate to="/dashboard" replace />} />
-          
+
           <Route path="dashboard" element={<Dashboard />} />
-          
+
           {/* Vehicles (Manager, Finance) */}
           <Route
             path="vehicles"
