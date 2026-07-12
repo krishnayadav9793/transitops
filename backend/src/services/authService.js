@@ -5,8 +5,28 @@ import { supabase } from '../config/supabase.js';
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_dev_secret';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
-const roleFromUser = (user) =>
-  user.user_roles?.[0]?.roles?.role_name || 'Unknown';
+const ROLE_MAP = {
+  'ADMIN': 'Admin',
+  'FLEET_MANAGER': 'Fleet Manager',
+  'DISPATCHER': 'Dispatcher',
+  'SAFETY_OFFICER': 'Safety Officer',
+  'FINANCIAL_ANALYST': 'Financial Analyst',
+  'DRIVER': 'Driver'
+};
+
+const REVERSE_ROLE_MAP = {
+  'Admin': 'ADMIN',
+  'Fleet Manager': 'FLEET_MANAGER',
+  'Dispatcher': 'DISPATCHER',
+  'Safety Officer': 'SAFETY_OFFICER',
+  'Financial Analyst': 'FINANCIAL_ANALYST',
+  'Driver': 'DRIVER'
+};
+
+const roleFromUser = (user) => {
+  const raw = user?.user_roles?.[0]?.roles?.role_name || 'Unknown';
+  return ROLE_MAP[raw] || raw;
+};
 
 export const authService = {
   async login(email, password) {
@@ -109,14 +129,15 @@ export const authService = {
     if (userErr || !user) throw userErr || new Error('Failed to create user account.');
 
     // 4. Resolve role ID (default to FLEET_MANAGER)
-    const activeRole = role_name || 'FLEET_MANAGER';
+    const dbRoleName = REVERSE_ROLE_MAP[role_name] || role_name || 'FLEET_MANAGER';
     const { data: roleData } = await supabase
       .from('roles')
       .select('role_id')
-      .eq('role_name', activeRole)
+      .eq('role_name', dbRoleName)
       .single();
 
     const finalRoleId = roleData?.role_id || 2; // Default fallback to FLEET_MANAGER (id 2)
+    const activeRoleUserFacing = ROLE_MAP[dbRoleName] || role_name || 'Fleet Manager';
 
     // 5. Insert user role
     await supabase
@@ -131,7 +152,7 @@ export const authService = {
       {
         user_id: user.user_id,
         email: user.email,
-        role_name: activeRole,
+        role_name: activeRoleUserFacing,
       },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
@@ -142,11 +163,12 @@ export const authService = {
         id: user.user_id,
         email: user.email,
         name: user.full_name,
-        role: activeRole,
+        role: activeRoleUserFacing,
       },
       token,
     };
   },
+
 
   async getUserById(userId) {
     const { data: user, error } = await supabase

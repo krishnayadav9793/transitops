@@ -8,8 +8,9 @@ const TripFormModal = ({ onClose, onSuccess }) => {
   const [resources, setResources] = useState({ vehicles: [], drivers: [] });
 
   useEffect(() => {
-    getResources().then(({ data }) => setResources(data));
+    getResources().then((data) => setResources(data || { vehicles: [], drivers: [] }));
   }, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();

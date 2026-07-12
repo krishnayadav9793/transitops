@@ -9,8 +9,9 @@ const VehicleForm = ({ onClose, onSuccess }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getVehicleTypes().then(({ data }) => setTypes(data));
+    getVehicleTypes().then((data) => setTypes(data || []));
   }, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
