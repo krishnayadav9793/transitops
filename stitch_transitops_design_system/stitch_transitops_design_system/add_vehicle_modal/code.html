@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps | Vehicle Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#b1f0ce",
+                    "error": "#ba1a1a",
+                    "primary": "#0f5238",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#fdb96c",
+                    "primary-fixed-dim": "#95d4b3",
+                    "on-primary-container": "#a8e7c5",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#2c694e",
+                    "surface-container-highest": "#e1e3df",
+                    "on-secondary-fixed-variant": "#673d00",
+                    "on-background": "#191c1a",
+                    "inverse-primary": "#95d4b3",
+                    "on-tertiary-fixed": "#1b1b1e",
+                    "background": "#f8faf6",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#e4e1e6",
+                    "surface": "#f8faf6",
+                    "surface-container": "#eceeea",
+                    "surface-bright": "#f8faf6",
+                    "outline-variant": "#bfc9c1",
+                    "on-tertiary-container": "#dbd8dc",
+                    "surface-container-low": "#f2f4f0",
+                    "on-tertiary-fixed-variant": "#47464a",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#eff1ed",
+                    "inverse-surface": "#2e312f",
+                    "surface-container-high": "#e7e9e5",
+                    "primary-container": "#2d6a4f",
+                    "outline": "#707973",
+                    "secondary-fixed": "#ffddbb",
+                    "on-primary-fixed-variant": "#0e5138",
+                    "on-primary-fixed": "#002114",
+                    "tertiary": "#47474a",
+                    "on-surface-variant": "#404943",
+                    "surface-dim": "#d8dbd7",
+                    "secondary-container": "#fdb96c",
+                    "on-secondary-container": "#774700",
+                    "tertiary-fixed-dim": "#c8c5ca",
+                    "secondary": "#86530d",
+                    "tertiary-container": "#5f5e62",
+                    "on-surface": "#191c1a",
+                    "surface-variant": "#e1e3df",
+                    "on-secondary-fixed": "#2b1700"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "sm": "8px",
+                    "sidebar-width": "260px",
+                    "md": "16px",
+                    "container-max": "1440px",
+                    "2xl": "48px",
+                    "base": "4px",
+                    "3xl": "64px",
+                    "xl": "32px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "kpi-md": ["IBM Plex Sans"],
+                    "headline-sm": ["Sora"],
+                    "display-lg": ["Sora"],
+                    "headline-md": ["Sora"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Sora"],
+                    "label-caps": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "kpi-lg": ["IBM Plex Sans"],
+                    "body-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "kpi-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "kpi-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-active {
+            border-left: 4px solid #fdb96c; /* Secondary container color used for the warm bronze accent */
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #bfc9c1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #707973;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Sidebar (As per JSON) -->
+<aside class="w-sidebar-width h-full fixed left-0 top-0 bg-inverse-surface dark:bg-inverse-surface shadow-md flex flex-col py-lg px-md z-30 transition-all duration-200 ease-in-out">
+<div class="mb-3xl">
+<h1 class="font-headline-md text-headline-md font-bold text-surface-lowest">TransitOps</h1>
+<p class="font-body-sm text-body-sm text-surface-variant/70 uppercase tracking-widest mt-xs">Logistics ERP</p>
+</div>
+<nav class="flex-1 space-y-xs overflow-y-auto">
+<a class="flex items-center gap-md px-md py-sm rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg transition-all duration-200 ease-in-out text-surface dark:text-surface-bright border-l-4 border-secondary-container bg-surface-container-highest/10" href="#">
+<span class="material-symbols-outlined">directions_bus</span>
+<span class="font-body-md text-body-md">Vehicles</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-md text-body-md">Drivers</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface" href="#">
+<span class="material-symbols-outlined">route</span>
+<span class="font-body-md text-body-md">Trips</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface" href="#">
+<span class="material-symbols-outlined">settings_suggest</span>
+<span class="font-body-md text-body-md">Maintenance</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface" href="#">
+<span class="material-symbols-outlined">local_gas_station</span>
+<span class="font-body-md text-body-md">Fuel</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-body-md text-body-md">Expenses</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant/20 hover:text-surface" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<div class="pt-lg mt-auto border-t border-surface-variant/10">
+<div class="flex items-center gap-md px-md">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="text-primary font-bold">JD</span>
+</div>
+<div class="overflow-hidden">
+<p class="font-body-md text-surface truncate">John Doe</p>
+<p class="text-xs text-surface-variant/60 truncate">Fleet Administrator</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="ml-sidebar-width sticky top-0 z-20 flex justify-between items-center h-16 px-xl bg-surface/80 backdrop-blur-md shadow-sm">
+<div class="flex items-center gap-xl w-full max-w-xl">
+<h2 class="font-headline-md text-headline-md text-primary font-bold">Vehicles</h2>
+<div class="relative flex-1 group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-3xl pr-md py-sm bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary transition-all" placeholder="Search fleet..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area (Background List - Blurred/Dimmed) -->
+<main class="ml-sidebar-width p-xl min-h-[calc(100vh-64px)] overflow-y-auto filter blur-[2px] opacity-40 transition-all">
+<!-- Dashboard Header Actions -->
+<div class="flex justify-between items-end mb-xl">
+<div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">Fleet Overview</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage and monitor 124 active vehicles across 3 regions.</p>
+</div>
+<button class="bg-primary hover:bg-primary-container text-white px-lg py-sm rounded-lg flex items-center gap-sm transition-all shadow-md">
+<span class="material-symbols-outlined">add</span>
+<span class="font-body-md font-semibold">Add New Vehicle</span>
+</button>
+</div>
+<!-- Vehicle Stats Row -->
+<div class="grid grid-cols-4 gap-lg mb-2xl">
+<div class="bg-white p-lg rounded-xl shadow-sm">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-sm">TOTAL VEHICLES</p>
+<p class="font-kpi-lg text-kpi-lg text-on-surface">142</p>
+<p class="text-xs text-primary font-medium mt-xs">+4 from last month</p>
+</div>
+<div class="bg-white p-lg rounded-xl shadow-sm">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-sm">ACTIVE TRIPS</p>
+<p class="font-kpi-lg text-kpi-lg text-on-surface">86</p>
+<div class="w-full bg-surface-container rounded-full h-1 mt-md">
+<div class="bg-primary h-1 rounded-full w-[60%]"></div>
+</div>
+</div>
+<div class="bg-white p-lg rounded-xl shadow-sm">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-sm">IN MAINTENANCE</p>
+<p class="font-kpi-lg text-kpi-lg text-error">12</p>
+<p class="text-xs text-on-surface-variant mt-xs">Average 2.4 days down</p>
+</div>
+<div class="bg-white p-lg rounded-xl shadow-sm">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-sm">FUEL EFFICIENCY</p>
+<p class="font-kpi-lg text-kpi-lg text-on-surface">8.4 <span class="text-sm font-normal text-on-surface-variant">km/L</span></p>
+<p class="text-xs text-secondary font-medium mt-xs">Target: 9.0 km/L</p>
+</div>
+</div>
+<!-- Fake Data Table -->
+<div class="bg-white rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+<table class="w-full border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-lg py-md text-left font-label-caps text-label-caps text-on-surface-variant">REG. NUMBER</th>
+<th class="px-lg py-md text-left font-label-caps text-label-caps text-on-surface-variant">MODEL</th>
+<th class="px-lg py-md text-left font-label-caps text-label-caps text-on-surface-variant">TYPE</th>
+<th class="px-lg py-md text-left font-label-caps text-label-caps text-on-surface-variant">REGION</th>
+<th class="px-lg py-md text-left font-label-caps text-label-caps text-on-surface-variant">STATUS</th>
+<th class="px-lg py-md text-right font-label-caps text-label-caps text-on-surface-variant">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-lg py-md font-semibold">TR-2023-X102</td>
+<td class="px-lg py-md">Volvo FH16 Globetrotter</td>
+<td class="px-lg py-md">Heavy Duty Truck</td>
+<td class="px-lg py-md">Nordic Hub</td>
+<td class="px-lg py-md"><span class="bg-primary-fixed text-primary px-sm py-xs rounded text-xs font-bold uppercase">Active</span></td>
+<td class="px-lg py-md text-right"><span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span></td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-lg py-md font-semibold">TR-2023-M445</td>
+<td class="px-lg py-md">Mercedes-Benz Actros</td>
+<td class="px-lg py-md">Semi-Trailer</td>
+<td class="px-lg py-md">Central Europe</td>
+<td class="px-lg py-md"><span class="bg-secondary-fixed text-secondary px-sm py-xs rounded text-xs font-bold uppercase">Maintenance</span></td>
+<td class="px-lg py-md text-right"><span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span></td>
+</tr>
+<!-- Add more rows to visualize background better -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-lg py-md font-semibold">TR-2024-S012</td>
+<td class="px-lg py-md">Scania R500</td>
+<td class="px-lg py-md">Heavy Duty Truck</td>
+<td class="px-lg py-md">Coastal Sector</td>
+<td class="px-lg py-md"><span class="bg-primary-fixed text-primary px-sm py-xs rounded text-xs font-bold uppercase">Active</span></td>
+<td class="px-lg py-md text-right"><span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">more_vert</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</main>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-lg">
+<!-- Modal Dialog -->
+<div class="bg-surface-container-lowest w-full max-w-2xl rounded-[16px] shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-300">
+<!-- Modal Header -->
+<div class="px-xl py-lg border-b border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-md">
+<div class="bg-primary-container p-sm rounded-lg text-on-primary-container">
+<span class="material-symbols-outlined">directions_bus</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Add New Vehicle</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Register a new asset into the TransitOps fleet network.</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-container-high p-sm rounded-full transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Body (Form) -->
+<div class="px-xl py-xl overflow-y-auto max-h-[716px]">
+<form class="grid grid-cols-1 md:grid-cols-2 gap-x-xl gap-y-lg" id="vehicleForm">
+<!-- Registration Number -->
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm text-on-surface-variant ml-xs">Registration Number</label>
+<input class="px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface bg-surface-container-lowest" placeholder="e.g. TR-2024-B882" type="text"/>
+</div>
+<!-- Model -->
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm text-on-surface-variant ml-xs">Model / Make</label>
+<input class="px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface bg-surface-container-lowest" placeholder="e.g. Scania R-Series" type="text"/>
+</div>
+<!-- Vehicle Type (Dropdown) -->
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm text-on-surface-variant ml-xs">Vehicle Type</label>
+<div class="relative">
+<select class="w-full appearance-none px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface bg-surface-container-lowest cursor-pointer">
+<option>Heavy Duty Truck</option>
+<option>Semi-Trailer</option>
+<option>Light Commercial Vehicle</option>
+<option>Last-Mile Van</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+</div>
+<!-- Capacity -->
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm text-on-surface-variant ml-xs">Capacity (Weight/Volume)</label>
+<div class="relative">
+<input class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface bg-surface-container-lowest" placeholder="25.5" type="text"/>
+<span class="absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant text-xs font-semibold">TONNES</span>
+</div>
+</div>
+<!-- Fuel Type -->
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm text-on-surface-variant ml-xs">Fuel Type</label>
+<div class="relative">
+<select class="w-full appearance-none px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface bg-surface-container-lowest cursor-pointer">
+<option>Diesel</option>
+<option>LNG / Biogas</option>
+<option>Electric</option>
+<option>Hydrogen</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+</div>
+<!-- Odometer Reading -->
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm text-on-surface-variant ml-xs">Odometer Reading</label>
+<div class="relative">
+<input class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface bg-surface-container-lowest" placeholder="0.00" type="number"/>
+<span class="absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant text-xs font-semibold">KM</span>
+</div>
+</div>
+<!-- Region -->
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm text-on-surface-variant ml-xs">Operating Region</label>
+<div class="relative">
+<select class="w-full appearance-none px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary transition-all text-on-surface bg-surface-container-lowest cursor-pointer">
+<option>Central Hub</option>
+<option>Nordic Corridor</option>
+<option>Coastal Logistics</option>
+<option>Eastern Expressway</option>
+</select>
+<span class="material-symbols-outlined absolute right-md top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
+</div>
+</div>
+<!-- Initial Status -->
+<div class="flex flex-col gap-xs">
+<label class="font-body-sm text-body-sm text-on-surface-variant ml-xs">Initial Status</label>
+<div class="flex items-center gap-md py-sm">
+<label class="flex items-center gap-xs cursor-pointer group">
+<input checked="" class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" name="status" type="radio"/>
+<span class="text-on-surface group-hover:text-primary transition-colors">Active</span>
+</label>
+<label class="flex items-center gap-xs cursor-pointer group">
+<input class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" name="status" type="radio"/>
+<span class="text-on-surface group-hover:text-primary transition-colors">Standby</span>
+</label>
+<label class="flex items-center gap-xs cursor-pointer group">
+<input class="w-4 h-4 text-primary focus:ring-primary border-outline-variant" name="status" type="radio"/>
+<span class="text-on-surface group-hover:text-primary transition-colors">In Prep</span>
+</label>
+</div>
+</div>
+<div class="md:col-span-2 mt-md">
+<div class="p-md bg-surface-container-low rounded-xl border border-dashed border-outline flex items-center justify-center gap-md group cursor-pointer hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">cloud_upload</span>
+<span class="text-on-surface-variant text-body-sm group-hover:text-on-surface transition-colors">Upload vehicle documents or photos (optional)</span>
+</div>
+</div>
+</form>
+</div>
+<!-- Modal Footer -->
+<div class="px-xl py-lg bg-surface-container-low border-t border-outline-variant flex justify-end items-center gap-md">
+<button class="px-lg py-sm font-semibold text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all">
+                    Cancel
+                </button>
+<button class="bg-primary hover:bg-primary-container text-white px-xl py-sm rounded-lg font-semibold shadow-md transform active:scale-95 transition-all">
+                    Save Vehicle
+                </button>
+</div>
+</div>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Close modal simulation
+            const closeBtn = document.querySelector('button .material-symbols-outlined[content="close"]') || document.querySelector('button:has(.material-symbols-outlined:contains("close"))');
+            const cancelBtn = document.querySelector('button:contains("Cancel")');
+            const modalOverlay = document.querySelector('.fixed.inset-0');
+
+            function closeModal() {
+                modalOverlay.classList.add('opacity-0');
+                modalOverlay.querySelector('.bg-surface-container-lowest').classList.add('scale-95', 'translate-y-4');
+                setTimeout(() => {
+                    modalOverlay.style.display = 'none';
+                    document.querySelector('main').classList.remove('blur-[2px]', 'opacity-40');
+                }, 300);
+            }
+
+            // Simple hover effect for inputs
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.querySelector('label')?.classList.add('text-primary');
+                });
+                input.addEventListener('blur', () => {
+                    input.parentElement.querySelector('label')?.classList.remove('text-primary');
+                });
+            });
+        });
+    </script>
+</body></html>

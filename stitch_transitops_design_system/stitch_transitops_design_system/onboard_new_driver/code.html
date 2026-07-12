@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add Driver | TransitOps ERP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e1e3df;
+            border-radius: 10px;
+        }
+        .form-input-focus:focus {
+            outline: none;
+            border-color: #0f5238;
+            ring: 2px;
+            ring-color: rgba(15, 82, 56, 0.1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#707973",
+                        "surface-container-low": "#f2f4f0",
+                        "on-tertiary-container": "#dbd8dc",
+                        "background": "#f8faf6",
+                        "tertiary-container": "#5f5e62",
+                        "primary": "#0f5238",
+                        "on-primary-fixed": "#002114",
+                        "surface-container-highest": "#e1e3df",
+                        "outline-variant": "#bfc9c1",
+                        "secondary": "#86530d",
+                        "on-tertiary-fixed": "#1b1b1e",
+                        "surface-tint": "#2c694e",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#fdb96c",
+                        "on-secondary-fixed-variant": "#673d00",
+                        "surface-bright": "#f8faf6",
+                        "inverse-on-surface": "#eff1ed",
+                        "tertiary-fixed": "#e4e1e6",
+                        "inverse-surface": "#2e312f",
+                        "secondary-fixed": "#ffddbb",
+                        "on-surface": "#191c1a",
+                        "surface-container": "#eceeea",
+                        "primary-container": "#2d6a4f",
+                        "surface-container-high": "#e7e9e5",
+                        "primary-fixed": "#b1f0ce",
+                        "on-tertiary-fixed-variant": "#47464a",
+                        "on-error": "#ffffff",
+                        "tertiary": "#47474a",
+                        "on-surface-variant": "#404943",
+                        "surface-variant": "#e1e3df",
+                        "on-primary-fixed-variant": "#0e5138",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8faf6",
+                        "on-background": "#191c1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d8dbd7",
+                        "primary-fixed-dim": "#95d4b3",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#95d4b3",
+                        "on-secondary-container": "#774700",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c8c5ca",
+                        "on-primary-container": "#a8e7c5",
+                        "secondary-container": "#fdb96c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "lg": "24px",
+                        "base": "4px",
+                        "md": "16px",
+                        "3xl": "64px",
+                        "container-max": "1440px",
+                        "sidebar-width": "260px",
+                        "2xl": "48px",
+                        "xs": "4px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "kpi-lg": ["IBM Plex Sans"],
+                        "headline-sm": ["Sora"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Sora"],
+                        "kpi-md": ["IBM Plex Sans"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Sora"],
+                        "display-lg": ["Sora"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "kpi-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "kpi-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- Fixed SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[260px] bg-inverse-surface flex flex-col py-lg z-[60] shadow-sm">
+<div class="px-lg mb-3xl">
+<h1 class="font-headline-md text-headline-md text-surface-container-lowest font-bold tracking-tight">TransitOps ERP</h1>
+<p class="font-body-sm text-body-sm text-outline-variant opacity-80">Enterprise Logistics</p>
+</div>
+<nav class="flex-1 space-y-base px-sm">
+<!-- Active Tab: Driver Fleet -->
+<a class="flex items-center gap-md px-lg py-md text-outline-variant font-medium hover:text-surface-container-highest hover:bg-surface-variant/10 transition-colors active:scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-surface-container-lowest font-bold border-l-4 border-secondary-fixed bg-surface-variant/10 active:scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-body-md">Driver Fleet</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-outline-variant font-medium hover:text-surface-container-highest hover:bg-surface-variant/10 transition-colors active:scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined">route</span>
+<span class="font-body-md">Routes</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-outline-variant font-medium hover:text-surface-container-highest hover:bg-surface-variant/10 transition-colors active:scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined">security</span>
+<span class="font-body-md">Safety Metrics</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-outline-variant font-medium hover:text-surface-container-highest hover:bg-surface-variant/10 transition-colors active:scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Maintenance</span>
+</a>
+</nav>
+<div class="mt-auto px-sm border-t border-surface-variant/10 pt-lg space-y-base">
+<a class="flex items-center gap-md px-lg py-md text-outline-variant font-medium hover:text-surface-container-highest hover:bg-surface-variant/10 transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md">Support</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-outline-variant font-medium hover:text-surface-container-highest hover:bg-surface-variant/10 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Fixed TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-260px)] z-50 bg-surface shadow-sm flex justify-between items-center px-xl h-16 ml-[260px]">
+<div class="flex items-center gap-xl">
+<h2 class="font-headline-sm text-headline-sm font-bold text-primary">Driver Management</h2>
+<div class="relative w-80 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-lg pl-10 pr-md py-sm text-body-sm focus:ring-1 focus:ring-primary-container transition-all" placeholder="Search drivers, IDs, or vehicles..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<div class="flex items-center gap-md border-r border-outline-variant/30 pr-lg">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer active:opacity-80">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer active:opacity-80">history</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer active:opacity-80">download</button>
+</div>
+<div class="flex items-center gap-md pl-sm">
+<div class="text-right">
+<p class="font-body-sm font-semibold text-on-surface">Alex Rivera</p>
+<p class="text-[10px] text-outline uppercase tracking-wider">Fleet Admin</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border-2 border-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a logistics administrator in a modern office, wearing a professional charcoal blazer. The lighting is soft and corporate, with a shallow depth of field showing a blurred office environment in the background. The aesthetic is clean, professional, and reflects an executive enterprise environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClVtnuVx9MSb7siDXowD_pVLuVM8KdFvNwocJw_X7k4o43ZMTVY5FcADfap_NjP3Jz1FogwO1-4iHBXd698UBDuNOxGwfelfudh3V0N6FR1ymf8BiAda6H5uEBxvVZvMevo80vUpdJBE-vEQFheDRC_oXm7s2NTB61O_lsOcC1tJ6A_ocNxVjewqbZKf-xcsk4U1RGVAMB1d2nCB2ZkwsfRMNAae5ThJtFpKDZdsnWpCAkV-kkqE0kpS9jcWL9fFoe5DuDZy0tswCM"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[260px] pt-24 px-xl pb-xl max-w-container-max mx-auto">
+<!-- Breadcrumbs & Header -->
+<div class="mb-lg flex justify-between items-end">
+<div>
+<nav class="flex items-center gap-sm text-outline mb-sm">
+<span class="font-label-caps text-label-caps">Fleet</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="font-label-caps text-label-caps text-primary">Add New Driver</span>
+</nav>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">Register New Personnel</h3>
+</div>
+<button class="flex items-center gap-sm px-lg py-md rounded-lg text-primary border border-primary/20 hover:bg-primary/5 transition-all font-medium">
+<span class="material-symbols-outlined">close</span>
+<span class="font-body-md">Cancel &amp; Exit</span>
+</button>
+</div>
+<!-- Form Layout: Asymmetric Two-Column Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<!-- Main Form Card (Level 1 Surface) -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] p-xl border border-surface-container">
+<form class="space-y-2xl">
+<!-- Section: Basic Information -->
+<section>
+<div class="flex items-center gap-md mb-lg border-b border-surface-container-low pb-sm">
+<span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">1</span>
+<h4 class="font-headline-sm text-headline-sm">Basic Information</h4>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">FULL NAME</label>
+<input class="w-full border-outline-variant rounded-lg p-md text-body-md form-input-focus" placeholder="e.g. Jonathan Harker" type="text"/>
+</div>
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">EMPLOYEE ID (OPTIONAL)</label>
+<input class="w-full border-outline-variant rounded-lg p-md text-body-md form-input-focus" placeholder="TX-9920" type="text"/>
+</div>
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">EMAIL ADDRESS</label>
+<input class="w-full border-outline-variant rounded-lg p-md text-body-md form-input-focus" placeholder="j.harker@transitops.com" type="email"/>
+</div>
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">PHONE NUMBER</label>
+<input class="w-full border-outline-variant rounded-lg p-md text-body-md form-input-focus" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+<div class="md:col-span-2 space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">RESIDENTIAL ADDRESS</label>
+<textarea class="w-full border-outline-variant rounded-lg p-md text-body-md form-input-focus resize-none" placeholder="Street address, City, State, ZIP code" rows="2"></textarea>
+</div>
+</div>
+</section>
+<!-- Section: License Details -->
+<section>
+<div class="flex items-center gap-md mb-lg border-b border-surface-container-low pb-sm">
+<span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">2</span>
+<h4 class="font-headline-sm text-headline-sm">License &amp; Certifications</h4>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">LICENSE NUMBER</label>
+<input class="w-full border-outline-variant rounded-lg p-md text-body-md form-input-focus" placeholder="D-8829-331" type="text"/>
+</div>
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">LICENSE CLASS</label>
+<select class="w-full border-outline-variant rounded-lg p-md text-body-md form-input-focus bg-surface-container-lowest appearance-none">
+<option>Class A (CDL)</option>
+<option>Class B (CDL)</option>
+<option>Class C (Standard)</option>
+<option>Specialist/Heavy</option>
+</select>
+</div>
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">EXPIRY DATE</label>
+<input class="w-full border-outline-variant rounded-lg p-md text-body-md form-input-focus" type="date"/>
+</div>
+</div>
+</section>
+<!-- Section: Employment Details -->
+<section>
+<div class="flex items-center gap-md mb-lg border-b border-surface-container-low pb-sm">
+<span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">3</span>
+<h4 class="font-headline-sm text-headline-sm">Employment Data</h4>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">HIRE DATE</label>
+<input class="w-full border-outline-variant rounded-lg p-md text-body-md form-input-focus" type="date"/>
+</div>
+<div class="space-y-sm">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">ASSIGNED REGION</label>
+<select class="w-full border-outline-variant rounded-lg p-md text-body-md form-input-focus bg-surface-container-lowest appearance-none">
+<option>Northeast Logistics Hub</option>
+<option>Southwest Distribution</option>
+<option>Pacific Coast Corridor</option>
+<option>Central Plains Route</option>
+</select>
+</div>
+</div>
+</section>
+<!-- Form Footer Actions -->
+<div class="pt-xl border-t border-surface-container flex justify-end gap-md">
+<button class="px-xl py-md text-on-surface-variant font-medium hover:bg-surface-container transition-colors rounded-lg" type="reset">Clear All</button>
+<button class="px-3xl py-md bg-primary text-on-primary font-bold rounded-lg shadow-sm hover:bg-primary-container transition-all active:scale-95 flex items-center gap-md" type="submit">
+<span class="material-symbols-outlined">save</span>
+                            Save Driver
+                        </button>
+</div>
+</form>
+</div>
+<!-- Sidebar Contextual Area: File Uploads & Profile Photo -->
+<div class="lg:col-span-4 space-y-xl">
+<!-- Profile Image Upload Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] p-lg border border-surface-container text-center">
+<h5 class="font-label-caps text-label-caps text-on-surface-variant mb-lg uppercase">Profile Photo</h5>
+<div class="w-32 h-32 mx-auto rounded-full bg-surface-container-high flex flex-col items-center justify-center border-2 border-dashed border-outline-variant group cursor-pointer hover:border-primary transition-all mb-md overflow-hidden relative">
+<span class="material-symbols-outlined text-outline-variant text-[40px] group-hover:text-primary">person_add</span>
+<p class="text-[10px] text-outline group-hover:text-primary-container px-sm leading-tight mt-sm">CLICK TO UPLOAD</p>
+</div>
+<p class="text-body-sm text-outline-variant italic">Accepted formats: JPG, PNG (Max 5MB)</p>
+</div>
+<!-- Document Upload Area -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)] p-lg border border-surface-container">
+<h5 class="font-label-caps text-label-caps text-on-surface-variant mb-lg uppercase">Required Documents</h5>
+<div class="space-y-md">
+<!-- License Scan -->
+<div class="p-md rounded-lg bg-background border border-surface-container-high group cursor-pointer hover:border-primary/30 transition-all">
+<div class="flex items-center justify-between mb-xs">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">badge</span>
+<span class="font-body-md font-medium">Driver License Scan</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary">cloud_upload</span>
+</div>
+<div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-0 h-full bg-primary group-hover:w-full transition-all duration-700"></div>
+</div>
+</div>
+<!-- Medical Certificate -->
+<div class="p-md rounded-lg bg-background border border-surface-container-high group cursor-pointer hover:border-primary/30 transition-all">
+<div class="flex items-center justify-between mb-xs">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">medical_services</span>
+<span class="font-body-md font-medium">Medical Certificate</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary">cloud_upload</span>
+</div>
+<div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-0 h-full bg-secondary group-hover:w-full transition-all duration-700"></div>
+</div>
+</div>
+<!-- Background Check -->
+<div class="p-md rounded-lg bg-background border border-surface-container-high group cursor-pointer hover:border-primary/30 transition-all">
+<div class="flex items-center justify-between mb-xs">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-tertiary">fact_check</span>
+<span class="font-body-md font-medium">Clearance Report</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-tertiary">cloud_upload</span>
+</div>
+<div class="h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-0 h-full bg-tertiary group-hover:w-full transition-all duration-700"></div>
+</div>
+</div>
+</div>
+<div class="mt-lg p-md bg-secondary/5 border border-secondary/10 rounded-lg">
+<div class="flex gap-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">info</span>
+<p class="text-body-sm text-secondary-fixed-dim font-medium leading-tight">
+                                Documents must be current and clearly legible. System will auto-verify OCR data.
+                            </p>
+</div>
+</div>
+</div>
+<!-- Guidance Widget -->
+<div class="p-lg bg-inverse-surface rounded-xl text-surface-container-lowest">
+<h6 class="font-headline-sm text-headline-sm mb-sm">Setup Guide</h6>
+<ul class="space-y-sm">
+<li class="flex items-center gap-sm text-body-sm opacity-80">
+<span class="material-symbols-outlined text-[18px] text-primary-fixed">check_circle</span>
+                            Review license validity periods
+                        </li>
+<li class="flex items-center gap-sm text-body-sm opacity-80">
+<span class="material-symbols-outlined text-[18px] text-primary-fixed">check_circle</span>
+                            Confirm regional zone assignments
+                        </li>
+<li class="flex items-center gap-sm text-body-sm opacity-80">
+<span class="material-symbols-outlined text-[18px] text-primary-fixed">check_circle</span>
+                            Employee ID is generated on save
+                        </li>
+</ul>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple form interaction
+        document.querySelectorAll('input, select, textarea').forEach(element => {
+            element.addEventListener('focus', function() {
+                this.parentElement.querySelector('label')?.classList.add('text-primary');
+            });
+            element.addEventListener('blur', function() {
+                this.parentElement.querySelector('label')?.classList.remove('text-primary');
+            });
+        });
+
+        // Form submission micro-interaction
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> Saving...`;
+            btn.classList.add('opacity-80', 'pointer-events-none');
+            
+            setTimeout(() => {
+                btn.innerHTML = `<span class="material-symbols-outlined">check</span> Success`;
+                btn.classList.remove('bg-primary');
+                btn.classList.add('bg-emerald-600');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('bg-emerald-600', 'opacity-80', 'pointer-events-none');
+                    btn.classList.add('bg-primary');
+                }, 2000);
+            }, 1500);
+        });
+    </script>
+</body></html>

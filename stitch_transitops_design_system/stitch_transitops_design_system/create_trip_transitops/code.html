@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TransitOps - Create Trip Dispatch</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#404943",
+                    "outline-variant": "#bfc9c1",
+                    "tertiary-container": "#5f5e62",
+                    "secondary": "#86530d",
+                    "on-error-container": "#93000a",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#dbd8dc",
+                    "outline": "#707973",
+                    "on-primary-fixed": "#002114",
+                    "surface-container-low": "#f2f4f0",
+                    "on-surface": "#191c1a",
+                    "on-tertiary-fixed-variant": "#47464a",
+                    "tertiary-fixed-dim": "#c8c5ca",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e1e3df",
+                    "primary-fixed": "#b1f0ce",
+                    "primary-container": "#2d6a4f",
+                    "on-secondary-container": "#774700",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#ffddbb",
+                    "on-background": "#191c1a",
+                    "surface-tint": "#2c694e",
+                    "inverse-on-surface": "#eff1ed",
+                    "surface-bright": "#f8faf6",
+                    "surface-dim": "#d8dbd7",
+                    "on-tertiary-fixed": "#1b1b1e",
+                    "primary-fixed-dim": "#95d4b3",
+                    "surface-container-high": "#e7e9e5",
+                    "background": "#f8faf6",
+                    "tertiary": "#47474a",
+                    "secondary-container": "#fdb96c",
+                    "on-secondary-fixed-variant": "#673d00",
+                    "tertiary-fixed": "#e4e1e6",
+                    "surface-container-highest": "#e1e3df",
+                    "on-primary-fixed-variant": "#0e5138",
+                    "on-primary-container": "#a8e7c5",
+                    "surface": "#f8faf6",
+                    "primary": "#0f5238",
+                    "inverse-surface": "#2e312f",
+                    "on-secondary-fixed": "#2b1700",
+                    "inverse-primary": "#95d4b3",
+                    "surface-container": "#eceeea",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#fdb96c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "3xl": "64px",
+                    "sidebar-width": "260px",
+                    "2xl": "48px",
+                    "lg": "24px",
+                    "container-max": "1440px",
+                    "base": "4px",
+                    "xl": "32px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "md": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "display-lg": ["Sora"],
+                    "label-caps": ["Inter"],
+                    "kpi-md": ["IBM Plex Sans"],
+                    "headline-sm": ["Sora"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Sora"],
+                    "headline-lg": ["Sora"],
+                    "body-sm": ["Inter"],
+                    "kpi-lg": ["IBM Plex Sans"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "kpi-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                    "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "kpi-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .step-active { @apply text-primary font-bold; }
+        .form-input-focus { @apply focus:ring-primary-container focus:border-primary-container; }
+        body { background-color: #F7F7F5; }
+    </style>
+</head>
+<body class="font-body-md text-on-surface overflow-hidden">
+<!-- Fixed SideNavBar (The Anchor) -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar-width bg-inverse-surface flex flex-col py-lg z-50">
+<div class="px-md mb-3xl">
+<h1 class="font-headline-md text-headline-md font-bold text-white tracking-tight">TransitOps</h1>
+<p class="font-label-caps text-label-caps text-surface-variant opacity-70">Enterprise Logistics</p>
+</div>
+<nav class="flex-1 space-y-base">
+<!-- Navigation Items Mapping from JSON -->
+<a class="flex items-center px-lg py-md text-surface-variant font-body-md hover:bg-on-surface-variant hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="dashboard">dashboard</span>
+<span>Fleet Overview</span>
+</a>
+<a class="flex items-center px-lg py-md text-surface-variant font-body-md hover:bg-on-surface-variant hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="directions_bus">directions_bus</span>
+<span>Vehicle Management</span>
+</a>
+<a class="flex items-center px-lg py-md text-surface-variant font-body-md hover:bg-on-surface-variant hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="person_pin">person_pin</span>
+<span>Driver Management</span>
+</a>
+<a class="flex items-center px-lg py-md text-white border-l-4 border-secondary font-bold hover:bg-on-surface-variant transition-colors" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="route">route</span>
+<span>Trip Dispatch</span>
+</a>
+</nav>
+<div class="mt-auto pt-lg border-t border-on-surface-variant/20">
+<a class="flex items-center px-lg py-sm text-surface-variant font-body-md hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center px-lg py-sm text-surface-variant font-body-md hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="help">help</span>
+<span>Support</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-0 h-16 bg-surface shadow-sm flex justify-between items-center pl-[260px] pr-xl z-40">
+<div class="flex items-center">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="bg-surface-container pl-10 pr-md py-sm rounded-lg border-none focus:ring-1 focus:ring-primary w-64 text-body-sm transition-all" placeholder="Search orders, drivers..." type="text"/>
+</div>
+<nav class="ml-xl flex gap-xl">
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors" href="#">Workspaces</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-colors" href="#">Operations</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">Dispatch</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-sm text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-sm text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center text-white font-bold text-xs overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a senior logistics manager in a modern office, wearing a charcoal blazer and a subtle smile. The background is a blurred high-tech control center with data visualization screens in emerald and slate tones. The lighting is soft, cinematic, and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAn5wNmFQrD9WBMpDKeiTGt9rAmAzDrHJyAERoGEwtF22Y70aLkZaWsxmZswyjtakNmkmpXdffhWc80JYbXoCO2cOn9igv8qBQf385INUbuvdeRx9BEcFV4H2xicX-NC-zmnxVNFyddiLeydBzsoezr0xfGEHC-sODco7nJXIc6JaVAGt502OvdhTgoHJHLkwOxlRdOPmdt3N7uvEjJxIjcwYcznMnRZiPKDkIBAmAJX_4qpLL_bnMT4y6X6oC6ydnu9x8H4V6y0BA6"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-[260px] mt-16 p-xl h-[calc(100vh-64px)] overflow-y-auto">
+<div class="max-w-container-max mx-auto">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-xl">
+<div>
+<nav class="flex items-center gap-xs text-outline mb-xs">
+<span class="text-body-sm">Dispatch</span>
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+<span class="text-body-sm text-on-surface-variant">Create Trip</span>
+</nav>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">New Dispatch Creation</h2>
+</div>
+<div class="flex gap-md">
+<button class="px-lg py-sm border border-outline-variant text-on-surface-variant font-body-md rounded-lg hover:bg-surface-container-low transition-all">
+                        Discard Draft
+                    </button>
+<div class="h-10 w-[1px] bg-outline-variant mx-sm"></div>
+<div class="flex items-center gap-sm text-outline font-body-sm">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+<span>Auto-saved 2m ago</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-xl">
+<!-- Left: Form Sections (Bento-style Modules) -->
+<div class="col-span-8 space-y-lg">
+<!-- Section 1: Trip Details -->
+<section class="bg-white rounded-xl shadow-md border border-outline-variant/30 overflow-hidden">
+<div class="px-xl py-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-md">
+<span class="h-8 w-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</span>
+<h3 class="font-headline-sm text-headline-sm">Trip Logistics &amp; Cargo</h3>
+</div>
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+</div>
+<div class="p-xl grid grid-cols-2 gap-lg">
+<div class="space-y-sm">
+<label class="font-body-sm text-on-surface-variant block">Source Location</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-primary" data-icon="location_on">location_on</span>
+<input class="w-full pl-10 pr-md py-md bg-surface-bright border border-outline-variant rounded-lg font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" type="text" value="San Francisco Port, Terminal 4"/>
+</div>
+</div>
+<div class="space-y-sm">
+<label class="font-body-sm text-on-surface-variant block">Destination Hub</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-secondary" data-icon="flag">flag</span>
+<input class="w-full pl-10 pr-md py-md bg-surface-bright border border-outline-variant rounded-lg font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="Search destination..." type="text"/>
+</div>
+</div>
+<div class="space-y-sm">
+<label class="font-body-sm text-on-surface-variant block">Cargo Weight (kg)</label>
+<div class="flex items-center">
+<input class="flex-1 px-md py-md bg-surface-bright border border-outline-variant rounded-l-lg font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" type="number" value="12450"/>
+<span class="px-md py-md bg-surface-container-high border border-l-0 border-outline-variant rounded-r-lg text-body-sm font-bold text-on-surface-variant">KG</span>
+</div>
+</div>
+<div class="space-y-sm">
+<label class="font-body-sm text-on-surface-variant block">Estimated Distance (km)</label>
+<div class="flex items-center">
+<input class="flex-1 px-md py-md bg-surface-bright border border-outline-variant rounded-l-lg font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" type="number" value="482"/>
+<span class="px-md py-md bg-surface-container-high border border-l-0 border-outline-variant rounded-r-lg text-body-sm font-bold text-on-surface-variant">KM</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Assignment -->
+<section class="bg-white rounded-xl shadow-md border border-outline-variant/30 overflow-hidden">
+<div class="px-xl py-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-md">
+<span class="h-8 w-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</span>
+<h3 class="font-headline-sm text-headline-sm">Resource Assignment</h3>
+</div>
+<span class="material-symbols-outlined text-primary" data-icon="assignment_ind">assignment_ind</span>
+</div>
+<div class="p-xl grid grid-cols-2 gap-lg">
+<div class="space-y-md">
+<label class="font-body-sm text-on-surface-variant block">Assigned Vehicle</label>
+<div class="p-md border border-outline-variant rounded-lg hover:border-primary cursor-pointer transition-all flex items-center gap-md group">
+<div class="h-12 w-12 bg-surface-container rounded flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" data-icon="truck_icon" style="font-size: 32px;">local_shipping</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md font-bold text-on-surface">Freightliner Cascadia #882</p>
+<p class="text-body-sm text-on-surface-variant">Capacity: 15,000kg • Status: Ready</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="space-y-md">
+<label class="font-body-sm text-on-surface-variant block">Assigned Driver</label>
+<div class="p-md border border-outline-variant rounded-lg hover:border-primary cursor-pointer transition-all flex items-center gap-md group">
+<div class="h-12 w-12 rounded-full overflow-hidden border-2 border-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a delivery truck driver in a clean emerald green uniform polo. The driver is a middle-aged man with a confident expression. The background is a clean, bright logistics yard during a clear day with soft natural sunlight. Professional corporate photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh1aKdB5yZ5jVxJce2tlnATfz_Q2kbbJ8KHMRedKlnkdluXrJO72ctju9U644BCXPRYtfLA9DLePm0qb7w3CHlAInT_EmGmeHeyO-wcx8UD6q7K598leI4KgYRnqrMMFxDN7vW_Pe1cArn1iI4GLCr6zlc_b3SnKmBcdbLHs0SI48gTbq-F201U2IDa-r3klxN6O6Yl7trceneURNsjXYL5FUASLNA7UcEoZltheXG_o5z-JYEj7WbUIJhyG0AaSip5PhQBUWG_JPW"/>
+</div>
+<div class="flex-1">
+<p class="font-body-md font-bold text-on-surface">Marcus Thorne</p>
+<p class="text-body-sm text-on-surface-variant">ID: 0492-MT • Rating: 4.9★</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Financials -->
+<section class="bg-white rounded-xl shadow-md border border-outline-variant/30 overflow-hidden">
+<div class="px-xl py-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-md">
+<span class="h-8 w-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">3</span>
+<h3 class="font-headline-sm text-headline-sm">Trip Financials</h3>
+</div>
+<span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+</div>
+<div class="p-xl">
+<div class="grid grid-cols-3 gap-xl">
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/20">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-xs">Base Revenue</p>
+<div class="flex items-baseline gap-xs">
+<span class="text-body-sm font-bold text-primary">$</span>
+<span class="font-kpi-md text-kpi-md">3,450.00</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/20">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-xs">Fuel Surcharge</p>
+<div class="flex items-baseline gap-xs">
+<span class="text-body-sm font-bold text-primary">$</span>
+<span class="font-kpi-md text-kpi-md">412.50</span>
+</div>
+</div>
+<div class="bg-primary p-lg rounded-xl shadow-lg shadow-primary-container/20">
+<p class="font-label-caps text-label-caps text-on-primary/80 mb-xs uppercase">Total Trip Value</p>
+<div class="flex items-baseline gap-xs text-white">
+<span class="text-body-sm font-bold">$</span>
+<span class="font-kpi-lg text-kpi-lg">3,862.50</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right: Validation Panel (Floating Sidebar) -->
+<div class="col-span-4 space-y-lg">
+<div class="bg-white rounded-xl shadow-md border border-outline-variant/30 p-xl sticky top-0">
+<div class="flex items-center justify-between mb-xl">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Dispatch Validation</h3>
+<span class="px-sm py-xs bg-error-container text-on-error-container rounded text-body-sm font-bold">3 Issues</span>
+</div>
+<div class="space-y-lg">
+<!-- Requirement Items -->
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-primary mt-1" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-1">
+<p class="font-body-md font-bold text-on-surface">Route Feasibility</p>
+<p class="text-body-sm text-on-surface-variant">Validated through GPS hub clusters.</p>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-primary mt-1" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-1">
+<p class="font-body-md font-bold text-on-surface">Driver Eligibility</p>
+<p class="text-body-sm text-on-surface-variant">Marcus Thorne is within HOS limits.</p>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-error mt-1" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="flex-1">
+<p class="font-body-md font-bold text-error">Cargo Overweight Alert</p>
+<p class="text-body-sm text-on-surface-variant">Weight exceeds standard toll limits by 2.4%.</p>
+<button class="mt-xs text-primary font-body-sm font-bold hover:underline">Apply Permit</button>
+</div>
+</div>
+<div class="flex items-start gap-md">
+<span class="material-symbols-outlined text-outline mt-1" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<div class="flex-1 opacity-50">
+<p class="font-body-md font-bold text-on-surface">Fuel Optimization</p>
+<p class="text-body-sm text-on-surface-variant">Waiting for assigned gas stations.</p>
+</div>
+</div>
+</div>
+<div class="mt-2xl pt-xl border-t border-outline-variant/30">
+<div class="bg-surface-container-low p-md rounded-lg flex items-center gap-md mb-xl">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="info">info</span>
+<p class="text-body-sm text-on-surface-variant">Operational readiness is currently <span class="font-bold text-on-surface">82%</span> based on 5 parameters.</p>
+</div>
+</div>
+</div>
+<!-- Small Map Module -->
+<div class="rounded-xl overflow-hidden shadow-md border border-outline-variant/30 h-48 relative">
+<img class="w-full h-full object-cover" data-alt="A detailed digital map view showing a logistic route between two points in a clean, modern aesthetic. The map uses a sophisticated color palette of desaturated greys and silvers, with the route highlighted in a vibrant emerald green glow. Icons for pickup and delivery locations are clearly marked with professional map pins." data-location="San Francisco" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD21Gel-pxwiUCb6uQIzFjXa6Wy1mXYvSXN58tQGx74u3kSdkjcF7KbstIb7h-oNEpXSwoVg8AxwsvlgOPxOW6mu98P7xgTauYJ1uCHkZ8sOuHG-wQQ5aX7_gZbgo6ghh_DKDEYbtQtMHVgNoNGgoEHA6q_0y6eIaUFSvLjm7MZiwruzLsZNRnr0FzrE-IfarC2IVOAl8_mqrLQ3T74m_HxN1fZuSv6hw9K-Ng4TMRGC-bhkzzboAyjnR5zYzu-HfbcneoUqHCbrAr3"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-md">
+<p class="text-white text-body-sm font-bold">Route Preview: West Coast Corridor</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Bottom Action Bar -->
+<footer class="fixed bottom-0 left-[260px] right-0 h-20 bg-white border-t border-outline-variant/30 shadow-xl flex items-center justify-between px-xl z-50">
+<div class="flex items-center gap-xl">
+<div class="flex flex-col">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Workflow Status</span>
+<span class="text-body-md font-bold text-primary flex items-center gap-xs">
+<span class="h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+                    Draft Configuration
+                </span>
+</div>
+<div class="h-10 w-[1px] bg-outline-variant/50"></div>
+<p class="text-body-sm text-on-surface-variant">Estimated arrival: Oct 24, 14:00 (PDT)</p>
+</div>
+<div class="flex gap-lg">
+<button class="px-xl py-md font-body-md font-bold text-primary hover:bg-primary/5 rounded-lg transition-all flex items-center gap-md">
+<span class="material-symbols-outlined" data-icon="save">save</span>
+                Save as Draft
+            </button>
+<button class="px-3xl py-md bg-primary text-white font-body-md font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary-container transition-all flex items-center gap-md">
+<span class="material-symbols-outlined" data-icon="send" style="font-variation-settings: 'FILL' 1;">send</span>
+                Execute Dispatch
+            </button>
+</div>
+</footer>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.parentElement.classList.add('border-primary');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.parentElement.classList.remove('border-primary');
+            });
+        });
+    </script>
+</body></html>
