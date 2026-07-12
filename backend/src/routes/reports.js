@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.use(authenticateToken);
 
-router.get('/', checkRole(['Fleet Manager', 'Financial Analyst']), getVehicleROI);
+router.get('/roi', checkRole(['Fleet Manager', 'Financial Analyst']), getVehicleROI);
 
 export default router;
