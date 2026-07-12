@@ -73,3 +73,18 @@ export const getMaintenanceTypes = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const getMaintenanceLogById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data, error } = await supabase.from('maintenance_records')
+            .select('*, vehicles(*), maintenance_types(*), maintenance_statuses(*), users:reported_by(full_name)')
+            .eq('maintenance_id', id)
+            .single();
+        if (error) throw error;
+        if (!data) return res.status(404).json({ error: 'Maintenance record not found.' });
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

@@ -1,9 +1,14 @@
-// Authentication Controller - Developer 1
+import { authService } from '../services/authService.js';
 
 export const login = async (req, res, next) => {
   try {
-    // TODO: Implement login verification and token generation
-    return res.status(200).json({ message: 'Login endpoint template' });
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
+    }
+
+    const result = await authService.login(email, password);
+    res.json(result);
   } catch (error) {
     next(error);
   }
@@ -11,8 +16,7 @@ export const login = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    // TODO: Implement logout logic
-    return res.status(200).json({ message: 'Logout endpoint template' });
+    res.json({ message: 'Logged out successfully.' });
   } catch (error) {
     next(error);
   }
@@ -20,8 +24,8 @@ export const logout = async (req, res, next) => {
 
 export const getCurrentUser = async (req, res, next) => {
   try {
-    // TODO: Implement current user retrieval
-    return res.status(200).json({ message: 'Get current user template' });
+    const user = await authService.getUserById(req.user.user_id);
+    res.json({ user });
   } catch (error) {
     next(error);
   }

@@ -23,126 +23,115 @@ function App() {
         {/* Auth Route */}
         <Route path="/login" element={<Login />} />
 
-      
       <Route path="/" element={<Layout />}>
-        
         <Route index element={<Navigate to="/dashboard" replace />} />
         
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="vehicles" element={<VehicleList />} />
-        <Route path="drivers" element={<DriverList />} />
-        <Route path="trips" element={<TripList />} />
-        <Route path="maintenance" element={<MaintenanceLogs />} />
-        <Route path="expenses" element={<ExpenseLedger />} />
-        <Route path="reports" element={<AnalyticsReports />} />
+
+        {/* Vehicles (Manager, Finance) */}
+        <Route
+          path="vehicles"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
+              <VehicleList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="vehicles/:id"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
+              <VehicleDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Drivers (Manager, Safety) */}
+        <Route
+          path="drivers"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager', 'Safety Officer']}>
+              <DriverList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="drivers/:id"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager', 'Safety Officer']}>
+              <DriverProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Trips (Manager, Driver) */}
+        <Route
+          path="trips"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager', 'Driver']}>
+              <TripList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="trips/:id"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager', 'Driver']}>
+              <TripDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Maintenance (Manager) */}
+        <Route
+          path="maintenance"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager']}>
+              <MaintenanceLogs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="maintenance/schedule"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager']}>
+              <ScheduleMaintenance />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="maintenance/:id"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager']}>
+              <MaintenanceDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Expenses (Manager, Finance, Driver) */}
+        <Route
+          path="expenses"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst', 'Driver']}>
+              <ExpenseLedger />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Reports (Manager, Finance) */}
+        <Route
+          path="reports"
+          element={
+            <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
+              <AnalyticsReports />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
-          <Route path="dashboard" element={<Dashboard />} />
-
-          {/* Vehicles (Manager, Finance) */}
-          <Route
-            path="vehicles"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
-                <VehicleList />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="vehicles/:id"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
-                <VehicleDetails />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Drivers (Manager, Safety) */}
-          <Route
-            path="drivers"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager', 'Safety Officer']}>
-                <DriverList />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="drivers/:id"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager', 'Safety Officer']}>
-                <DriverProfile />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Trips (Manager, Driver) */}
-          <Route
-            path="trips"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager', 'Driver']}>
-                <TripList />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="trips/:id"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager', 'Driver']}>
-                <TripDetails />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Maintenance (Manager) */}
-          <Route
-            path="maintenance"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager']}>
-                <MaintenanceLogs />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="maintenance/schedule"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager']}>
-                <ScheduleMaintenance />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="maintenance/:id"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager']}>
-                <MaintenanceDetails />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Expenses (Manager, Finance, Driver) */}
-          <Route
-            path="expenses"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst', 'Driver']}>
-                <ExpenseLedger />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Reports (Manager, Finance) */}
-          <Route
-            path="reports"
-            element={
-              <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
-                <AnalyticsReports />
-              </ProtectedRoute>
-            }
-          />
-       
-
-        {/* Fallback route */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+      {/* Fallback route */}
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
   );
 }
 
