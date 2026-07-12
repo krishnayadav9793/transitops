@@ -7,7 +7,7 @@ export const initWebSocket = (server) => {
 
   io = new Server(server, {
     cors: {
-      origin: '*', // Prototypes wildcard (restrict in production)
+      origin: '*', 
       methods: ['GET', 'POST']
     }
   });
@@ -15,7 +15,7 @@ export const initWebSocket = (server) => {
   io.on('connection', (socket) => {
     console.log('[Socket.io Server] New client connected. Socket ID:', socket.id);
 
-    // Welcome handshake frame
+    
     socket.emit('connection-status', {
       status: 'connected',
       time: new Date().toISOString()
