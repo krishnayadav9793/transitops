@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import express from 'express';
 import { 
     getTrips, 
@@ -29,3 +30,25 @@ router.patch('/:id/complete', completeTrip);
 router.patch('/:id/cancel', cancelTrip);
 
 export default router;
+=======
+import express from 'express';
+import {
+  getTrips,
+  createTrip,
+  updateTripStatus,
+  getEligibleResources,
+  getTripById
+} from '../controllers/tripController.js';
+import { authenticateToken, checkRole } from '../middleware/authMiddleware.js';
+
+const router = express.Router();
+
+router.use(authenticateToken);
+router.get('/', getTrips);
+router.get('/resources', getEligibleResources);
+router.get('/:id', getTripById);
+router.post('/', checkRole(['Fleet Manager', 'Driver']), createTrip);
+router.patch('/:id/status', checkRole(['Fleet Manager', 'Driver']), updateTripStatus);
+
+export default router;
+>>>>>>> 30fefbefc835956e67a9056efd9495b0c7cb53d0

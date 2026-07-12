@@ -5,8 +5,28 @@ import { supabase } from '../config/supabase.js';
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_dev_secret';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
-const roleFromUser = (user) =>
-  user.user_roles?.[0]?.roles?.role_name || 'Unknown';
+const ROLE_MAP = {
+  'ADMIN': 'Admin',
+  'FLEET_MANAGER': 'Fleet Manager',
+  'DISPATCHER': 'Dispatcher',
+  'SAFETY_OFFICER': 'Safety Officer',
+  'FINANCIAL_ANALYST': 'Financial Analyst',
+  'DRIVER': 'Driver'
+};
+
+const REVERSE_ROLE_MAP = {
+  'Admin': 'ADMIN',
+  'Fleet Manager': 'FLEET_MANAGER',
+  'Dispatcher': 'DISPATCHER',
+  'Safety Officer': 'SAFETY_OFFICER',
+  'Financial Analyst': 'FINANCIAL_ANALYST',
+  'Driver': 'DRIVER'
+};
+
+const roleFromUser = (user) => {
+  const raw = user?.user_roles?.[0]?.roles?.role_name || 'Unknown';
+  return ROLE_MAP[raw] || raw;
+};
 
 export const authService = {
   async login(email, password) {
@@ -75,6 +95,81 @@ export const authService = {
     };
   },
 
+  async signup(full_name, email, password, phone, role_name) {
+    // 1. Check if user already exists
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('user_id')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingUser) {
+      const err = new Error('A user with this email address already exists.');
+      err.status = 409;
+      throw err;
+    }
+
+    // 2. Hash password
+    const salt = await bcrypt.genSalt(10);
+    const password_hash = await bcrypt.hash(password, salt);
+
+    // 3. Create user entry
+    const { data: user, error: userErr } = await supabase
+      .from('users')
+      .insert([{
+        full_name: full_name.trim(),
+        email: email.trim().toLowerCase(),
+        password_hash,
+        phone: phone ? phone.trim() : null,
+        is_active: true
+      }])
+      .select()
+      .single();
+
+    if (userErr || !user) throw userErr || new Error('Failed to create user account.');
+
+    // 4. Resolve role ID (default to FLEET_MANAGER)
+    const dbRoleName = REVERSE_ROLE_MAP[role_name] || role_name || 'FLEET_MANAGER';
+    const { data: roleData } = await supabase
+      .from('roles')
+      .select('role_id')
+      .eq('role_name', dbRoleName)
+      .single();
+
+    const finalRoleId = roleData?.role_id || 2; // Default fallback to FLEET_MANAGER (id 2)
+    const activeRoleUserFacing = ROLE_MAP[dbRoleName] || role_name || 'Fleet Manager';
+
+    // 5. Insert user role
+    await supabase
+      .from('user_roles')
+      .insert([{
+        user_id: user.user_id,
+        role_id: finalRoleId
+      }]);
+
+    // 6. Generate JWT token
+    const token = jwt.sign(
+      {
+        user_id: user.user_id,
+        email: user.email,
+        role_name: activeRoleUserFacing,
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    return {
+      user: {
+        id: user.user_id,
+        email: user.email,
+        name: user.full_name,
+        role: activeRoleUserFacing,
+      },
+      token,
+    };
+  },
+
+
   async getUserById(userId) {
     const { data: user, error } = await supabase
       .from('users')
@@ -95,4 +190,4 @@ export const authService = {
       role: roleFromUser(user),
     };
   },
-};
+};

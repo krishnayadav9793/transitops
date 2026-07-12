@@ -5,6 +5,7 @@ import ProtectedRoute from './routes/protectedRoute';
 
 // Page imports
 import Login from './pages/auth/Login';
+import Signup from './pages/auth/Signup';
 import Dashboard from './pages/dashboard/Dashboard';
 import VehicleList from './pages/vehicles/VehicleList';
 import DriverList from './pages/drivers/DriverList';
@@ -17,12 +18,18 @@ import DriverProfile from './pages/drivers/DriverProfile';
 import TripDetails from './pages/trips/TripDetails';
 import MaintenanceDetails from './pages/maintenance/MaintenanceDetails';
 import ScheduleMaintenance from './pages/maintenance/ScheduleMaintenance';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
-    <Routes>
-      {/* Auth Route */}
-      <Route path="/login" element={<Login />} />
+    <>
+      <Toaster position="top-right" toastOptions={{ style: { background: '#1e1e24', color: '#f3f4f6', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' } }} />
+      <Routes>
+          {/* Auth Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+
 
       <Route path="/" element={<Layout />}>
         <Route index element={<Navigate to="/dashboard" replace />} />
@@ -33,7 +40,7 @@ function App() {
         <Route
           path="vehicles"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Financial Analyst']}>
               <VehicleList />
             </ProtectedRoute>
           }
@@ -41,7 +48,7 @@ function App() {
         <Route
           path="vehicles/:id"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Financial Analyst']}>
               <VehicleDetails />
             </ProtectedRoute>
           }
@@ -51,7 +58,7 @@ function App() {
         <Route
           path="drivers"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager', 'Safety Officer']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Safety Officer']}>
               <DriverList />
             </ProtectedRoute>
           }
@@ -59,7 +66,7 @@ function App() {
         <Route
           path="drivers/:id"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager', 'Safety Officer']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Safety Officer']}>
               <DriverProfile />
             </ProtectedRoute>
           }
@@ -69,7 +76,7 @@ function App() {
         <Route
           path="trips"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager', 'Driver']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Driver']}>
               <TripList />
             </ProtectedRoute>
           }
@@ -77,7 +84,7 @@ function App() {
         <Route
           path="trips/:id"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager', 'Driver']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Driver']}>
               <TripDetails />
             </ProtectedRoute>
           }
@@ -87,7 +94,7 @@ function App() {
         <Route
           path="maintenance"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager']}>
               <MaintenanceLogs />
             </ProtectedRoute>
           }
@@ -95,7 +102,7 @@ function App() {
         <Route
           path="maintenance/schedule"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager']}>
               <ScheduleMaintenance />
             </ProtectedRoute>
           }
@@ -103,7 +110,7 @@ function App() {
         <Route
           path="maintenance/:id"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager']}>
               <MaintenanceDetails />
             </ProtectedRoute>
           }
@@ -113,7 +120,7 @@ function App() {
         <Route
           path="expenses"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst', 'Driver']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Financial Analyst', 'Driver']}>
               <ExpenseLedger />
             </ProtectedRoute>
           }
@@ -123,7 +130,7 @@ function App() {
         <Route
           path="reports"
           element={
-            <ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}>
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Financial Analyst']}>
               <AnalyticsReports />
             </ProtectedRoute>
           }
@@ -133,7 +140,9 @@ function App() {
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
+    </>
   );
+
 }
 
 export default App;

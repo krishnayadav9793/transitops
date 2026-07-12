@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from '../../store/authStore';
+import { apiClient } from '../../services/apiClient';
+import { toast } from 'react-hot-toast';
 
 export default function Signup() {
     const navigate = useNavigate();
-
+    const loginAction = useAuthStore((s) => s.login);
     const [loading, setLoading] = useState(false);
 
     const [form, setForm] = useState({
@@ -35,22 +38,39 @@ export default function Signup() {
         e.preventDefault();
 
         if (form.password !== form.confirmPassword) {
-            alert("Passwords do not match");
+            toast.error("Passwords do not match");
             return;
         }
 
         setLoading(true);
+        const loadToast = toast.loading("Creating your corporate profile...");
 
         try {
+            const payload = {
+                full_name: form.fullName,
+                email: form.email,
+                password: form.password,
+                phone: form.phone || null,
+                role_name: form.role,
+            };
 
-            // Backend teammate will implement API call here.
+            const data = await apiClient.post('/auth/signup', payload);
 
-            console.log(form);
+            // Auto login on successful signup
+            loginAction(data.user, data.token);
 
+            toast.success('Account created successfully! Logging you in...', { id: loadToast });
+            
+            setTimeout(() => {
+                navigate('/dashboard', { replace: true });
+            }, 1000);
+        } catch (err) {
+            toast.error(err.message || 'Failed to create user account.', { id: loadToast });
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <>

@@ -1,20 +1,25 @@
-import axios from 'axios';
+import { apiClient } from '../services/apiClient';
 
-const api = axios.create({
-  baseURL: '/api',
-  headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-});
+export const getVehicles = () => apiClient.get('/vehicles');
+export const getVehicleById = (id) => apiClient.get(`/vehicles/${id}`);
+export const createVehicle = (data) => apiClient.post('/vehicles', data);
+export const getVehicleTypes = () => apiClient.get('/vehicles/types');
+export const getDocumentTypes = () => apiClient.get('/vehicles/documents/types');
 
+<<<<<<< HEAD
 export const getVehicles = () => api.get('/vehicles');
 export const getVehicle = (id) => api.get(`/vehicles/${id}`);
 export const createVehicle = (data) => api.post('/vehicles', data);
 export const getVehicleTypes = () => api.get('/vehicles/types');
 export const getDocumentTypes = () => api.get('/vehicles/documents/types');
 export const uploadVehicleDocument = (formData) => api.post('/vehicles/documents', formData, {
+=======
+export const uploadVehicleDocument = (formData) => apiClient.post('/vehicles/documents', formData, {
+>>>>>>> 30fefbefc835956e67a9056efd9495b0c7cb53d0
   headers: { 'Content-Type': 'multipart/form-data' }
 });
 
-export const getMaintenanceLogs = () => api.get('/maintenance');
-export const createMaintenanceLog = (data) => api.post('/maintenance', data);
-export const closeMaintenanceLog = (id, data) => api.put(`/maintenance/${id}/close`, data);
-export const getMaintenanceTypes = () => api.get('/maintenance/types');
+export const getMaintenanceLogs = () => apiClient.get('/maintenance');
+export const createMaintenanceLog = (data) => apiClient.post('/maintenance', data);
+export const closeMaintenanceLog = (id, data) => apiClient.put(`/maintenance/${id}/close`, data);
+export const getMaintenanceTypes = () => apiClient.get('/maintenance/types');
