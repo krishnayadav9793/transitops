@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { apiClient } from '../../services/apiClient';
+import { toast } from 'react-hot-toast';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -27,6 +28,7 @@ export const Login = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    const loadToast = toast.loading('Signing into TransitOps portal...');
 
     try {
       const data = await apiClient.post('/auth/login', { email, password });
@@ -39,13 +41,19 @@ export const Login = () => {
         localStorage.removeItem('remembered_email');
       }
 
-      navigate('/dashboard', { replace: true });
+      toast.success('Successfully logged in!', { id: loadToast });
+      
+      setTimeout(() => {
+        navigate('/dashboard', { replace: true });
+      }, 500);
     } catch (err) {
       setError(err.message || 'Invalid email or password');
+      toast.error(err.message || 'Invalid email or password', { id: loadToast });
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <>

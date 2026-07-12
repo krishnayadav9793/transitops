@@ -17,13 +17,17 @@ import DriverProfile from './pages/drivers/DriverProfile';
 import TripDetails from './pages/trips/TripDetails';
 import MaintenanceDetails from './pages/maintenance/MaintenanceDetails';
 import ScheduleMaintenance from './pages/maintenance/ScheduleMaintenance';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
-    <Routes>
-        {/* Auth Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+    <>
+      <Toaster position="top-right" toastOptions={{ style: { background: '#1e1e24', color: '#f3f4f6', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' } }} />
+      <Routes>
+          {/* Auth Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
 
 
       <Route path="/" element={<Layout />}>
@@ -135,7 +139,9 @@ function App() {
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
+    </>
   );
+
 }
 
 export default App;
