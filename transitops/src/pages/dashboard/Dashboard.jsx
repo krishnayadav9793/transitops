@@ -25,7 +25,7 @@ export const Dashboard = () => {
   if (loading) {
     return (
       <div className="space-y-lg">
-        <div className="grid grid-cols-2 gap-md md:grid-cols-4 lg:grid-cols-8">
+        <div className="grid grid-cols-2 gap-md sm:grid-cols-4 lg:grid-cols-8">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
@@ -128,7 +128,7 @@ export const Dashboard = () => {
   return (
     <div className="space-y-lg">
       {/* KPI Row (Bento Grid Style) */}
-      <div className="grid grid-cols-2 gap-md md:grid-cols-4 lg:grid-cols-8">
+      <div className="grid grid-cols-2 gap-md sm:grid-cols-4 lg:grid-cols-8">
         {kpis.map((kpi) => (
           <div
             key={kpi.label}
@@ -181,9 +181,9 @@ export const Dashboard = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-12 gap-lg">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-lg">
         {/* Fleet Utilization Trend */}
-        <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
+        <div className="col-span-1 md:col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
           <div className="flex justify-between items-center mb-lg">
             <h3 className="font-headline-sm text-headline-sm">
               Fleet Utilization Trend
@@ -222,7 +222,7 @@ export const Dashboard = () => {
         </div>
 
         {/* Vehicle Status Donut */}
-        <div className="col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
+        <div className="col-span-1 md:col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
           <h3 className="font-headline-sm text-headline-sm mb-lg">
             Vehicle Status
           </h3>
@@ -285,7 +285,7 @@ export const Dashboard = () => {
         </div>
 
         {/* Revenue vs Expense Grouped Bar */}
-        <div className="col-span-12 lg:col-span-7 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
+        <div className="col-span-1 md:col-span-12 lg:col-span-7 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
           <h3 className="font-headline-sm text-headline-sm mb-lg">
             Revenue vs Expense
           </h3>
@@ -314,7 +314,7 @@ export const Dashboard = () => {
         </div>
 
         {/* Fuel Consumption */}
-        <div className="col-span-12 lg:col-span-5 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
+        <div className="col-span-1 md:col-span-12 lg:col-span-5 bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
           <h3 className="font-headline-sm text-headline-sm mb-lg">
             Fuel Consumption (Gal)
           </h3>
@@ -344,9 +344,9 @@ export const Dashboard = () => {
       </div>
 
       {/* Data & Activity Section */}
-      <div className="grid grid-cols-12 gap-lg">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-lg">
         {/* Recent Trips Table */}
-        <div className="col-span-12 xl:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 overflow-hidden">
+        <div className="col-span-1 md:col-span-12 xl:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 overflow-hidden">
           <div className="px-lg py-md border-b border-outline-variant/30 flex justify-between items-center">
             <h3 className="font-headline-sm text-headline-sm">
               Recent Dispatch Trips
@@ -413,7 +413,7 @@ export const Dashboard = () => {
         </div>
 
         {/* Right Sidebar Column: Alerts */}
-        <div className="col-span-12 xl:col-span-4 space-y-lg">
+        <div className="col-span-1 md:col-span-12 xl:col-span-4 space-y-lg">
           {/* Critical Alerts */}
           <div className="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/20">
             <h3 className="font-headline-sm text-headline-sm mb-md flex items-center gap-2">

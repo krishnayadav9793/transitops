@@ -65,17 +65,17 @@ export const DriverList = () => {
 
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm p-lg mb-lg flex flex-wrap items-center gap-lg border border-surface-container">
-        <div className="flex items-center bg-white p-1 rounded-xl shadow-sm border border-outline-variant/20">
-          <button className="px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase bg-primary text-on-primary">All Drivers</button>
-          <button className="px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase text-on-surface-variant hover:bg-surface-container transition-colors">Available</button>
-          <button className="px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase text-on-surface-variant hover:bg-surface-container transition-colors">Suspended</button>
-          <button className="px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase text-on-surface-variant hover:bg-surface-container transition-colors flex items-center gap-2">
+        <div className="flex items-center bg-white p-1 rounded-xl shadow-sm border border-outline-variant/20 overflow-x-auto no-scrollbar">
+          <button className="px-md sm:px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase bg-primary text-on-primary whitespace-nowrap">All Drivers</button>
+          <button className="px-md sm:px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase text-on-surface-variant hover:bg-surface-container transition-colors whitespace-nowrap">Available</button>
+          <button className="px-md sm:px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase text-on-surface-variant hover:bg-surface-container transition-colors whitespace-nowrap">Suspended</button>
+          <button className="px-md sm:px-lg py-sm rounded-lg font-label-caps text-label-caps uppercase text-on-surface-variant hover:bg-surface-container transition-colors flex items-center gap-2 whitespace-nowrap">
             Expired
             <span className="w-2 h-2 bg-error rounded-full"></span>
           </button>
         </div>
 
-        <div className="flex gap-md ml-auto">
+        <div className="flex flex-wrap gap-md ml-auto">
           <button className="flex items-center gap-2 px-lg py-2 border border-outline-variant rounded-lg font-body-sm font-semibold hover:bg-surface-container transition-all">
             <span className="material-symbols-outlined text-[20px]">filter_list</span>
             Advanced Filters

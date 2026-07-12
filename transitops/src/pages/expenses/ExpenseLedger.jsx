@@ -22,7 +22,7 @@ export const ExpenseLedger = () => {
   return (
     <div className="space-y-lg">
       {/* Page Header */}
-      <div className="flex justify-between items-end mb-xl">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-lg mb-xl">
         <div>
           <h2 className="font-headline-lg text-headline-lg text-primary">Expense Management</h2>
           <p className="text-on-surface-variant mt-1">Review, categorize, and approve operational expenditures across the fleet.</p>
@@ -34,15 +34,15 @@ export const ExpenseLedger = () => {
       </div>
 
       {/* Analytics Widgets */}
-      <div className="grid grid-cols-12 gap-lg mb-xl">
-        <div className="col-span-8 bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-surface-container">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-lg mb-xl">
+        <div className="col-span-1 lg:col-span-8 bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-surface-container">
           <div className="flex justify-between items-center mb-md">
             <h3 className="font-headline-sm text-headline-sm text-on-surface">Top Expense Categories</h3>
             <div className="flex gap-sm">
               <span className="px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded-full font-label-caps text-label-caps">This Month</span>
             </div>
           </div>
-          <div className="grid grid-cols-4 gap-lg">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-lg">
             {[
               { name: 'Fuel', icon: 'local_gas_station', amount: '$42.8k', trend: '+8.2%', trendType: 'up' },
               { name: 'Repairs', icon: 'build', amount: '$18.4k', trend: '-4.1%', trendType: 'down' },
@@ -76,7 +76,7 @@ export const ExpenseLedger = () => {
             ))}
           </div>
         </div>
-        <div className="col-span-4 bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-surface-container">
+        <div className="col-span-1 lg:col-span-4 bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-surface-container">
           <h3 className="font-headline-sm text-headline-sm text-on-surface mb-md">Vehicle Cost Leaders</h3>
           <div className="space-y-md">
             {[
