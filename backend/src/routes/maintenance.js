@@ -1,9 +1,9 @@
 import express from 'express';
 import { getMaintenanceLogs, createMaintenanceLog, closeMaintenanceLog, getMaintenanceTypes } from '../controllers/maintenanceController.js';
-import { authMiddleware } from '../middleware/authMiddleware.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
-router.use(authMiddleware);
+router.use(authenticateToken);
 
 router.get('/', getMaintenanceLogs);
 router.post('/', createMaintenanceLog);

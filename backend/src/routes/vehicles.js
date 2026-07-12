@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import { getVehicles, createVehicle, updateVehicle, deleteVehicle, getVehicleTypes, getDocumentTypes, uploadDocument } from '../controllers/vehicleController.js';
-import { authMiddleware } from '../middleware/authMiddleware.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const router = express.Router();
-router.use(authMiddleware);
+router.use(authenticateToken);
 
 router.get('/', getVehicles);
 router.post('/', createVehicle);
