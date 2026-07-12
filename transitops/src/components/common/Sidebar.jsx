@@ -2,14 +2,15 @@ import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 
 const navItems = [
-  { name: 'Dashboard', path: '/dashboard', icon: 'dashboard', roles: ['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst'] },
-  { name: 'Vehicles', path: '/vehicles', icon: 'directions_bus', roles: ['Fleet Manager', 'Financial Analyst'] },
-  { name: 'Drivers', path: '/drivers', icon: 'person_pin_circle', roles: ['Fleet Manager', 'Safety Officer'] },
-  { name: 'Trips', path: '/trips', icon: 'route', roles: ['Fleet Manager', 'Driver'] },
-  { name: 'Maintenance', path: '/maintenance', icon: 'build', roles: ['Fleet Manager'] },
-  { name: 'Expenses', path: '/expenses', icon: 'receipt_long', roles: ['Fleet Manager', 'Financial Analyst', 'Driver'] },
-  { name: 'Reports', path: '/reports', icon: 'analytics', roles: ['Fleet Manager', 'Financial Analyst'] },
+  { name: 'Dashboard', path: '/dashboard', icon: 'dashboard', roles: ['Admin', 'Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst'] },
+  { name: 'Vehicles', path: '/vehicles', icon: 'directions_bus', roles: ['Admin', 'Fleet Manager', 'Financial Analyst'] },
+  { name: 'Drivers', path: '/drivers', icon: 'person_pin_circle', roles: ['Admin', 'Fleet Manager', 'Safety Officer'] },
+  { name: 'Trips', path: '/trips', icon: 'route', roles: ['Admin', 'Fleet Manager', 'Driver'] },
+  { name: 'Maintenance', path: '/maintenance', icon: 'build', roles: ['Admin', 'Fleet Manager'] },
+  { name: 'Expenses', path: '/expenses', icon: 'receipt_long', roles: ['Admin', 'Fleet Manager', 'Financial Analyst', 'Driver'] },
+  { name: 'Reports', path: '/reports', icon: 'analytics', roles: ['Admin', 'Fleet Manager', 'Financial Analyst'] },
 ];
+
 
 const footerItems = [
   { name: 'Settings', icon: 'settings' },
