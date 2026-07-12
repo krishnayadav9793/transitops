@@ -125,8 +125,8 @@ export const DriverFormModal = ({ isOpen, onClose, driver = null, onSaved }) => 
   const errorTextClass = 'text-xs text-error mt-1';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-lg">
-      <div className="bg-surface-container-lowest w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-4">
+      <div className="bg-white w-[600px] max-w-full rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] shrink-0">
         
         {/* Header */}
         <div className="px-xl py-lg border-b border-outline-variant flex justify-between items-center">

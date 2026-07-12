@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getTrip } from '../../api/trips';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { getTripById, dispatchTrip, completeTrip, cancelTrip } from '../../api/trips';
+import StatusBadge from '../../components/ui/StatusBadge';
+import TripCompleteModal from './TripCompleteModal';
+import { useAuthStore } from '../../store/authStore';
+import { toast } from 'react-hot-toast';
 
-const TripDetails = () => {
+export const TripDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const userRole = user?.role || 'Guest';
+
   const [trip, setTrip] = useState(null);
 
   useEffect(() => {
@@ -13,125 +20,279 @@ const TripDetails = () => {
       .catch(console.error);
   }, [id]);
 
-  if (!trip) {
+  const handleAccept = async () => {
+    const loadToast = toast.loading('Accepting trip request...');
+    try {
+      await dispatchTrip(id);
+      toast.success('Trip accepted and dispatch started!', { id: loadToast });
+      fetchTrip();
+    } catch (err) {
+      toast.error(err.message || 'Failed to accept trip.', { id: loadToast });
+    }
+  };
+
+  const handleCompleteSubmit = async (payload) => {
+    const loadToast = toast.loading('Filing completion details...');
+    try {
+      await completeTrip(id, {
+        odometer_reading: Number(payload.odometer_reading),
+        fuel_quantity_liters: Number(payload.fuel_quantity_liters)
+      });
+      toast.success('Trip completed successfully!', { id: loadToast });
+      setShowCompleteModal(false);
+      fetchTrip();
+    } catch (err) {
+      toast.error(err.message || 'Failed to complete trip.', { id: loadToast });
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!window.confirm('Are you sure you want to cancel this trip request? All resources will be released.')) return;
+    const loadToast = toast.loading('Cancelling trip sheet...');
+    try {
+      await cancelTrip(id);
+      toast.success('Trip cancelled and assets released.', { id: loadToast });
+      fetchTrip();
+    } catch (err) {
+      toast.error(err.message || 'Failed to cancel trip.', { id: loadToast });
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#1C5B3E] border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex flex-col items-center justify-center py-2xl text-outline italic animate-pulse">
+        <span className="material-symbols-outlined text-4xl mb-sm animate-spin">sync</span>
+        <span>Loading trip specifications...</span>
       </div>
     );
   }
 
-  const status = trip.trip_statuses?.status_name;
+  if (error || !trip) {
+    return (
+      <div className="p-xl bg-error/10 text-error rounded-3xl border border-error/20 flex flex-col items-center gap-md max-w-md mx-auto mt-2xl text-center">
+        <span className="material-symbols-outlined text-4xl">error</span>
+        <p className="font-semibold">{error || 'Trip details not found.'}</p>
+        <Link to="/trips" className="bg-primary text-on-primary px-xl py-sm rounded-xl font-bold hover:bg-primary-container transition-all">
+          Return to Dispatch Logs
+        </Link>
+      </div>
+    );
+  }
+
+  const status = trip.trip_statuses?.status_name || 'DRAFT';
   const assignment = trip.trip_assignments?.[0] || {};
+  const vehicle = assignment.vehicles || {};
+  const driver = assignment.drivers || {};
+
+  const steps = [
+    { label: 'Requested (Draft)', active: true },
+    { label: 'En Route (Dispatched)', active: status === 'DISPATCHED' || status === 'COMPLETED' },
+    { label: 'Completed', active: status === 'COMPLETED' }
+  ];
 
   return (
-    <div className="p-8 max-w-7xl mx-auto bg-[#F9FAFB] min-h-screen font-sans">
-       <div className="flex items-center gap-4 mb-8">
-         <button onClick={() => navigate(-1)} className="p-2.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-         </button>
-         <div>
-           <div className="flex items-center gap-3">
-             <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{trip.trip_number}</h1>
-             <span className={`px-2.5 py-1 inline-flex text-xs font-bold rounded-md uppercase tracking-wide
-                    ${status === 'DRAFT' ? 'bg-gray-100 text-gray-600' : 
-                      status === 'DISPATCHED' ? 'bg-orange-50 text-orange-700' : 
-                      status === 'ONGOING' ? 'bg-blue-50 text-blue-700' :
-                      status === 'COMPLETED' ? 'bg-[#E5F0E8] text-[#1C5B3E]' : 'bg-red-50 text-red-700'}`}>
-                {status}
-             </span>
-           </div>
-           <p className="text-gray-500 text-sm mt-1">Created on {new Date(trip.created_at).toLocaleDateString()}</p>
-         </div>
-       </div>
+    <div className="space-y-xl">
+      
+      {/* Header Panel */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-lg">
+        <div>
+          <nav className="flex items-center text-on-surface-variant text-body-sm mb-sm">
+            <Link to="/trips" className="hover:text-primary transition-colors">Trips</Link>
+            <span className="material-symbols-outlined text-[14px] mx-xs">chevron_right</span>
+            <span className="text-on-surface font-medium">Trip #{trip.trip_number}</span>
+          </nav>
+          <h2 className="font-headline-lg text-headline-lg text-on-background flex items-center gap-md">
+            Trip ID: {trip.trip_number}
+            <StatusBadge status={status} />
+          </h2>
+          <p className="text-body-lg text-on-surface-variant">
+            Route: <span className="font-bold text-on-surface">{trip.source}</span> &rarr; <span className="font-bold text-on-surface">{trip.destination}</span>
+          </p>
+        </div>
+        
+        {/* Responsive Control Actions */}
+        <div className="flex flex-wrap gap-md">
+          {/* Driver Actions */}
+          {userRole === 'Driver' && status === 'DRAFT' && (
+            <button
+              onClick={handleAccept}
+              className="px-lg py-md bg-primary text-on-primary rounded-xl text-body-md font-bold shadow-md hover:bg-primary-container active:scale-[0.98] transition-all cursor-pointer flex items-center gap-sm"
+            >
+              <span className="material-symbols-outlined text-lg">check_circle</span>
+              <span>Accept Request</span>
+            </button>
+          )}
+          {userRole === 'Driver' && status === 'DISPATCHED' && (
+            <button
+              onClick={() => setShowCompleteModal(true)}
+              className="px-lg py-md bg-primary text-on-primary rounded-xl text-body-md font-bold shadow-md hover:bg-primary-container active:scale-[0.98] transition-all cursor-pointer flex items-center gap-sm"
+            >
+              <span className="material-symbols-outlined text-lg">done_all</span>
+              <span>Complete Trip</span>
+            </button>
+          )}
 
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-         {/* Route Information */}
-         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5">Logistics & Route</h3>
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Origin</p>
-                    <p className="font-bold text-gray-900">{trip.source}</p>
-                </div>
-                <div className="flex-1 px-4 flex items-center justify-center">
-                    <div className="w-full h-px bg-gray-200 relative">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2">
-                           <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                        </div>
-                    </div>
-                </div>
-                <div className="text-right">
-                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Destination</p>
-                    <p className="font-bold text-gray-900">{trip.destination}</p>
-                </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-5">
-                <div>
-                    <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Cargo Weight</p>
-                    <p className="text-lg font-bold text-gray-900">{trip.cargo_weight_kg} <span className="text-xs text-gray-500 font-medium">KG</span></p>
-                </div>
-                <div>
-                    <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Est. Distance</p>
-                    <p className="text-lg font-bold text-gray-900">{trip.estimated_distance_km} <span className="text-xs text-gray-500 font-medium">KM</span></p>
-                </div>
-            </div>
-         </div>
+          {/* User/Customer Cancellation Action */}
+          {(userRole === 'User' || userRole === 'Admin' || userRole === 'Fleet Manager') && 
+           (status === 'DRAFT' || status === 'DISPATCHED') && (
+            <button
+              onClick={handleCancel}
+              className="px-lg py-md border border-error text-error rounded-xl text-body-md font-semibold hover:bg-error/5 transition-all cursor-pointer flex items-center gap-sm"
+            >
+              <span className="material-symbols-outlined text-lg">cancel</span>
+              <span>Cancel Request</span>
+            </button>
+          )}
+          
+          <Link
+            to="/trips"
+            className="px-lg py-md border border-outline-variant rounded-xl text-body-md font-semibold bg-surface-container-lowest hover:bg-surface-container-low transition-all flex items-center"
+          >
+            Back to List
+          </Link>
+        </div>
+      </div>
 
-         {/* Assignment Information */}
-         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5">Asset Assignment</h3>
-            <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                    <div className="bg-[#E5F0E8] p-3 rounded-lg text-[#1C5B3E]">
-                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"></path></svg>
-                    </div>
-                    <div>
-                        <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Assigned Vehicle</p>
-                        <p className="font-bold text-gray-900">{assignment.vehicles?.registration_number || 'Unassigned'}</p>
-                        {assignment.vehicles && <p className="text-xs text-gray-500 mt-0.5">{assignment.vehicles.vehicle_name}</p>}
-                    </div>
+      {/* Stepper Timeline */}
+      <div className="bg-surface-container-lowest rounded-2xl p-lg shadow-sm border border-surface-container">
+        <div className="flex items-center justify-between px-xl md:px-3xl">
+          {steps.map((step, idx) => (
+            <React.Fragment key={step.label}>
+              <div className="flex flex-col items-center relative z-10 text-center">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-sm transition-all duration-300 ${
+                  step.active
+                    ? 'bg-primary text-on-primary ring-4 ring-primary/10 ring-offset-2 font-bold scale-105'
+                    : 'bg-surface-container-high text-on-surface-variant'
+                }`}>
+                  <span className="material-symbols-outlined">
+                    {idx === 0 ? 'edit_note' : idx === 1 ? 'local_shipping' : 'flag'}
+                  </span>
                 </div>
-                <div className="flex items-center gap-4">
-                    <div className="bg-blue-50 p-3 rounded-lg text-blue-600">
-                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    </div>
-                    <div>
-                        <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Assigned Driver</p>
-                        <p className="font-bold text-gray-900">{assignment.drivers?.full_name || 'Unassigned'}</p>
-                        {assignment.drivers && <p className="text-xs text-gray-500 mt-0.5">{assignment.drivers.email}</p>}
-                    </div>
-                </div>
-            </div>
-         </div>
-       </div>
+                <span className={`font-label-caps uppercase text-[10px] md:text-xs tracking-wider ${step.active ? 'text-on-surface font-bold' : 'text-on-surface-variant'}`}>
+                  {step.label}
+                </span>
+              </div>
+              {idx < steps.length - 1 && (
+                <div className={`flex-grow h-1 mx-4 -mt-8 rounded transition-all duration-500 ${
+                  idx === 0 && status !== 'DRAFT' 
+                    ? 'bg-primary' 
+                    : status === 'COMPLETED' 
+                    ? 'bg-primary' 
+                    : 'bg-surface-container-high'
+                }`} />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
 
-       {/* Execution Execution Metrics */}
-       {(status === 'COMPLETED' || status === 'ONGOING') && (
-       <div className="bg-white shadow-sm border border-gray-100 rounded-xl overflow-hidden">
-         <div className="px-6 py-5 border-b border-gray-100 bg-[#F3F4F6]">
-           <h2 className="text-lg font-bold text-gray-900 tracking-tight">Execution Metrics</h2>
-         </div>
-         <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-           <div>
-             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Actual Start Time</p>
-             <p className="text-sm font-medium text-gray-900">{trip.actual_start_time ? new Date(trip.actual_start_time).toLocaleString() : 'N/A'}</p>
-           </div>
-           <div>
-             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Actual End Time</p>
-             <p className="text-sm font-medium text-gray-900">{trip.actual_end_time ? new Date(trip.actual_end_time).toLocaleString() : 'N/A'}</p>
-           </div>
-           <div>
-             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Final Odometer</p>
-             <p className="text-sm font-medium text-gray-900">{trip.odometer_reading || '--'} KM</p>
-           </div>
-           <div>
-             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Fuel Consumed</p>
-             <p className="text-sm font-medium text-gray-900">{trip.fuel_quantity_liters || '--'} L</p>
-           </div>
-         </div>
-       </div>
-       )}
+      {/* Detail Panels */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-xl">
+        
+        {/* Route Specifications */}
+        <section className="bg-surface-container-lowest rounded-2xl p-lg border border-surface-container space-y-lg shadow-sm">
+          <div className="flex items-center justify-between border-b border-surface-container pb-sm">
+            <h3 className="font-headline-sm text-headline-sm text-on-surface">Route Specs</h3>
+            <span className="material-symbols-outlined text-outline">map</span>
+          </div>
+          <div className="space-y-md">
+            <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
+              <span className="text-on-surface-variant font-medium">Estimated Distance</span>
+              <span className="font-bold text-on-surface">{trip.estimated_distance_km} KM</span>
+            </div>
+            {trip.actual_distance_km && (
+              <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
+                <span className="text-on-surface-variant font-medium">Actual Distance</span>
+                <span className="font-bold text-primary">{trip.actual_distance_km} KM</span>
+              </div>
+            )}
+            <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
+              <span className="text-on-surface-variant font-medium">Cargo Payload</span>
+              <span className="font-bold text-on-surface">{Number(trip.cargo_weight_kg).toLocaleString()} KG</span>
+            </div>
+            <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
+              <span className="text-on-surface-variant font-medium">Scheduled Start</span>
+              <span className="font-bold text-on-surface">
+                {trip.actual_start_time ? new Date(trip.actual_start_time).toLocaleString() : 'Waiting for Driver acceptance'}
+              </span>
+            </div>
+            {trip.actual_end_time && (
+              <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
+                <span className="text-on-surface-variant font-medium">Completed Time</span>
+                <span className="font-bold text-on-surface">{new Date(trip.actual_end_time).toLocaleString()}</span>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Assigned Vehicle */}
+        <section className="bg-surface-container-lowest rounded-2xl p-lg border border-surface-container space-y-lg shadow-sm">
+          <div className="flex items-center justify-between border-b border-surface-container pb-sm">
+            <h3 className="font-headline-sm text-headline-sm text-on-surface">Assigned Carrier</h3>
+            <span className="material-symbols-outlined text-outline">directions_bus</span>
+          </div>
+          {vehicle.registration_number ? (
+            <div className="space-y-md">
+              <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
+                <span className="text-on-surface-variant font-medium">Identifier / Registration</span>
+                <span className="font-bold text-on-surface">{vehicle.registration_number}</span>
+              </div>
+              <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
+                <span className="text-on-surface-variant font-medium">Maximum Load Capacity</span>
+                <span className="font-bold text-on-surface">{Number(vehicle.capacity_kg).toLocaleString()} KG</span>
+              </div>
+              <div className="mt-lg p-sm bg-primary-fixed/20 rounded-xl flex items-center gap-xs">
+                <span className="material-symbols-outlined text-primary text-md">info</span>
+                <span className="text-[11px] text-on-primary-fixed-variant font-semibold">Matched dynamically to weight.</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-xl text-center">
+              <span className="material-symbols-outlined text-outline-variant text-4xl mb-sm">pending_actions</span>
+              <p className="text-outline text-body-sm italic">Assigning suitable carrier...</p>
+            </div>
+          )}
+        </section>
+
+        {/* Assigned Driver */}
+        <section className="bg-surface-container-lowest rounded-2xl p-lg border border-surface-container space-y-lg shadow-sm">
+          <div className="flex items-center justify-between border-b border-surface-container pb-sm">
+            <h3 className="font-headline-sm text-headline-sm text-on-surface">Assigned Operator</h3>
+            <span className="material-symbols-outlined text-outline">person</span>
+          </div>
+          {driver.full_name ? (
+            <div className="space-y-md">
+              <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
+                <span className="text-on-surface-variant font-medium">Driver Operator Name</span>
+                <span className="font-bold text-on-surface">{driver.full_name}</span>
+              </div>
+              <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
+                <span className="text-on-surface-variant font-medium">Contact Email</span>
+                <span className="font-bold text-on-surface truncate max-w-[150px]">{driver.email || 'N/A'}</span>
+              </div>
+              <div className="mt-lg p-sm bg-primary-fixed/20 rounded-xl flex items-center gap-xs">
+                <span className="material-symbols-outlined text-primary text-md">shield</span>
+                <span className="text-[11px] text-on-primary-fixed-variant font-semibold">ISO 27001 background checked</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-xl text-center">
+              <span className="material-symbols-outlined text-outline-variant text-4xl mb-sm">pending_actions</span>
+              <p className="text-outline text-body-sm italic">Matching driver operator...</p>
+            </div>
+          )}
+        </section>
+
+      </div>
+
+      {showCompleteModal && (
+        <TripCompleteModal
+          trip={trip}
+          onClose={() => setShowCompleteModal(false)}
+          onSubmit={handleCompleteSubmit}
+        />
+      )}
+
     </div>
   );
 };

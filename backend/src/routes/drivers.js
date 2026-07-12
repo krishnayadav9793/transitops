@@ -16,8 +16,8 @@ router.use(authenticateToken);
 router.get('/', getDrivers);
 router.get('/meta', getDriverMetadata);
 router.get('/:id', getDriverById);
-router.post('/', checkRole(['Fleet Manager', 'Safety Officer']), createDriver);
-router.put('/:id', checkRole(['Fleet Manager', 'Safety Officer']), updateDriver);
-router.delete('/:id', checkRole(['Fleet Manager', 'Safety Officer']), deleteDriver);
+router.post('/', checkRole(['Admin', 'Fleet Manager', 'Safety Officer']), createDriver);
+router.put('/:id', checkRole(['Admin', 'Fleet Manager', 'Safety Officer']), updateDriver);
+router.delete('/:id', checkRole(['Admin', 'Fleet Manager', 'Safety Officer']), deleteDriver);
 
 export default router;

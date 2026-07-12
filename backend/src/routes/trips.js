@@ -8,11 +8,11 @@ import {
     cancelTrip, 
     getTripById 
 } from '../controllers/tripController.js';
-import {  authenticateToken } from '../middleware/authMiddleware.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.use(authenticateToken);
+router.use(authMiddleware);
 
 router.get('/', getTrips);
 router.post('/', createTrip);
