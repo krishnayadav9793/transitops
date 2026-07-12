@@ -6,17 +6,21 @@ const TripFormModal = ({ onClose, onSuccess }) => {
     source: '', destination: '', cargo_weight_kg: '', estimated_distance_km: '', vehicle_id: '', driver_id: ''
   });
   const [resources, setResources] = useState({ vehicles: [], drivers: [] });
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    getResources().then((data) => setResources(data || { vehicles: [], drivers: [] }));
+    getResources().then((data) => setResources(data)).catch(console.error);
   }, []);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await createTrip(formData);
-    onSuccess();
-    onClose();
+    try {
+      await createTrip(formData);
+      onSuccess();
+      onClose();
+    } catch (err) {
+      setError(err.message || 'Failed to create trip');
+    }
   };
 
   return (
@@ -27,14 +31,16 @@ const TripFormModal = ({ onClose, onSuccess }) => {
         </button>
         <div className="flex items-center gap-3 mb-8">
           <div className="bg-[#1C5B3E] p-2.5 rounded-xl text-white shadow-sm">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path></svg>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"></path></svg>
           </div>
           <div>
             <h3 className="text-xl font-bold text-gray-900 tracking-tight">Add New Trip</h3>
             <p className="text-sm text-gray-500">Register a new trip in the TransitOps network.</p>
           </div>
         </div>
-        
+
+        {error && <div className="mb-6 p-3.5 bg-red-50 border border-red-100 text-red-700 rounded-lg text-sm font-medium">{error}</div>}
+
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-x-6 gap-y-5">
           <div className="col-span-1">
             <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Source Location</label>
@@ -56,17 +62,17 @@ const TripFormModal = ({ onClose, onSuccess }) => {
             <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Assign Vehicle</label>
             <select required className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5B3E]/20 focus:border-[#1C5B3E] transition-all text-sm bg-white" onChange={e => setFormData({...formData, vehicle_id: e.target.value})}>
               <option value="">Select available vehicle</option>
-              {resources.vehicles.map(v => <option key={v.vehicle_id} value={v.vehicle_id}>{v.registration_number}</option>)}
+              {resources.vehicles?.map(v => <option key={v.vehicle_id} value={v.vehicle_id}>{v.registration_number}</option>)}
             </select>
           </div>
           <div className="col-span-1">
             <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Assign Driver</label>
             <select required className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5B3E]/20 focus:border-[#1C5B3E] transition-all text-sm bg-white" onChange={e => setFormData({...formData, driver_id: e.target.value})}>
               <option value="">Select available driver</option>
-              {resources.drivers.map(d => <option key={d.driver_id} value={d.driver_id}>{d.full_name}</option>)}
+              {resources.drivers?.map(d => <option key={d.driver_id} value={d.driver_id}>{d.full_name}</option>)}
             </select>
           </div>
-          
+
           <div className="col-span-2 mt-4 pt-5 border-t border-gray-100 flex justify-end gap-3">
             <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded-lg transition-colors">Cancel</button>
             <button type="submit" className="px-6 py-2.5 text-sm bg-[#1C5B3E] hover:bg-[#154630] text-white font-medium rounded-lg transition-colors shadow-sm">Save Trip</button>

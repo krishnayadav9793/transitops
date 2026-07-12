@@ -9,9 +9,8 @@ const VehicleForm = ({ onClose, onSuccess }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    getVehicleTypes().then((data) => setTypes(data || []));
+    getVehicleTypes().then((data) => setTypes(data)).catch(console.error);
   }, []);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +19,7 @@ const VehicleForm = ({ onClose, onSuccess }) => {
       onSuccess();
       onClose();
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create vehicle');
+      setError(err.message || 'Failed to create vehicle');
     }
   };
 
@@ -30,7 +29,6 @@ const VehicleForm = ({ onClose, onSuccess }) => {
         <button onClick={onClose} className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 transition-colors">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
-        
         <div className="flex items-center gap-3 mb-8">
           <div className="bg-[#1C5B3E] p-2.5 rounded-xl text-white shadow-sm">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,23 +42,17 @@ const VehicleForm = ({ onClose, onSuccess }) => {
           </div>
         </div>
 
-        {error && (
-          <div className="mb-6 p-3.5 bg-red-50 border border-red-100 text-red-700 rounded-lg text-sm font-medium">
-            {error}
-          </div>
-        )}
-        
+        {error && <div className="mb-6 p-3.5 bg-red-50 border border-red-100 text-red-700 rounded-lg text-sm font-medium">{error}</div>}
+
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-x-6 gap-y-5">
           <div className="col-span-1">
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">Registration Number</label>
             <input required type="text" placeholder="e.g. TR-2024-B882" className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5B3E]/20 focus:border-[#1C5B3E] transition-all text-sm placeholder-gray-400" onChange={e => setFormData({...formData, registration_number: e.target.value})} />
           </div>
-          
           <div className="col-span-1">
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">Model / Make</label>
             <input required type="text" placeholder="e.g. Scania R-Series" className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5B3E]/20 focus:border-[#1C5B3E] transition-all text-sm placeholder-gray-400" onChange={e => setFormData({...formData, model: e.target.value})} />
           </div>
-          
           <div className="col-span-1">
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">Vehicle Type</label>
             <select required className="w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5B3E]/20 focus:border-[#1C5B3E] transition-all text-sm bg-white text-gray-700" onChange={e => setFormData({...formData, vehicle_type_id: e.target.value})}>
@@ -68,9 +60,8 @@ const VehicleForm = ({ onClose, onSuccess }) => {
               {types.map(t => <option key={t.vehicle_type_id} value={t.vehicle_type_id}>{t.type_name}</option>)}
             </select>
           </div>
-          
           <div className="col-span-1">
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Capacity (Weight/Volume)</label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Capacity (KG)</label>
             <div className="relative">
               <input required type="number" step="0.01" placeholder="25500" className="w-full p-2.5 pr-12 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1C5B3E]/20 focus:border-[#1C5B3E] transition-all text-sm placeholder-gray-400" onChange={e => setFormData({...formData, capacity_kg: e.target.value})} />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none">
@@ -78,7 +69,6 @@ const VehicleForm = ({ onClose, onSuccess }) => {
               </div>
             </div>
           </div>
-          
           <div className="col-span-1">
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">Odometer Reading</label>
             <div className="relative">
@@ -88,7 +78,6 @@ const VehicleForm = ({ onClose, onSuccess }) => {
               </div>
             </div>
           </div>
-          
           <div className="col-span-1">
             <label className="block text-xs font-semibold text-gray-700 mb-1.5">Acquisition Cost</label>
             <div className="relative">
@@ -100,12 +89,8 @@ const VehicleForm = ({ onClose, onSuccess }) => {
           </div>
 
           <div className="col-span-2 mt-4 pt-5 border-t border-gray-100 flex justify-end gap-3">
-            <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded-lg transition-colors">
-              Cancel
-            </button>
-            <button type="submit" className="px-6 py-2.5 text-sm bg-[#1C5B3E] hover:bg-[#154630] text-white font-medium rounded-lg transition-colors shadow-sm">
-              Save Vehicle
-            </button>
+            <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm text-gray-600 font-medium hover:bg-gray-50 rounded-lg transition-colors">Cancel</button>
+            <button type="submit" className="px-6 py-2.5 text-sm bg-[#1C5B3E] hover:bg-[#154630] text-white font-medium rounded-lg transition-colors shadow-sm">Save Vehicle</button>
           </div>
         </form>
       </div>
