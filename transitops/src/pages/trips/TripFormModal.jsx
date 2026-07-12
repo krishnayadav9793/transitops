@@ -42,7 +42,7 @@ export const TripFormModal = ({ isOpen, onClose }) => {
               </div>
               <span className="material-symbols-outlined text-primary">local_shipping</span>
             </div>
-            <div className="p-xl grid grid-cols-2 gap-lg">
+            <div className="p-xl grid grid-cols-1 sm:grid-cols-2 gap-lg">
               <div className="space-y-sm">
                 <label className="font-body-sm text-on-surface-variant block">Source Location</label>
                 <div className="relative">
@@ -82,7 +82,7 @@ export const TripFormModal = ({ isOpen, onClose }) => {
               </div>
               <span className="material-symbols-outlined text-primary">assignment_ind</span>
             </div>
-            <div className="p-xl grid grid-cols-2 gap-lg">
+            <div className="p-xl grid grid-cols-1 sm:grid-cols-2 gap-lg">
               <div className="space-y-md">
                 <label className="font-body-sm text-on-surface-variant block">Assigned Vehicle</label>
                 <div className="p-md border border-outline-variant rounded-lg hover:border-primary cursor-pointer transition-all flex items-center gap-md group">
@@ -121,7 +121,7 @@ export const TripFormModal = ({ isOpen, onClose }) => {
               <span className="material-symbols-outlined text-primary">payments</span>
             </div>
             <div className="p-xl">
-              <div className="grid grid-cols-3 gap-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-xl">
                 <div className="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/20">
                   <p className="font-label-caps text-label-caps text-on-surface-variant mb-xs">Base Revenue</p>
                   <div className="flex items-baseline gap-xs">

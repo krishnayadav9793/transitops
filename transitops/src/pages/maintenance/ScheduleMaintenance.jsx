@@ -20,7 +20,7 @@ export const ScheduleMaintenance = () => {
 
   return (
     <div className="space-y-xl">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-lg">
         <div>
           <nav className="flex items-center space-x-sm mb-xs text-on-surface-variant font-body-sm">
             <Link to="/maintenance" className="hover:text-primary">Maintenance</Link>
@@ -35,8 +35,8 @@ export const ScheduleMaintenance = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-xl">
-        <section className="col-span-12 lg:col-span-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+        <section className="col-span-1 lg:col-span-8">
           <div className="bg-surface-container-lowest rounded-xl p-xl shadow-[0px_4px_20px_rgba(0,0,0,0.03)]">
             <div className="space-y-xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
@@ -113,7 +113,7 @@ export const ScheduleMaintenance = () => {
           </div>
         </section>
 
-        <aside className="col-span-12 lg:col-span-4 space-y-xl">
+        <aside className="col-span-1 lg:col-span-4 space-y-xl">
           <div className="bg-surface-container-lowest rounded-xl p-lg shadow-[0px_4px_20px_rgba(0,0,0,0.03)] border border-outline-variant">
             <div className="flex items-center justify-between mb-lg">
               <h3 className="font-headline-sm text-on-surface">Vehicle Health</h3>

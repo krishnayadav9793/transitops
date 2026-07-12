@@ -17,7 +17,7 @@ export const Settings = () => {
       </div>
 
       {/* Tabs */}
-      <nav className="flex gap-xl border-b border-outline-variant">
+      <nav className="flex gap-xl border-b border-outline-variant overflow-x-auto no-scrollbar">
         {[
           { id: 'profile', icon: 'person_outline', label: 'Profile' },
           { id: 'notifications', icon: 'notifications_active', label: 'Notifications' },
@@ -29,7 +29,7 @@ export const Settings = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`pb-md px-base transition-colors flex items-center gap-sm ${
+            className={`pb-md px-base transition-colors flex items-center gap-sm whitespace-nowrap ${
               activeTab === tab.id
                 ? 'text-primary font-bold border-b-2 border-primary'
                 : 'text-on-surface-variant hover:text-primary'
@@ -42,9 +42,9 @@ export const Settings = () => {
       </nav>
 
       {/* Settings Content */}
-      <div className="grid grid-cols-12 gap-xl">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
         {/* Left Column */}
-        <div className="col-span-12 lg:col-span-8 space-y-xl">
+        <div className="col-span-1 lg:col-span-8 space-y-xl">
           <section className="bg-surface-container-lowest rounded-xl p-xl shadow-sm border border-outline-variant/30">
             <div className="flex items-center justify-between mb-xl">
               <div>
@@ -56,8 +56,8 @@ export const Settings = () => {
                 Save Changes
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-xl">
-              <div className="col-span-2 flex items-center gap-xl mb-md">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-xl">
+              <div className="col-span-1 sm:col-span-2 flex items-center gap-xl mb-md">
                 <div className="relative group">
                   <div className="w-24 h-24 rounded-full bg-surface-container flex items-center justify-center border-2 border-primary-fixed shadow-md overflow-hidden">
                     <span className="material-symbols-outlined text-4xl text-on-surface-variant">person</span>
@@ -93,7 +93,7 @@ export const Settings = () => {
                   className="rounded-lg border-outline-variant bg-surface-container-low px-md py-sm focus:border-primary focus:ring-primary font-body-md text-on-surface"
                 />
               </div>
-              <div className="col-span-2 flex flex-col gap-xs">
+              <div className="col-span-1 sm:col-span-2 flex flex-col gap-xs">
                 <label className="font-body-sm font-semibold text-on-surface-variant">Email Address</label>
                 <div className="relative">
                   <span className="absolute left-md top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-[18px]">mail</span>
@@ -174,7 +174,7 @@ export const Settings = () => {
         </div>
 
         {/* Right Column */}
-        <div className="col-span-12 lg:col-span-4 space-y-xl">
+        <div className="col-span-1 lg:col-span-4 space-y-xl">
           {/* Appearance Card */}
           <section className="bg-surface-container-lowest rounded-xl p-xl shadow-sm border border-outline-variant/30">
             <h3 className="font-headline-sm text-headline-sm text-on-surface mb-md">Appearance</h3>
