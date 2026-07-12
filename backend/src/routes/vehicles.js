@@ -1,8 +1,17 @@
 import express from 'express';
 import multer from 'multer';
-import { getVehicles, createVehicle, updateVehicle, deleteVehicle, getVehicleTypes, getDocumentTypes, uploadDocument } from '../controllers/vehicleController.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import { 
+    getVehicles, 
+    createVehicle, 
+    updateVehicle, 
+    deleteVehicle, 
+    getVehicleTypes, 
+    getDocumentTypes, 
+    uploadDocument 
+} from '../controllers/vehicleController.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
+// Configure Multer for local document uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
   filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
@@ -10,8 +19,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const router = express.Router();
-router.use(authenticateToken);
 
+router.use(authMiddleware);
 router.get('/', getVehicles);
 router.post('/', createVehicle);
 router.put('/:id', updateVehicle);

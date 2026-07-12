@@ -126,3 +126,27 @@ export const getEligibleResources = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const getTripById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data, error } = await supabase.from('trips')
+            .select(`
+                *,
+                trip_statuses(status_name),
+                trip_assignments(
+                    vehicles(registration_number, vehicle_name),
+                    drivers:users(full_name, email)
+                )
+            `)
+            .eq('trip_id', id)
+            .single();
+            
+        if (error) throw error;
+        if (!data) return res.status(404).json({ error: 'Trip not found' });
+        
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

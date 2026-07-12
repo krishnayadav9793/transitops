@@ -1,13 +1,31 @@
 import express from 'express';
-import { getTrips, createTrip, updateTripStatus, getEligibleResources } from '../controllers/tripController.js';
-import { authenticateToken, checkRole } from '../middleware/authMiddleware.js';
+import { 
+    getTrips, 
+    createTrip, 
+    getResources, 
+    dispatchTrip, 
+    completeTrip, 
+    cancelTrip, 
+    getTripById 
+} from '../controllers/tripController.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.use(authenticateToken);
+// Secure all trip routes
+router.use(authMiddleware);
+
+// Core fetching & creation
 router.get('/', getTrips);
-router.get('/resources', getEligibleResources);
-router.post('/', checkRole(['Fleet Manager', 'Driver']), createTrip);
-router.patch('/:id/status', checkRole(['Fleet Manager', 'Driver']), updateTripStatus);
+router.post('/', createTrip);
+
+// Dropdown data (MUST be above /:id)
+router.get('/resources', getResources);
+
+// ID-specific routes
+router.get('/:id', getTripById);
+router.patch('/:id/dispatch', dispatchTrip);
+router.patch('/:id/complete', completeTrip);
+router.patch('/:id/cancel', cancelTrip);
 
 export default router;

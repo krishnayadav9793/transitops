@@ -18,14 +18,13 @@ export const ScheduleMaintenance = () => {
   const [apiError, setApiError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Selector choices loaded from API
+
   const [vehicles, setVehicles] = useState([]);
   const [types, setTypes] = useState([]);
 
   useEffect(() => {
     (async () => {
       try {
-        // Fetch active vehicles from expenses metadata or custom fetch
         const expMeta = await apiClient.get('/expenses/meta');
         setVehicles(expMeta.vehicles || []);
 
