@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/common/Layout';
 import ProtectedRoute from './routes/protectedRoute';
+
 // Page imports
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
@@ -9,7 +10,7 @@ import Dashboard from './pages/dashboard/Dashboard';
 import VehicleList from './pages/vehicles/VehicleList';
 import DriverList from './pages/drivers/DriverList';
 import TripList from './pages/trips/TripList';
-import MaintenanceLogs from './pages/maintenance/MaintenanceLogs';
+import MaintenanceLogs from './pages/vehicles/MaintenanceLogs'; // <-- CORRECTED IMPORT PATH
 import ExpenseLedger from './pages/expenses/ExpenseLedger';
 import AnalyticsReports from './pages/reports/AnalyticsReports';
 import VehicleDetails from './pages/vehicles/VehicleDetails';

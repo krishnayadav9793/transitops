@@ -13,25 +13,11 @@ export const TripDetails = () => {
   const userRole = user?.role || 'Guest';
 
   const [trip, setTrip] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [showCompleteModal, setShowCompleteModal] = useState(false);
-
-  const fetchTrip = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const data = await getTripById(id);
-      setTrip(data);
-    } catch (err) {
-      setError(err.message || 'Failed to retrieve trip details.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchTrip();
+    getTrip(id)
+      .then(res => setTrip(res.data))
+      .catch(console.error);
   }, [id]);
 
   const handleAccept = async () => {

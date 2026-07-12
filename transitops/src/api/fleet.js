@@ -6,7 +6,12 @@ export const createVehicle = (data) => apiClient.post('/vehicles', data);
 export const getVehicleTypes = () => apiClient.get('/vehicles/types');
 export const getDocumentTypes = () => apiClient.get('/vehicles/documents/types');
 
-export const uploadVehicleDocument = (formData) => apiClient.post('/vehicles/documents', formData, {
+export const getVehicles = () => api.get('/vehicles');
+export const getVehicle = (id) => api.get(`/vehicles/${id}`);
+export const createVehicle = (data) => api.post('/vehicles', data);
+export const getVehicleTypes = () => api.get('/vehicles/types');
+export const getDocumentTypes = () => api.get('/vehicles/documents/types');
+export const uploadVehicleDocument = (formData) => api.post('/vehicles/documents', formData, {
   headers: { 'Content-Type': 'multipart/form-data' }
 });
 

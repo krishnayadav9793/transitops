@@ -1,181 +1,108 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { getVehicleById } from '../../api/fleet';
-import { apiClient } from '../../services/apiClient';
-import StatusBadge from '../../components/ui/StatusBadge';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getVehicle } from '../../api/fleet';
 
-const prettyStatus = (status) => {
-  if (!status) return 'Unknown';
-  return status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-};
-
-export const VehicleDetails = () => {
+const VehicleDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [vehicle, setVehicle] = useState(null);
-  const [maintenance, setMaintenance] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const vData = await getVehicleById(id);
-        setVehicle(vData);
-
-        // Fetch maintenance history and filter for this vehicle
-        const mData = await apiClient.get('/maintenance');
-        const vehicleMaint = (mData || []).filter((m) => m.vehicle_id === Number(id));
-        setMaintenance(vehicleMaint);
-      } catch (err) {
-        setError(err.message || 'Failed to load vehicle details.');
-      } finally {
-        setLoading(false);
-      }
-    })();
+    getVehicle(id)
+      .then(res => setVehicle(res.data))
+      .catch(console.error);
   }, [id]);
 
-  if (loading) {
+  if (!vehicle) {
     return (
-      <div className="p-xl text-center text-outline italic">
-        Loading asset sheet...
+      <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#1C5B3E] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  if (error || !vehicle) {
-    return (
-      <div className="p-xl bg-error/10 text-error rounded-xl border border-error/20 flex flex-col items-center gap-md">
-        <p className="font-bold">{error || 'Vehicle asset details not found.'}</p>
-        <Link to="/vehicles" className="bg-primary text-on-primary px-xl py-sm rounded-lg font-bold">
-          Return to Registry
-        </Link>
-      </div>
-    );
-  }
-
-  const statusName = vehicle.vehicle_statuses?.status_name || 'AVAILABLE';
+  const getStatusStyle = (status) => {
+    switch(status) {
+      case 'AVAILABLE': return 'bg-[#E5F0E8] text-[#1C5B3E]';
+      case 'ON_TRIP': return 'bg-blue-50 text-blue-700';
+      case 'IN_SHOP': return 'bg-orange-50 text-orange-700';
+      case 'RETIRED': return 'bg-red-50 text-red-700';
+      default: return 'bg-gray-100 text-gray-600';
+    }
+  };
 
   return (
-    <div className="space-y-xl">
-      
-      {/* Header Panel */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-lg">
-        <div>
-          <nav className="flex items-center text-on-surface-variant text-body-sm mb-sm">
-            <Link to="/vehicles" className="hover:text-primary">Registry</Link>
-            <span className="material-symbols-outlined text-[14px] mx-xs">chevron_right</span>
-            <span>Asset #{vehicle.registration_number}</span>
-          </nav>
-          <h2 className="font-headline-lg text-headline-lg text-on-background flex items-center gap-md">
-            Plate: {vehicle.registration_number}
-            <StatusBadge status={prettyStatus(statusName)} />
-          </h2>
-          <p className="text-body-lg text-on-surface-variant">
-            {vehicle.vehicle_name || vehicle.model || 'General Fleet Asset'}
-          </p>
-        </div>
-        <Link
-          to="/vehicles"
-          className="px-lg py-md border border-outline-variant rounded-lg text-body-md font-medium bg-surface hover:bg-surface-container-low transition-colors flex items-center"
-        >
-          Back to Registry
-        </Link>
-      </div>
+    <div className="p-8 max-w-7xl mx-auto bg-[#F9FAFB] min-h-screen font-sans">
+       <div className="flex items-center gap-4 mb-8">
+         <button onClick={() => navigate(-1)} className="p-2.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+         </button>
+         <div>
+           <div className="flex items-center gap-3">
+             <h1 className="text-3xl font-bold text-gray-900 tracking-tight">{vehicle.registration_number}</h1>
+             <span className={`px-2.5 py-1 inline-flex text-xs font-bold rounded-md uppercase tracking-wide ${getStatusStyle(vehicle.vehicle_statuses?.status_name)}`}>
+                {vehicle.vehicle_statuses?.status_name}
+             </span>
+           </div>
+           <p className="text-gray-500 text-sm mt-1">{vehicle.model} • {vehicle.vehicle_types?.type_name}</p>
+         </div>
+       </div>
 
-      {/* Grid Content Panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-xl">
-        
-        {/* Left: General tech sheet */}
-        <section className="bg-surface-container-lowest rounded-xl p-lg border border-outline-variant/10 space-y-lg shadow-[0px_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-lg border-b border-surface-container pb-sm">
-              <h3 className="font-headline-sm text-headline-sm">Asset Technical Parameters</h3>
-              <span className="material-symbols-outlined text-outline">engineering</span>
+       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4">
+            <div className="bg-[#E5F0E8] p-3 rounded-xl text-[#1C5B3E]">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
             </div>
-            <div className="space-y-md">
-              <div className="w-full h-36 rounded-lg overflow-hidden bg-surface-container flex items-center justify-center text-outline mb-md">
-                <span className="material-symbols-outlined text-5xl">directions_bus</span>
-              </div>
-              <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
-                <span className="text-outline">Model / Make</span>
-                <span className="font-bold text-on-surface">{vehicle.model || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
-                <span className="text-outline">Classification</span>
-                <span className="font-bold text-on-surface">{vehicle.vehicle_types?.type_name || 'General Fleet'}</span>
-              </div>
-              <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
-                <span className="text-outline">Load Capacity limit</span>
-                <span className="font-bold text-on-surface">{Number(vehicle.capacity_kg).toLocaleString()} KG</span>
-              </div>
-              <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
-                <span className="text-outline">Current Odometer</span>
-                <span className="font-bold text-on-surface">{Number(vehicle.current_odometer_km).toLocaleString()} KM</span>
-              </div>
+            <div>
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Current Odometer</p>
+              <p className="text-2xl font-bold text-gray-900">{vehicle.current_odometer_km} <span className="text-sm font-medium text-gray-500">KM</span></p>
             </div>
-          </div>
-        </section>
+         </div>
+         
+         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4">
+            <div className="bg-blue-50 p-3 rounded-xl text-blue-600">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+            </div>
+            <div>
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Load Capacity</p>
+              <p className="text-2xl font-bold text-gray-900">{vehicle.capacity_kg} <span className="text-sm font-medium text-gray-500">KG</span></p>
+            </div>
+         </div>
+         
+         <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4">
+            <div className="bg-orange-50 p-3 rounded-xl text-orange-600">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div>
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Acquisition Cost</p>
+              <p className="text-2xl font-bold text-gray-900"><span className="text-lg text-gray-500 mr-1">$</span>{vehicle.purchase_cost}</p>
+            </div>
+         </div>
+       </div>
 
-        {/* Center: Financial details */}
-        <section className="bg-surface-container-lowest rounded-xl p-lg border border-outline-variant/10 space-y-lg shadow-[0px_4px_20px_rgba(0,0,0,0.03)]">
-          <div className="flex items-center justify-between border-b border-surface-container pb-sm">
-            <h3 className="font-headline-sm text-headline-sm">Acquisition Summary</h3>
-            <span className="material-symbols-outlined text-outline">payments</span>
-          </div>
-          <div className="space-y-md">
-            <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
-              <span className="text-outline">Purchase Price</span>
-              <span className="font-bold text-on-surface">${Number(vehicle.purchase_cost || 0).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between border-b border-surface-container pb-xs text-body-sm">
-              <span className="text-outline">Acquisition Date</span>
-              <span className="font-bold text-on-surface">{vehicle.created_at ? new Date(vehicle.created_at).toLocaleDateString() : 'N/A'}</span>
-            </div>
-            <div className="p-md bg-primary-container/5 rounded-xl border border-primary-container/10 text-body-sm text-on-surface-variant leading-relaxed mt-lg">
-              <span className="font-bold text-primary block mb-1">Fleet Compliance</span>
-              This vehicle is actively monitored for safety inspections. Any outstanding mechanical logs must be closed prior to assignment.
-            </div>
-          </div>
-        </section>
-
-        {/* Right: Maintenance History logs list */}
-        <section className="bg-surface-container-lowest rounded-xl p-lg border border-outline-variant/10 space-y-lg shadow-[0px_4px_20px_rgba(0,0,0,0.03)]">
-          <div className="flex items-center justify-between border-b border-surface-container pb-sm">
-            <h3 className="font-headline-sm text-headline-sm">Service History</h3>
-            <span className="material-symbols-outlined text-outline">calendar_today</span>
-          </div>
-          {maintenance.length === 0 ? (
-            <p className="text-outline text-body-sm italic text-center py-10">No maintenance tasks recorded for this vehicle.</p>
-          ) : (
-            <div className="space-y-md max-h-[350px] overflow-y-auto pr-xs">
-              {maintenance.map((m) => (
-                <div key={m.maintenance_id} className="p-md border border-outline-variant/40 rounded-xl space-y-xs">
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-body-sm">#MNT-{m.maintenance_id}</span>
-                    <span className="text-[10px] text-outline">{m.start_date ? new Date(m.start_date).toLocaleDateString() : 'N/A'}</span>
-                  </div>
-                  <p className="text-body-sm text-on-surface-variant font-semibold">
-                    {prettyStatus(m.maintenance_types?.type_name)}
-                  </p>
-                  <p className="text-[11px] text-outline truncate" title={m.problem_description}>
-                    {m.problem_description}
-                  </p>
-                  <div className="flex justify-between items-center pt-xs border-t border-surface-container">
-                    <span className="text-[10px] font-bold text-primary">${Number(m.actual_cost || m.estimated_cost || 0).toLocaleString()}</span>
-                    <span className="text-[10px] uppercase font-bold text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">
-                      {m.maintenance_statuses?.status_name}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-      </div>
-
+       <div className="bg-white shadow-sm border border-gray-100 rounded-xl overflow-hidden">
+         <div className="px-6 py-5 border-b border-gray-100 bg-[#F3F4F6]">
+           <h2 className="text-lg font-bold text-gray-900 tracking-tight">Vehicle Specifications</h2>
+         </div>
+         <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+           <div>
+             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">System ID</p>
+             <p className="text-sm font-medium text-gray-900">{vehicle.vehicle_id}</p>
+           </div>
+           <div>
+             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Registration Date</p>
+             <p className="text-sm font-medium text-gray-900">{new Date(vehicle.created_at).toLocaleDateString()}</p>
+           </div>
+           <div>
+             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Asset Name</p>
+             <p className="text-sm font-medium text-gray-900">{vehicle.vehicle_name || 'N/A'}</p>
+           </div>
+           <div>
+             <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Operating Region</p>
+             <p className="text-sm font-medium text-gray-900">{vehicle.region_id || 'Global'}</p>
+           </div>
+         </div>
+       </div>
     </div>
   );
 };
