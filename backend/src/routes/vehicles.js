@@ -1,14 +1,23 @@
 import express from 'express';
-import { getVehicles, createVehicle, updateVehicle, deleteVehicle } from '../controllers/vehicleController.js';
-import { authenticateToken, checkRole } from '../middleware/authMiddleware.js';
+import multer from 'multer';
+import { getVehicles, createVehicle, updateVehicle, deleteVehicle, getVehicleTypes, getDocumentTypes, uploadDocument } from '../controllers/vehicleController.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
+});
+const upload = multer({ storage });
 
 const router = express.Router();
-
-router.use(authenticateToken);
+router.use(authMiddleware);
 
 router.get('/', getVehicles);
-router.post('/', checkRole(['Fleet Manager']), createVehicle);
-router.put('/:id', checkRole(['Fleet Manager']), updateVehicle);
-router.delete('/:id', checkRole(['Fleet Manager']), deleteVehicle);
+router.post('/', createVehicle);
+router.put('/:id', updateVehicle);
+router.delete('/:id', deleteVehicle);
+router.get('/types', getVehicleTypes);
+router.get('/documents/types', getDocumentTypes);
+router.post('/documents', upload.single('document'), uploadDocument);
 
 export default router;

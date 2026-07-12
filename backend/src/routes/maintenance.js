@@ -1,13 +1,13 @@
 import express from 'express';
-import { getMaintenanceLogs, createMaintenanceRecord, closeMaintenanceRecord } from '../controllers/maintenanceController.js';
-import { authenticateToken, checkRole } from '../middleware/authMiddleware.js';
+import { getMaintenanceLogs, createMaintenanceLog, closeMaintenanceLog, getMaintenanceTypes } from '../controllers/maintenanceController.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
-
-router.use(authenticateToken);
+router.use(authMiddleware);
 
 router.get('/', getMaintenanceLogs);
-router.post('/', checkRole(['Fleet Manager']), createMaintenanceRecord);
-router.put('/:id/close', checkRole(['Fleet Manager']), closeMaintenanceRecord);
+router.post('/', createMaintenanceLog);
+router.put('/:id/close', closeMaintenanceLog);
+router.get('/types', getMaintenanceTypes);
 
 export default router;
