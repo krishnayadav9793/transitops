@@ -13,7 +13,7 @@ const EmptyState = ({ message }) => (
 export const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     apiClient
       .get('/dashboard/stats')
