@@ -13,7 +13,8 @@ export const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 
   
   if (allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />;
+    const fallback = (user.role === 'Driver' || user.role === 'User') ? '/trips' : '/dashboard';
+    return <Navigate to={fallback} replace />;
   }
 
   return children;

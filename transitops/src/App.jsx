@@ -34,7 +34,14 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Navigate to="/dashboard" replace />} />
         
-        <Route path="dashboard" element={<Dashboard />} />
+        <Route 
+          path="dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={['Admin', 'Fleet Manager', 'Vehicle Owner', 'Financial Analyst', 'Safety Officer']}>
+              <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
 
         {/* Vehicles (Manager, Finance, Vehicle Owner) */}
         <Route

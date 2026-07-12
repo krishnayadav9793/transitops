@@ -173,7 +173,7 @@ export const authService = {
       expiryDate.setFullYear(expiryDate.getFullYear() + 1); // Valid for 1 year
       const licenseExpiry = expiryDate.toISOString().split('T')[0];
 
-      await supabase
+      const { error: driverErr } = await supabase
         .from('drivers')
         .insert([{
           full_name: full_name.trim(),
@@ -187,6 +187,7 @@ export const authService = {
           joining_date: new Date().toISOString().split('T')[0],
           is_active: true
         }]);
+      if (driverErr) throw driverErr;
     }
 
     // 6. Generate JWT token

@@ -62,7 +62,8 @@ export default function Signup() {
             toast.success('Account created successfully! Logging you in...', { id: loadToast });
             
             setTimeout(() => {
-                navigate('/dashboard', { replace: true });
+                const dest = (data.user.role === 'Driver' || data.user.role === 'User') ? '/trips' : '/dashboard';
+                navigate(dest, { replace: true });
             }, 1000);
         } catch (err) {
             toast.error(err.message || 'Failed to create user account.', { id: loadToast });

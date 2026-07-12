@@ -44,7 +44,8 @@ export const Login = () => {
       toast.success('Successfully logged in!', { id: loadToast });
       
       setTimeout(() => {
-        navigate('/dashboard', { replace: true });
+        const dest = (data.user.role === 'Driver' || data.user.role === 'User') ? '/trips' : '/dashboard';
+        navigate(dest, { replace: true });
       }, 500);
     } catch (err) {
       setError(err.message || 'Invalid email or password');

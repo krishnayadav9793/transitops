@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 
 const navItems = [
-  { name: 'Dashboard', path: '/dashboard', icon: 'dashboard', roles: ['Admin', 'Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst', 'User', 'Vehicle Owner'] },
+  { name: 'Dashboard', path: '/dashboard', icon: 'dashboard', roles: ['Admin', 'Fleet Manager', 'Safety Officer', 'Financial Analyst', 'Vehicle Owner'] },
   { name: 'Vehicles', path: '/vehicles', icon: 'directions_bus', roles: ['Admin', 'Fleet Manager', 'Financial Analyst', 'Vehicle Owner'] },
   { name: 'Drivers', path: '/drivers', icon: 'person_pin_circle', roles: ['Admin', 'Fleet Manager', 'Safety Officer'] },
   { name: 'Trips', path: '/trips', icon: 'route', roles: ['Admin', 'Fleet Manager', 'Driver', 'User'] },
