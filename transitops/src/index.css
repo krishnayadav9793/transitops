@@ -131,11 +131,7 @@ body {
   background: linear-gradient(135deg, rgba(15, 82, 56, 0.15) 0%, rgba(15, 82, 56, 0.05) 100%);
 }
 
-.login-illustration {
-  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZUdq9JZ9Gx2BSej-MaTGpD7HrbagYk0qkX_IMnWWB5FcnUSIcsLFdsLwZ3szJuGHuI9V5s4L_o25FKR8_KD-vurDwfNNvuoz9vpXQTgfGaIVZN4QVWB28XCKS7LKvcsUlwyNK_H-1oTySOyoZ0kuKSnj7VteEINanTnQDHBNoOTp-h3qSxiqD5lBeowGnFGqSDo3GPQ7zbwSKesq5Alp4-q0piJiCXt9U1AV_qICb4gy1T8ou2Hxx1244gUUuSatUtfeYWshutse2');
-  background-size: cover;
-  background-position: center;
-}
+/* login-illustration removed — left panel now uses CSS/SVG animation */
 
 input:focus {
   outline: none;
